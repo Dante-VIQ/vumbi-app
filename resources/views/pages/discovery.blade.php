@@ -8,7 +8,7 @@
     $pageSchemas = [];
 
     $pageSchemas[] = [
-        "@context" => "https://schema.org",
+        "@context" => "[https://schema.org](https://schema.org)",
         "@type" => "CollectionPage",
         "name" => "African Travel Experiences | Vumbi Ventures",
         "description" => "Explore authentic African safaris, cultural immersions, and hidden gems.",
@@ -18,16 +18,17 @@
             "name" => "African Travel Experiences"
         ],
     ];
-@endphp
+    @endphp
 @endpush
+
 @section('content')
     <div class="min-h-screen bg-zinc-950 text-white" x-data="discoveryPage()">
 
         <!-- ============================================= -->
-        <!-- 1. HERO (unchanged)                           -->
+        <!-- 1. HERO                                       -->
         <!-- ============================================= -->
         <section class="relative h-screen flex items-center justify-center">
-            <div class="absolute inset-0 bg-[url('https://picsum.photos/id/1015/2000/1200')] bg-cover bg-center">
+            <div class="absolute inset-0 bg-[url('[https://picsum.photos/id/1015/2000/1200](https://picsum.photos/id/1015/2000/1200)')] bg-cover bg-center">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-zinc-950"></div>
             </div>
 
@@ -63,7 +64,7 @@
                         @foreach ($trendingCities as $city)
                             <button @click="query = '{{ $city->name }}'; searchPlace()"
                                 class="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-400/60 transition transform hover:-translate-y-1 shadow-lg">
-                                <img src="{{ $city->image_url ?? 'https://picsum.photos/seed/' . $city->slug . '/400/300' }}"
+                                <img src="{{ $city->image_url ?? '[https://picsum.photos/seed/](https://picsum.photos/seed/)' . $city->slug . '/400/300' }}"
                                     alt="{{ $city->name }}"
                                     class="w-full h-40 object-cover group-hover:scale-105 transition">
                                 <div class="p-4">
@@ -81,28 +82,23 @@
                 <h2 class="text-2xl font-semibold mb-6">Find your perfect trip</h2>
                 <div class="flex flex-wrap justify-center gap-4">
                     <button @click="query = 'Mombasa'; searchPlace()"
-                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🏖️
-                        Beach</button>
+                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🏖️ Beach</button>
                     <button @click="query = 'Maasai Mara'; searchPlace()"
-                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🦁
-                        Safari</button>
+                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🦁 Safari</button>
                     <button @click="query = 'Nairobi'; searchPlace()"
-                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🌆
-                        City</button>
+                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🌆 City</button>
                     <button @click="query = 'Nakuru'; searchPlace()"
-                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🦩
-                        Lake</button>
+                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🦩 Lake</button>
                     <button @click="query = 'Lamu'; searchPlace()"
-                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🏝️
-                        Island</button>
+                        class="px-6 py-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">🏝️ Island</button>
                 </div>
             </section>
 
-            <!-- Empty State (if no trending cities, but this will also show) -->
             <div class="text-center py-12 text-zinc-500">
                 <p class="text-2xl">Search a destination above to get started</p>
             </div>
         </div>
+
         @if (isset($featuredPackages) && count($featuredPackages) > 0)
             <section class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20">
                 <h2 class="text-3xl font-bold mb-8 text-center">🌍 Featured Trips</h2>
@@ -111,16 +107,14 @@
                         <a href="{{ route('tours.show', $pkg) }}"
                             class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                             <div class="h-48 bg-cover bg-center"
-                                style="background-image: url('{{ $pkg->image ?: 'https://picsum.photos/400/250' }}')">
+                                style="background-image: url('{{ $pkg->image ?: '[https://picsum.photos/400/250](https://picsum.photos/400/250)' }}')">
                             </div>
                             <div class="p-5">
-                                <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}
-                                </div>
+                                <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}</div>
                                 <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
                                 <p class="text-sm text-zinc-400 mt-1 line-clamp-2">{{ $pkg->description }}</p>
                                 <div class="flex items-center justify-between mt-4">
-                                    <span class="text-2xl font-bold text-green-400">$
-                                        {{ number_format($pkg->price) }}</span>
+                                    <span class="text-2xl font-bold text-green-400">$ {{ number_format($pkg->price) }}</span>
                                     <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
                                         Book Now
@@ -132,6 +126,7 @@
                 </div>
             </section>
         @endif
+
         <!-- ============================================= -->
         <!-- 3. AFTER SEARCH: Results & Tabs               -->
         <!-- ============================================= -->
@@ -150,7 +145,7 @@
                     <p class="text-sm text-zinc-400 mt-2">This may take 15–45 seconds...</p>
                 </div>
 
-                <!-- TABS (now 6 with Book a Trip if packages exist) -->
+                <!-- TABS -->
                 <div class="border-b border-zinc-800 mb-12">
                     <div class="flex flex-wrap gap-2">
                         <button @click="activeTab = 'overview'"
@@ -186,10 +181,6 @@
                     </div>
                 </div>
 
-                <!-- ========================================= -->
-                <!-- TAB CONTENT                                -->
-                <!-- ========================================= -->
-
                 <!-- OVERVIEW TAB -->
                 <div x-show="activeTab === 'overview'" class="grid md:grid-cols-2 gap-12">
                     <div class="space-y-10">
@@ -219,8 +210,7 @@
                     <h2 class="text-3xl font-semibold mb-8">Things To Do</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <template x-for="place in result.places" :key="place.id || place.xid">
-                            <div
-                                class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
+                            <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
                                 <h3 class="font-semibold text-lg mb-2" x-text="place.properties?.name || place.name"></h3>
                                 <p class="text-sm text-zinc-400 line-clamp-3"
                                     x-text="place.properties?.descr || place.description || 'No description available'">
@@ -235,8 +225,7 @@
                     <h2 class="text-3xl font-semibold mb-8">Recommended Hotels</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <template x-for="hotel in result.hotels" :key="hotel.hotelId || hotel.id">
-                            <div
-                                class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
+                            <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
                                 <h3 class="font-semibold text-lg" x-text="hotel.hotelName || hotel.name || 'Hotel'"></h3>
                                 <p class="text-amber-400 text-xl font-medium mt-2"
                                     x-text="'KES ' + (hotel.priceAvg || hotel.price || 'N/A')"></p>
@@ -250,17 +239,14 @@
                 <div x-show="activeTab === 'flights'">
                     <h2 class="text-3xl font-semibold mb-8">Flights & Travel Deals</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <template x-for="item in [...(result.flights || []), ...(result.affiliate_deals || [])]"
-                            :key="item.id">
-                            <div
-                                class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
+                        <template x-for="item in [...(result.flights || []), ...(result.affiliate_deals || [])]" :key="item.id">
+                            <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <h3 class="font-semibold" x-text="item.from + ' → ' + item.to"></h3>
                                         <p class="text-amber-400 text-2xl font-medium mt-1" x-text="item.price"></p>
                                     </div>
-                                    <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full"
-                                        x-text="item.source || 'Deal'"></span>
+                                    <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full" x-text="item.source || 'Deal'"></span>
                                 </div>
                                 <p class="text-sm text-zinc-400 mt-3" x-text="item.airline || item.description"></p>
                             </div>
@@ -295,17 +281,14 @@
                     </div>
                 </div>
 
-                <!-- ========================================= -->
-                <!-- NEW: BOOK A TRIP TAB (partner packages)   -->
-                <!-- ========================================= -->
+                <!-- BOOK A TRIP TAB -->
                 <div x-show="activeTab === 'book' && result.partner_packages?.length" class="space-y-6">
                     <h2 class="text-3xl font-semibold mb-8">Book a Trip to <span x-text="result.city"></span></h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <template x-for="pkg in result.partner_packages" :key="pkg.id">
-                            <div
-                                class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
+                            <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                                 <div class="h-48 bg-cover bg-center"
-                                    :style="'background-image: url(' + (pkg.image || 'https://picsum.photos/400/250') + ')'">
+                                    :style="'background-image: url(' + (pkg.image || '[https://picsum.photos/400/250](https://picsum.photos/400/250)') + ')'">
                                 </div>
                                 <div class="p-5">
                                     <h3 class="font-semibold text-lg" x-text="pkg.title"></h3>
@@ -331,7 +314,6 @@
         <!-- 4. GLOBAL BOOK A TRIP FLOATING BUTTON          -->
         <!-- ============================================= -->
         <div x-data="{ openGeneralBooking: false, search: '', packages: [] }">
-            <!-- Floating button -->
             <button @click="openGeneralBooking = true"
                 class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-500 text-white p-4 rounded-full shadow-2xl z-40 transition transform hover:scale-105">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,15 +347,14 @@
                                     class="text-green-400 font-semibold"></span>
                             </div>
                         </template>
-                        <div x-show="search && !packages.length" class="text-center text-zinc-500 py-4">No packages found
-                            for this destination.</div>
+                        <div x-show="search && !packages.length" class="text-center text-zinc-500 py-4">No packages found for this destination.</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ============================================= -->
-        <!-- 5. BOOKING REQUEST MODAL (shared)              -->
+        <!-- 5. BOOKING REQUEST MODAL                       -->
         <!-- ============================================= -->
         <div x-data="bookingModal()" x-show="open" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -405,8 +386,7 @@
                         <button type="button" @click="open = false"
                             class="px-6 py-2 border border-zinc-700 rounded-xl">Cancel</button>
                         <button type="submit"
-                            class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium">Send
-                            Request</button>
+                            class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium">Send Request</button>
                     </div>
                 </form>
             </div>
@@ -416,7 +396,6 @@
 
     <script>
         document.addEventListener('alpine:init', () => {
-            // --- Discovery Page Component ---
             Alpine.data('discoveryPage', () => ({
                 query: '',
                 loading: false,
@@ -453,27 +432,21 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector(
-                                    'meta[name="csrf-token"]').content
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                             },
-                            body: JSON.stringify({
-                                q: this.query
-                            })
+                            body: JSON.stringify({ q: this.query })
                         });
 
                         const data = await res.json();
-
                         if (!res.ok) throw new Error(data.message || 'Search failed');
 
                         this.result = data.result || this.result;
 
                         if (data.status === 'building') {
                             this.building = true;
-                            this.buildingMessage = data.message ||
-                                'Building your personalized travel guide...';
+                            this.buildingMessage = data.message || 'Building your personalized travel guide...';
                             this.startPolling(this.query);
                         }
-
                     } catch (err) {
                         console.error(err);
                         this.error = err.message || 'Failed to fetch results';
@@ -493,8 +466,7 @@
                         }
 
                         try {
-                            const res = await fetch(
-                                `/discover/search?q=${encodeURIComponent(query)}`);
+                            const res = await fetch(`/discover/search?q=${encodeURIComponent(query)}`);
                             const data = await res.json();
 
                             if (data.status === 'ready') {
@@ -509,34 +481,24 @@
                 }
             }));
 
-            // --- Booking Modal Component ---
             Alpine.data('bookingModal', () => ({
                 open: false,
                 packageId: null,
-                form: {
-                    name: '',
-                    phone: '',
-                    email: '',
-                    notes: ''
-                },
+                form: { name: '', phone: '', email: '', notes: '' },
+
                 openForPackage(pkgId) {
                     this.packageId = pkgId;
-                    this.form = {
-                        name: '',
-                        phone: '',
-                        email: '',
-                        notes: ''
-                    };
+                    this.form = { name: '', phone: '', email: '', notes: '' };
                     this.open = true;
                 },
+
                 async submitBooking() {
                     try {
                         const res = await fetch('/api/partner-leads', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector(
-                                    'meta[name="csrf-token"]').content
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                             },
                             body: JSON.stringify({
                                 customer_name: this.form.name,
@@ -546,6 +508,7 @@
                                 notes: this.form.notes
                             })
                         });
+
                         if (res.ok) {
                             alert('Request sent! We’ll contact you shortly.');
                             this.open = false;
@@ -560,12 +523,15 @@
             }));
         });
 
-        // Global event listener for booking (catches $dispatch('open-booking'))
-        window.addEventListener('load', () => {
-            document.addEventListener('open-booking', (e) => {
-                const bookingModal = document.querySelector('[x-data="bookingModal()"]');
-                if (bookingModal && bookingModal.__x) {
-                    bookingModal.__x.$data.openForPackage(e.detail.packageId);
+        function dispatchBookingEvent(pkgId) {
+            window.dispatchEvent(new CustomEvent('open-booking', { detail: { packageId: pkgId } }));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener('open-booking', (e) => {
+                const modal = document.querySelector('[x-data*="bookingModal"]');
+                if (modal && modal._x_dataStack) {
+                    modal._x_dataStack[0].openForPackage(e.detail.packageId);
                 }
             });
         });
