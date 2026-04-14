@@ -15,7 +15,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
         
-    use HasFactory, HasRoles, Notifiable;
+    use HasFactory, Notifiable;
 
     const ROLE_ADMIN = 'admin';
     const ROLE_MASTER = 'master';
