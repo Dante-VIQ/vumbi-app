@@ -214,12 +214,12 @@ new class extends Component {
                     {{ $blog->title }}
                 </h1>
 
-                @if($blog->description)
-                    <p
-                        class="prose prose-invert text-xl text-[#C4B9A6] leading-relaxed mb-8 border-l-4 border-sunflare pl-6">
-                        {{ $blog->description }}
-                    </p>
-                @endif
+                {{-- @if($blog->description)
+                <p
+                    class="prose prose-invert text-xl text-[#C4B9A6] leading-relaxed mb-8 border-l-4 border-sunflare pl-6">
+                    {{ $blog->description }}
+                </p>
+                @endif --}}
 
                 <div
                     class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-dust-mite mb-8">
@@ -334,14 +334,15 @@ new class extends Component {
 
             {{-- Main Article Content --}}
             <div class="lg:col-span-6">
-    <div class="prose prose-lg prose-invert max-w-none 
+                <div
+                    class="prose prose-lg prose-invert max-w-none 
                 prose-headings:text-raw-linen 
                 prose-p:text-[#C4B9A6] prose-p:leading-relaxed prose-p:mb-5
                 prose-strong:text-sunflare prose-strong:font-semibold
                 prose-a:text-sunflare prose-a:no-underline hover:prose-a:underline
                 prose-blockquote:border-l-4 prose-blockquote:border-sunflare prose-blockquote:pl-6 prose-blockquote:italic">
-        {!! $blog->formatted_description !!}
-    </div>
+                    {!! $blog->formatted_description !!}
+                </div>
 
                 {{-- Author Bio (if available) --}}
                 @if($blog->author && $blog->author->bio)
