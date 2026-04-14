@@ -20,9 +20,12 @@
                 <a href="/ecosystem" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Ecosystem</a>
                 <a href="/blog" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Field Notes</a>
                 <a href="/contact" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Contact</a>
-                @role('engineer')
-                <a href="/admin/africa" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Africa</a>
-                @endrole
+                @auth
+
+                    @role('master|engineer')
+                    <a href="/admin/africa" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Africa</a>
+                    @endrole
+                @endauth
 
                 <div class="hidden md:block">
                     <a href="/contact"
@@ -91,10 +94,15 @@
                     class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Field Notes</a>
                 <a href="/contact" @click="mobileOpen = false"
                     class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Contact</a>
-                @role('master|engineer')
-                <a href="/admin/africa" @click="mobileOpen = false"
-                    class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Analysis</a>
-                @endrole
+                @auth
+
+                    @role('master|engineer')
+                    <a href="/admin/africa" @click="mobileOpen = false"
+                        class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Analysis</a>
+                    @endrole
+
+                @endauth
+
                 <a href="#contact" @click="mobileOpen = false"
                     class="bg-[#8B5A2B] text-white px-6 py-2 rounded-full hover:bg-[#6B421F] transition text-center">Partner
                     With Us</a>
