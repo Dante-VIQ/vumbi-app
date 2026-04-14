@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
 
 class RolePermissionSeeder extends Seeder
@@ -13,7 +12,7 @@ class RolePermissionSeeder extends Seeder
     {
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Create roles with explicit slug
+        // Define roles with guard_name
         $roles = [
             ['name' => 'user', 'guard_name' => 'web', 'slug' => 'user'],
             ['name' => 'admin', 'guard_name' => 'web', 'slug' => 'admin'],
@@ -27,25 +26,23 @@ class RolePermissionSeeder extends Seeder
             );
         }
 
-        // Assign engineer role to specific admin emails
+        // Assign engineer role to specific emails
         $engineerEmails = array_filter(array_map('trim', explode(',', config('app.engineer_emails', ''))));
         foreach ($engineerEmails as $email) {
             $user = User::where('email', $email)->first();
-            if ($user) {
-                $user->syncRoles(['engineer']);
-                $this->command->info("Assigned 'engineer' role to {$email}");
-            } else {
-                $this->command->warn("User with email {$email} not found. Create the user first or run this seeder after user creation.");
+            if ($user && !$user->hasRole('engineer')) {
+                $user->assignRole('engineer');
+                $this->command->info("Assigned 'engineer' to {$email}");
             }
         }
 
-        // Optional: assign admin role to other emails
+        // Assign admin role to admin emails (if any)
         $adminEmails = array_filter(array_map('trim', explode(',', config('app.admin_emails', ''))));
         foreach ($adminEmails as $email) {
             $user = User::where('email', $email)->first();
-            if ($user && !$user->hasRole('engineer')) {
+            if ($user && !$user->hasRole('engineer') && !$user->hasRole('admin')) {
                 $user->assignRole('admin');
-                $this->command->info("Assigned 'admin' role to {$email}");
+                $this->command->info("Assigned 'admin' to {$email}");
             }
         }
     }
