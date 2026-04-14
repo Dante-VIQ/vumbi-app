@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -31,12 +30,12 @@ class Blog extends Model
     // Accessors
     public function getExcerptAttribute($length = 150)
     {
-        return Str::limit(strip_tags($this->description), $length);
+        return Str::limit(strip_tags((string) $this->description), $length);
     }
 
     public function getReadingTimeAttribute()
     {
-        $words = str_word_count(strip_tags($this->description));
+        $words = str_word_count(strip_tags((string) $this->description));
         $minutes = ceil($words / 200);
 
         return $minutes.' min read';
@@ -99,4 +98,19 @@ class Blog extends Model
 
     }
 
+    public function getFormattedDescriptionAttribute()
+    {
+        // Convert line breaks to <p> tags
+        $paragraphs = explode("\n\n", (string) $this->description);
+        $html = '';
+        foreach ($paragraphs as $paragraph) {
+            $paragraph = trim($paragraph);
+            if (! empty($paragraph)) {
+                // Use nl2br to preserve single line breaks inside paragraph
+                $html .= '<p>'.nl2br(e($paragraph)).'</p>';
+            }
+        }
+
+        return $html;
+    }
 }

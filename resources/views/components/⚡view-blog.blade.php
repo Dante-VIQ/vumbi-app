@@ -164,22 +164,6 @@ new class extends Component {
             // 'categories' => $this->categories,
         ];
     }
-
-
-
-    public function getFormattedDescriptionAttribute()
-    {
-        // Convert line breaks to <p> tags
-        $paragraphs = explode("\n\n", $this->description);
-        $html = '';
-        foreach ($paragraphs as $paragraph) {
-            $paragraph = trim($paragraph);
-            if (!empty($paragraph)) {
-                $html .= '<p>' . nl2br(e($paragraph)) . '</p>';
-            }
-        }
-        return $html;
-    }
 };
 
 ?>
@@ -230,7 +214,7 @@ new class extends Component {
                     {{ $blog->title }}
                 </h1>
 
-                @if($blog->excerpt)
+                @if($blog->description)
                     <p
                         class="prose prose-invert text-xl text-[#C4B9A6] leading-relaxed mb-8 border-l-4 border-sunflare pl-6">
                         {{ $blog->description }}
@@ -356,7 +340,7 @@ new class extends Component {
                 prose-strong:text-sunflare prose-strong:font-semibold
                 prose-a:text-sunflare prose-a:no-underline hover:prose-a:underline
                 prose-blockquote:border-l-4 prose-blockquote:border-sunflare prose-blockquote:pl-6 prose-blockquote:italic">
-        {!! clean($blog->description) !!}
+        {!! $blog->formatted_description !!}
     </div>
 
                 {{-- Author Bio (if available) --}}
