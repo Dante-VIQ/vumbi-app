@@ -46,7 +46,7 @@ new class extends Component {
                     $this->blog->category,
                     $this->contentType,
                     $this->blog->title,
-                    $this->blog->excerpt ?? '',
+                    $this->blog->description ?? '',
                     ...($this->blog->tags ?? [])
                 ])->filter()->map(fn($t) => strtolower(trim($t)));
 
@@ -233,7 +233,7 @@ new class extends Component {
                 @if($blog->excerpt)
                     <p
                         class="prose prose-invert text-xl text-[#C4B9A6] leading-relaxed mb-8 border-l-4 border-sunflare pl-6">
-                        {{ $blog->excerpt }}
+                        {{ $blog->description }}
                     </p>
                 @endif
 
