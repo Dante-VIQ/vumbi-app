@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Sitemap: https://vumbiventures.com/sitemap.xml
+
+# Disallow admin and private paths
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /password/
+Disallow: /livewire/
+Disallow: /vendor/
+Disallow: /storage/framework/
