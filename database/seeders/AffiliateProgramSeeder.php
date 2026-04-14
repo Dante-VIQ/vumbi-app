@@ -54,15 +54,47 @@ class AffiliateProgramSeeder extends Seeder
         // Add Awin examples
         AffiliateProgram::create([
             'network' => 'awin',
-            'program_name' => 'Travel Insurance Partner',
+            'program_name' => 'GoWithGuide US',
             'type' => 'insurance',
             'keywords' => json_encode(['insurance', 'travel insurance', 'safety']),
             'description' => 'Protect your African adventure',
-            'affiliate_link' => 'https://your-awin-link-here',
+            'affiliate_link' => 'https://www.awin1.com/cread.php?awinmid=87121&awinaffid=2580697',
             'priority' => 60,
             'active' => true,
         ]);
 
+                AffiliateProgram::create([
+            'network' => 'awin',
+            'program_name' => 'AWIN',
+            'type' => 'insurance',
+            'keywords' => json_encode(['insurance', 'travel insurance', 'safety']),
+            'description' => 'Protect your African adventure',
+            'affiliate_link' => 'https://www.awin1.com/cread.php?awinmid=87121&awinaffid=2580697',
+            'priority' => 60,
+            'active' => true,
+        ]);
+
+        AffiliateProgram::create([
+            'network' => 'awin',
+            'program_name' => 'normanwalsh',
+            'type' => 'insurance',
+            'keywords' => json_encode(['insurance', 'travel insurance', 'safety']),
+            'description' => 'Protect your African adventure',
+            'affiliate_link' => 'https://www.awin1.com/cread.php?awinmid=115943&awinaffid=2580697',
+            'priority' => 60,
+            'active' => true,
+        ]);
+
+        AffiliateProgram::create([
+            'network' => 'awin',
+            'program_name' => 'PANDA GOGO LIMITED',
+            'type' => 'insurance',
+            'keywords' => json_encode(['insurance', 'travel insurance', 'safety']),
+            'description' => 'Protect your African adventure',
+            'affiliate_link' => 'https://www.awin1.com/cread.php?awinmid=51067&awinaffid=2580697',
+            'priority' => 60,
+            'active' => true,
+        ]);
         // Add more programs as you join them
     }
 }

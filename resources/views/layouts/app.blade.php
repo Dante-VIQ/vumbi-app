@@ -42,6 +42,14 @@
     {{-- Additional Styles --}}
     @stack('styles')
 
+    <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
+  (function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.src = 'https://emrldtp.cc/NDY1NDg3.js?t=465487';
+      document.head.appendChild(script);
+  })();
+</script>
     {{-- Organization Schema --}}
     @php
     $organizationSchema = [
