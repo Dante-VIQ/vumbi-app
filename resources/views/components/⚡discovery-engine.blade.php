@@ -207,7 +207,7 @@ new class extends Component {
             <h2 class="text-3xl font-light text-raw-linen mb-8 text-center"><span class="text-sunflare">Culture</span> Stories</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($cultureEntries as $culture)
-                <a href="{{ route('culture.show', $culture->id) }}" class="group block border border-dust-mite hover:border-sunflare rounded-lg overflow-hidden bg-indigo-night bg-opacity-30 transition">
+                <a href="#" class="group block border border-dust-mite hover:border-sunflare rounded-lg overflow-hidden bg-indigo-night bg-opacity-30 transition">
                     @if($culture->image)
                         <img src="{{ Storage::url($culture->image) }}" class="w-full h-48 object-cover">
                     @endif
