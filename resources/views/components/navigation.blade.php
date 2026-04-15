@@ -18,12 +18,13 @@
                 <a href="/about" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">About</a>
                 <a href="/services" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Services</a>
                 <a href="/ecosystem" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Ecosystem</a>
+                <a href="/discover" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Discovery</a>
                 <a href="/blog" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Field Notes</a>
                 <a href="/contact" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Contact</a>
                 {{-- @auth --}}
-                    @role('master|engineer')
-                    <a href="/admin/africa" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Africa</a>
-                    @endrole
+                @role('master|engineer')
+                <a href="/admin/africa" class="text-[#1A1A1A] hover:text-[#8B5A2B] transition font-medium">Africa</a>
+                @endrole
                 {{-- @endauth --}}
 
                 <div class="hidden md:block">
@@ -95,10 +96,10 @@
                     class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Contact</a>
                 {{-- @auth --}}
 
-                    @role('master|engineer')
-                    <a href="/admin/africa" @click="mobileOpen = false"
-                        class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Analysis</a>
-                    @endrole
+                @role('master|engineer')
+                <a href="/admin/africa" @click="mobileOpen = false"
+                    class="text-[#1A1A1A] hover:text-[#8B5A2B] transition py-2">Analysis</a>
+                @endrole
 
                 {{-- @endauth --}}
 

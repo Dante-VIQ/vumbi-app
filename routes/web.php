@@ -28,7 +28,9 @@ Route::get('ecosystem', function () {
     return view('pages.ecosystem');
 });
 
-
+Route::get('discover', function () {
+    return view('pages.discovery');
+});
 
 
 // ======================

@@ -1,77 +1,67 @@
 <?php
-
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class TravelpayoutsService
 {
+    protected $apiUrl;
     protected $token;
     protected $marker;
+    protected $cacheTtl;
 
     public function __construct()
     {
-        $this->token = config('travelpayouts.token');
-        $this->marker = config('travelpayouts.marker');
+        $this->apiUrl = config('services.travelpayouts.api_url');
+        $this->token = config('services.travelpayouts.token');
+        $this->marker = config('services.travelpayouts.marker');
+        $this->cacheTtl = config('services.travelpayouts.cache_ttl', 3600);
     }
 
-    /**
-     * Search Hotels using Hotellook API
-     */
-    public function searchHotels(string $location, int $limit = 5)
+    public function searchHotels(string $location, ?string $checkIn = null, ?string $checkOut = null, int $adults = 2, int $limit = 5): array
     {
-        return $this->callApi('hotels', $location, $limit);
-    }
+        if (empty($this->token)) return [];
 
-    /**
-     * Search Tours, Safaris & Activities
-     */
-    public function searchTours(string $location, int $limit = 6)
-    {
-        return $this->callApi('tours', $location, $limit);
-    }
-
-    /**
-     * Core API call method
-     */
-    private function callApi(string $type, string $location, int $limit)
-    {
-        if (empty($this->token) || empty($this->marker)) {
-            return [];
-        }
-
-        $cacheKey = "tp_{$type}_" . strtolower(str_replace([' ', ',', '.'], '_', $location)) . "_{$limit}";
-
-        return Cache::remember($cacheKey, now()->addHours(12), function () use ($type, $location, $limit) {
-            try {
-                if ($type === 'hotels') {
-                    // Hotellook API for hotels
-                    $response = Http::timeout(10)->get('https://engine.hotellook.com/api/v2/cache.json', [
-                        'location'     => $location,
-                        'checkIn'      => now()->addDays(30)->format('Y-m-d'),
-                        'checkOut'     => now()->addDays(37)->format('Y-m-d'),
-                        'adultsCount'  => 2,
-                        'currency'     => 'USD',
-                        'limit'        => $limit,
-                        'marker'       => $this->marker,
-                    ]);
-                } else {
-                    // Tours / Activities (Travelpayouts)
-                    $response = Http::timeout(10)->get('https://api.travelpayouts.com/v2/tours.json', [
-                        'location' => $location,
-                        'marker'   => $this->marker,
-                        'limit'    => $limit,
-                        'currency' => 'USD',
-                    ]);
-                }
-
-                return $response->successful() ? $response->json() : [];
-            } catch (\Exception $e) {
-                Log::error("Travelpayouts API Error ({$type}): " . $e->getMessage());
-                return [];
-            }
+        $cacheKey = 'travelpayouts_hotels_' . md5($location . $checkIn . $checkOut . $adults . $limit);
+        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($location, $checkIn, $checkOut, $adults, $limit) {
+            $response = Http::withHeaders(['X-Access-Token' => $this->token])
+                ->get($this->apiUrl . '/hotels/search', [
+                    'query' => $location,
+                    'check_in' => $checkIn ?? now()->addDay()->toDateString(),
+                    'check_out' => $checkOut ?? now()->addDays(3)->toDateString(),
+                    'adults' => $adults,
+                    'currency' => 'usd',
+                    'limit' => $limit,
+                    'marker' => $this->marker,
+                ]);
+            if ($response->failed()) return [];
+            $data = $response->json();
+            if (empty($data['data'])) return [];
+            return $this->formatResults($data['data']);
         });
+    }
+
+    protected function formatResults(array $results): array
+    {
+        $formatted = [];
+        foreach ($results as $hotel) {
+            $formatted[] = [
+                'name' => $hotel['hotel_name'] ?? $hotel['name'] ?? 'Accommodation',
+                'price' => isset($hotel['price']) ? '$' . number_format($hotel['price'], 2) : 'Best rates',
+                'image' => $hotel['image'] ?? $hotel['photo'] ?? null,
+                'url' => $this->buildAffiliateLink($hotel),
+            ];
+        }
+        return $formatted;
+    }
+
+    protected function buildAffiliateLink(array $hotel): string
+    {
+        $hotelId = $hotel['hotel_id'] ?? $hotel['id'] ?? 0;
+        $checkIn = $hotel['checkIn'] ?? now()->addDay()->toDateString();
+        $checkOut = $hotel['checkOut'] ?? now()->addDays(3)->toDateString();
+        return "https://www.travelpayouts.com/hotels/?marker={$this->marker}&hotel_id={$hotelId}&checkIn={$checkIn}&checkOut={$checkOut}&adults=2";
     }
 }
