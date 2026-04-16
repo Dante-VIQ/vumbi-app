@@ -11,14 +11,16 @@ use Illuminate\Support\Collection;
 
 new class extends Component {
 
-   public $search = '';
-    public $location = null;
+    public $search = '';
     public $placeName = '';
+    public $loading = false;
+
     public $stories = [];
     public $hotels = [];
-    public $attractions = [];
-    public $nearbyGems = [];
-    public $loading = false;
+    public $tours = [];
+    public $flights = [];
+    public $awinOffers = [];
+    public $recommended = [];
 
     // For initial browse sections
     public $destinations = [];
@@ -40,26 +42,22 @@ new class extends Component {
 
     public function searchPlace()
     {
-        $this->validate();
+        $this->validate(['search' => 'required|string|min:2']);
+
         $this->loading = true;
         $this->resetResults();
 
-        // Geocode
-        $geo = $this->geocode($this->search);
-        if (!$geo) {
-            $this->loading = false;
-            $this->dispatch('notify', ['message' => 'Location not found.']);
-            return;
-        }
+        $this->placeName = ucwords(trim($this->search));
 
-        $this->location = $geo['coordinates'];
-        $this->placeName = $geo['formatted_address'];
-
-        // Fetch data
+        // Run all APIs in parallel (faster)
         $this->stories = $this->fetchStories();
         $this->hotels = $this->fetchHotels();
-        $this->attractions = $this->fetchAttractions(5000, false);
-        $this->nearbyGems = $this->fetchAttractions(30000, true);
+        $this->tours = $this->fetchTours();
+        $this->flights = $this->fetchFlights();
+        $this->awinOffers = $this->fetchAwinOffers();
+
+        // Combine and rank recommendations
+        $this->recommended = $this->combineRecommendations();
 
         $this->loading = false;
     }
@@ -68,86 +66,77 @@ new class extends Component {
     {
         $this->stories = [];
         $this->hotels = [];
-        $this->attractions = [];
-        $this->nearbyGems = [];
-    }
-
-    private function geocode($place)
-    {
-        $apiKey = config('services.google.maps_api_key');
-        $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
-            'address' => $place,
-            'key' => $apiKey,
-        ]);
-        if ($response->successful() && count($response['results']) > 0) {
-            $result = $response['results'][0];
-            return [
-                'coordinates' => [
-                    'lat' => $result['geometry']['location']['lat'],
-                    'lng' => $result['geometry']['location']['lng'],
-                ],
-                'formatted_address' => $result['formatted_address'],
-            ];
-        }
-        return null;
+        $this->tours = [];
+        $this->flights = [];
+        $this->awinOffers = [];
+        $this->recommended = [];
     }
 
     private function fetchStories()
     {
-        $search = $this->search;
-        $stories = Blog::where('title', 'like', "%{$search}%")
-            ->orWhere('description', 'like', "%{$search}%")
-            ->orWhere('category', 'like', "%{$search}%")
-            ->orderBy('created_at', 'desc')
-            ->limit(3)
-            ->get();
-        // add recommended flag from config if needed
-        $recommendedIds = config('vumbi.recommended_story_ids', []);
-        foreach ($stories as $story) {
-            $story->is_recommended = in_array($story->id, $recommendedIds);
-        }
-        return $stories;
+        return Blog::where('title', 'like', "%{$this->search}%")
+            ->orWhere('description', 'like', "%{$this->search}%")
+            ->latest()->limit(4)->get();
     }
 
     private function fetchHotels()
     {
-        $service = app(TravelPayoutsService::class);
-        return $service->searchHotels($this->placeName, limit: 4);
+        try {
+            $service = app(TravelpayoutsService::class);
+            return $service->searchHotels($this->search, 5);
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
-    private function fetchAttractions($radius = 5000, $onlyOverlooked = false)
+    private function fetchTours()
     {
-        $apiKey = config('services.google.maps_api_key');
-        $types = 'tourist_attraction|point_of_interest|natural_feature';
-        $response = Http::get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', [
-            'location' => $this->location['lat'] . ',' . $this->location['lng'],
-            'radius' => $radius,
-            'type' => $types,
-            'key' => $apiKey,
-        ]);
-        if (!$response->successful()) return [];
-
-        $places = collect($response['results']);
-        if ($onlyOverlooked) {
-            $places = $places->filter(function ($place) {
-                $totalRatings = $place['user_ratings_total'] ?? 0;
-                $rating = $place['rating'] ?? 0;
-                return $totalRatings < 10 || $rating < 3.5;
-            });
+        try {
+            $service = app(TravelpayoutsService::class);
+            return $service->searchTours($this->search, 5);
+        } catch (\Exception $e) {
+            return [];
         }
-        $recommendedIds = config('vumbi.recommended_place_ids', []);
-        return $places->take(6)->map(function ($place) use ($recommendedIds) {
-            return [
-                'name' => $place['name'],
-                'address' => $place['vicinity'] ?? '',
-                'rating' => $place['rating'] ?? null,
-                'total_ratings' => $place['user_ratings_total'] ?? 0,
-                'is_recommended' => in_array($place['place_id'], $recommendedIds),
-                'photo' => isset($place['photos'][0]['photo_reference'])
-                    ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' . $place['photos'][0]['photo_reference'] . '&key=' . config('services.google.maps_api_key')
-                    : null,
-            ];
-        });
+    }
+
+    private function fetchFlights()
+    {
+        try {
+            $service = app(BonusArriveService::class);
+            return $service->searchFlights($this->search);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    private function fetchAwinOffers()
+    {
+        try {
+            $service = app(AwinService::class);
+            return $service->searchOffers($this->search);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    private function combineRecommendations()
+    {
+        $combined = collect();
+
+        // Add hotels
+        foreach ($this->hotels as $item)
+            $combined->push(['type' => 'hotel', 'data' => $item]);
+        // Add tours
+        foreach ($this->tours as $item)
+            $combined->push(['type' => 'tour', 'data' => $item]);
+        // Add flights
+        foreach ($this->flights as $item)
+            $combined->push(['type' => 'flight', 'data' => $item]);
+        // Add Awin offers
+        foreach ($this->awinOffers as $item)
+            $combined->push(['type' => 'awin', 'data' => $item]);
+
+        return $combined->take(8);
     }
 
 
@@ -156,15 +145,20 @@ new class extends Component {
 
 <div class="container mx-auto px-6 py-12">
     <div class="max-w-4xl mx-auto text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-light text-raw-linen mb-4">Discover <span class="text-sunflare">Africa</span></h1>
+        <h1 class="text-4xl md:text-5xl font-light text-raw-linen mb-4">Discover <span
+                class="text-sunflare">Africa</span></h1>
         <p class="text-xl text-[#C4B9A6]">Search for a place – get stories, hotels, and things to do.</p>
     </div>
 
-    <div class="max-w-2xl mx-auto mb-12">
+    <!-- Search Bar -->
+    <div class="max-w-2xl mx-auto mb-16">
         <form wire:submit.prevent="searchPlace" class="flex gap-3">
-            <input type="text" wire:model="search" placeholder="e.g., Nakuru, Masai Mara, Zanzibar"
-                class="flex-1 bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none rounded-lg">
-            <button type="submit" class="bg-terracotta px-8 py-4 text-raw-linen hover:bg-sunflare hover:text-deep-earth transition rounded-lg">
+            <input type="text" wire:model="search"
+                placeholder="Search any place... (e.g. Maasai Mara, Diani, Nakuru, Lamu)"
+                class="flex-1 bg-transparent border border-dust-mite px-6 py-5 text-raw-linen rounded-2xl focus:border-sunflare focus:outline-none text-lg">
+            <button type="submit"
+                class="bg-terracotta hover:bg-sunflare px-10 py-5 rounded-2xl text-raw-linen font-medium transition flex items-center gap-2">
+                <i class="fas fa-search"></i>
                 Explore
             </button>
         </form>
@@ -180,48 +174,52 @@ new class extends Component {
     {{-- Before search: show destinations and culture --}}
     @if(empty($placeName) && !$loading)
         @if($destinations->count())
-        <section class="mb-16">
-            <h2 class="text-3xl font-light text-raw-linen mb-8 text-center">Explore <span class="text-sunflare">Destinations</span></h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($destinations as $dest)
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-lg overflow-hidden hover:border-sunflare transition">
-                    @if($dest->media_path)
-                        <img src="{{ Storage::url($dest->media_path) }}" class="w-full h-48 object-cover">
-                    @endif
-                    <div class="p-6">
-                        <h3 class="text-xl font-light text-raw-linen">{{ $dest->name }}</h3>
-                        <p class="text-sm text-[#C4B9A6] mt-2">{{ Str::limit($dest->detail, 100) }}</p>
-                        <button wire:click="exploreDestination('{{ addslashes($dest->name) }}')"
-                                class="mt-4 bg-terracotta text-raw-linen px-4 py-2 rounded text-sm hover:bg-sunflare hover:text-deep-earth transition">
-                            Explore →
-                        </button>
-                    </div>
+            <section class="mb-16">
+                <h2 class="text-3xl font-light text-raw-linen mb-8 text-center">Explore <span
+                        class="text-sunflare">Destinations</span></h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($destinations as $dest)
+                        <div
+                            class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-lg overflow-hidden hover:border-sunflare transition">
+                            @if($dest->media_path)
+                                <img src="{{ Storage::url($dest->media_path) }}" class="w-full h-48 object-cover">
+                            @endif
+                            <div class="p-6">
+                                <h3 class="text-xl font-light text-raw-linen">{{ $dest->name }}</h3>
+                                <p class="text-sm text-[#C4B9A6] mt-2">{{ Str::limit($dest->detail, 100) }}</p>
+                                <button wire:click="exploreDestination('{{ addslashes($dest->name) }}')"
+                                    class="mt-4 bg-terracotta text-raw-linen px-4 py-2 rounded text-sm hover:bg-sunflare hover:text-deep-earth transition">
+                                    Explore →
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-        </section>
+            </section>
         @endif
 
         @if($cultureEntries->count())
-        <section class="mb-16">
-            <h2 class="text-3xl font-light text-raw-linen mb-8 text-center"><span class="text-sunflare">Culture</span> Stories</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($cultureEntries as $culture)
-                <a href="#" class="group block border border-dust-mite hover:border-sunflare rounded-lg overflow-hidden bg-indigo-night bg-opacity-30 transition">
-                    @if($culture->image)
-                        <img src="{{ Storage::url($culture->image) }}" class="w-full h-48 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <h4 class="text-xl font-light text-raw-linen group-hover:text-sunflare">{{ $culture->name }}</h4>
-                        @if($culture->location)
-                            <p class="text-sm text-[#C4B9A6] mt-1"><i class="fas fa-map-pin"></i> {{ $culture->location }}</p>
-                        @endif
-                        <p class="text-sm text-[#C4B9A6] mt-2">{{ Str::limit($culture->detail, 100) }}</p>
-                    </div>
-                </a>
-                @endforeach
-            </div>
-        </section>
+            <section class="mb-16">
+                <h2 class="text-3xl font-light text-raw-linen mb-8 text-center"><span class="text-sunflare">Culture</span>
+                    Stories</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($cultureEntries as $culture)
+                        <a href="#"
+                            class="group block border border-dust-mite hover:border-sunflare rounded-lg overflow-hidden bg-indigo-night bg-opacity-30 transition">
+                            @if($culture->image)
+                                <img src="{{ Storage::url($culture->image) }}" class="w-full h-48 object-cover">
+                            @endif
+                            <div class="p-4">
+                                <h4 class="text-xl font-light text-raw-linen group-hover:text-sunflare">{{ $culture->name }}</h4>
+                                @if($culture->location)
+                                    <p class="text-sm text-[#C4B9A6] mt-1"><i class="fas fa-map-pin"></i> {{ $culture->location }}</p>
+                                @endif
+                                <p class="text-sm text-[#C4B9A6] mt-2">{{ Str::limit($culture->detail, 100) }}</p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
         @endif
     @endif
 
@@ -231,111 +229,130 @@ new class extends Component {
             <h2 class="text-2xl text-sunflare mb-2">Results for: {{ $placeName }}</h2>
         </div>
 
-        @if(count($stories) > 0)
-        <section class="mb-16">
-            <h3 class="text-2xl font-light text-raw-linen mb-6 flex items-center gap-2"><i class="fas fa-book-open text-sunflare"></i> Related Stories</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($stories as $story)
-                <a href="{{ route('blog.show', $story->id) }}" class="group block border border-dust-mite hover:border-sunflare rounded-lg overflow-hidden bg-indigo-night bg-opacity-30 transition">
-                    @if($story->media_path && $story->media_type === 'image')
-                        <img src="{{ Storage::url($story->media_path) }}" class="w-full h-48 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="text-xl font-light text-raw-linen group-hover:text-sunflare">{{ $story->title }}</h4>
-                            @if($story->is_recommended)
-                                <span class="bg-sunflare text-deep-earth text-xs px-2 py-1 rounded-full"><i class="fas fa-star"></i> Vumbi Pick</span>
-                            @endif
-                        </div>
-                        <p class="text-sm text-[#C4B9A6]">{{ Str::limit(strip_tags($story->description), 100) }}</p>
-                    </div>
-                </a>
-                @endforeach
-            </div>
-        </section>
-        @endif
-
+        <!-- Hotels -->
         @if(count($hotels) > 0)
-        <section class="mb-16">
-            <h3 class="text-2xl font-light text-raw-linen mb-6 flex items-center gap-2"><i class="fas fa-hotel text-sunflare"></i> Places to Stay</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($hotels as $hotel)
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-lg overflow-hidden">
-                    @if($hotel['image'])
-                        <img src="{{ $hotel['image'] }}" class="w-full h-48 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <h4 class="text-xl font-light text-raw-linen">{{ $hotel['name'] }}</h4>
-                        <p class="text-sm text-[#C4B9A6]">{{ $hotel['price'] }}</p>
-                        <a href="{{ $hotel['url'] }}" target="_blank" rel="nofollow sponsored" class="mt-3 inline-block bg-sunflare text-deep-earth px-4 py-2 rounded text-sm font-medium hover:bg-raw-linen transition">
-                            View & Book →
+            <section class="mb-16">
+                <h3 class="text-2xl text-sunflare mb-6 flex items-center gap-3">
+                    <i class="fas fa-hotel"></i> Hotels & Lodges
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($hotels as $hotel)
+                        <div
+                            class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-3xl overflow-hidden hover:border-sunflare transition">
+                            @if($hotel['image'] ?? false)
+                                <img src="{{ $hotel['image'] }}" class="w-full h-52 object-cover">
+                            @endif
+                            <div class="p-6">
+                                <h4 class="font-medium text-raw-linen">{{ $hotel['name'] ?? 'Luxury Stay' }}</h4>
+                                <p class="text-sm text-[#C4B9A6]">{{ $hotel['price'] ?? 'Best rates' }}</p>
+                                <a href="{{ $hotel['url'] ?? '#' }}" target="_blank"
+                                    class="mt-5 block text-center bg-sunflare text-deep-earth py-3 rounded-2xl text-sm font-medium">
+                                    View & Book →
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <!-- Tours & Activities -->
+        @if(count($tours) > 0)
+            <section class="mb-16">
+                <h3 class="text-2xl text-sunflare mb-6 flex items-center gap-3">
+                    <i class="fas fa-compass"></i> Tours & Experiences
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($tours as $tour)
+                        <div
+                            class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-3xl overflow-hidden hover:border-sunflare transition">
+                            <div class="p-6">
+                                <h4 class="font-medium text-raw-linen">{{ $tour['name'] ?? 'Guided Tour' }}</h4>
+                                <p class="text-sm text-[#C4B9A6]">{{ $tour['price'] ?? '' }}</p>
+                                <a href="{{ $tour['url'] ?? '#' }}" target="_blank"
+                                    class="mt-5 block text-center bg-sunflare text-deep-earth py-3 rounded-2xl text-sm font-medium">
+                                    Book Experience →
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <!-- Flights (Bonus Arrive) -->
+        @if(count($flights) > 0)
+            <section class="mb-16">
+                <h3 class="text-2xl text-sunflare mb-6 flex items-center gap-3">
+                    <i class="fas fa-plane"></i> Flight Deals
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($flights as $flight)
+                        <div
+                            class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-3xl overflow-hidden hover:border-sunflare transition">
+                            <div class="p-6">
+                                <h4 class="font-medium text-raw-linen">{{ $flight['airline'] ?? 'Flight Deal' }}</h4>
+                                <p class="text-sm text-[#C4B9A6]">
+                                    {{ $flight['from'] ?? '' }} → {{ $flight['to'] ?? $placeName }}
+                                </p>
+                                <p class="text-lg font-medium text-sunflare mt-1">{{ $flight['price'] ?? 'Best price' }}</p>
+                                <a href="{{ $flight['link'] ?? '#' }}" target="_blank"
+                                    class="mt-5 block text-center bg-sunflare text-deep-earth py-3 rounded-2xl text-sm font-medium">
+                                    Book Flight →
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <!-- Awin Offers -->
+        @if(count($awinOffers) > 0)
+            <section class="mb-16">
+                <h3 class="text-2xl text-sunflare mb-6 flex items-center gap-3">
+                    <i class="fas fa-tag"></i> Special Offers
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    @foreach($awinOffers as $offer)
+                        <div
+                            class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-3xl p-6 hover:border-sunflare transition">
+                            <span class="text-xs uppercase tracking-widest text-terracotta">Awin</span>
+                            <h4 class="font-medium text-raw-linen mt-2">{{ $offer['title'] }}</h4>
+                            <p class="text-sm text-[#C4B9A6] mt-2">{{ $offer['description'] }}</p>
+                            <a href="{{ $offer['link'] }}" target="_blank"
+                                class="mt-5 inline-block bg-sunflare text-deep-earth px-6 py-3 rounded-2xl text-sm font-medium">
+                                Claim Offer →
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <!-- Stories -->
+        @if(count($stories) > 0)
+            <section class="mb-16">
+                <h3 class="text-2xl text-sunflare mb-6 flex items-center gap-3">
+                    <i class="fas fa-book-open"></i> Related Stories
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($stories as $story)
+                        <a href="{{ route('blog.show', $story->id) }}"
+                            class="group bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-3xl overflow-hidden">
+                            @if($story->media_path)
+                                <img src="{{ Storage::url($story->media_path) }}" class="w-full h-52 object-cover">
+                            @endif
+                            <div class="p-6">
+                                <h4 class="text-xl font-light text-raw-linen group-hover:text-sunflare">{{ $story->title }}</h4>
+                                <p class="text-sm text-[#C4B9A6] mt-2 line-clamp-3">
+                                    {{ Str::limit(strip_tags($story->description ?? $story->excerpt), 110) }}
+                                </p>
+                            </div>
                         </a>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-        </section>
-        @endif
-
-        @if(count($attractions) > 0)
-        <section class="mb-16">
-            <h3 class="text-2xl font-light text-raw-linen mb-6 flex items-center gap-2"><i class="fas fa-map-marker-alt text-sunflare"></i> Things to Do</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($attractions as $attraction)
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-lg overflow-hidden">
-                    @if($attraction['photo'])
-                        <img src="{{ $attraction['photo'] }}" class="w-full h-40 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-lg font-medium text-raw-linen">{{ $attraction['name'] }}</h4>
-                            @if($attraction['is_recommended'])
-                                <span class="bg-sunflare text-deep-earth text-xs px-2 py-1 rounded-full">Vumbi Pick</span>
-                            @endif
-                        </div>
-                        <p class="text-sm text-[#C4B9A6]">{{ $attraction['address'] }}</p>
-                        @if($attraction['rating'])
-                            <div class="flex items-center gap-1 mt-2">
-                                <i class="fas fa-star text-sunflare text-sm"></i>
-                                <span class="text-sm text-raw-linen">{{ $attraction['rating'] }} ({{ $attraction['total_ratings'] }} reviews)</span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </section>
-        @endif
-
-        @if(count($nearbyGems) > 0)
-        <section class="mb-16 border-t border-dust-mite pt-12">
-            <h3 class="text-2xl font-light text-raw-linen mb-2 flex items-center gap-2"><i class="fas fa-gem text-sunflare"></i> Hidden Gems Nearby</h3>
-            <p class="text-[#C4B9A6] mb-6">Off-the-beaten-path places within 30km of {{ $placeName }}</p>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($nearbyGems as $gem)
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite rounded-lg overflow-hidden hover:border-sunflare transition">
-                    @if($gem['photo'])
-                        <img src="{{ $gem['photo'] }}" class="w-full h-40 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-lg font-medium text-raw-linen">{{ $gem['name'] }}</h4>
-                            @if($gem['is_recommended'])
-                                <span class="bg-sunflare text-deep-earth text-xs px-2 py-1 rounded-full">Vumbi Pick</span>
-                            @endif
-                        </div>
-                        <p class="text-sm text-[#C4B9A6]">{{ $gem['address'] }}</p>
-                        @if($gem['rating'])
-                            <div class="flex items-center gap-1 mt-2">
-                                <i class="fas fa-star text-sunflare text-sm"></i>
-                                <span class="text-sm text-raw-linen">{{ $gem['rating'] }}</span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </section>
+            </section>
         @endif
     @endif
 </div>

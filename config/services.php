@@ -46,4 +46,13 @@ return [
         'cache_ttl' => env('TRAVELPAYOUTS_CACHE_TTL', 3600),
     ],
 
+        'awin' => [
+        'api_key' => env('AWIN_API_KEY'),
+        'publisher_id' => env('AWIN_PUBLISHER_ID'),
+    ],
+
+    'bonusarrive' => [
+        'api_key' => env('BONUSARRIVE_API_KEY'),
+        'affiliate_id' => env('BONUSARRIVE_AFFILIATE_ID'),
+    ],
 ];
