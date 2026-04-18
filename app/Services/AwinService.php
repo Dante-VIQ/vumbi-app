@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class AwinService
 {
@@ -17,36 +16,32 @@ class AwinService
         $this->publisherId = config('services.awin.publisher_id');
     }
 
-    /**
-     * Search offers from Awin
-     */
     public function searchOffers(string $keyword, int $limit = 6)
     {
-        if (empty($this->apiKey)) {
+        if (empty($this->apiKey) || empty($this->publisherId)) {
             return [];
         }
 
-        $cacheKey = "awin_offers_" . strtolower($keyword);
+        $cacheKey = 'awin_offers_' . md5($keyword);
 
         return Cache::remember($cacheKey, now()->addHours(6), function () use ($keyword, $limit) {
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                ])->get('https://api.awin.com/publishers/' . $this->publisherId . '/advertiser-campaigns', [
-                    'search' => $keyword,
-                    'limit' => $limit,
+                    'Authorization' => "Bearer {$this->apiKey}",
+                ])->get("https://api.awin.com/publishers/{$this->publisherId}/reports", [
+                    'keyword' => $keyword,
+                    'limit'   => $limit,
                 ]);
 
                 if ($response->successful()) {
-                    return collect($response->json())->take($limit)->map(function ($offer) {
+                    return collect($response->json())->take($limit)->map(function ($item) {
                         return [
-                            'id' => $offer['id'] ?? null,
-                            'name' => $offer['advertiserName'] ?? 'Awin Partner',
-                            'title' => $offer['campaignName'] ?? 'Special Offer',
-                            'description' => $offer['description'] ?? '',
-                            'link' => $offer['trackingLink'] ?? '#',
-                            'type' => 'awin',
-                            'network' => 'Awin',
+                            'name'        => $item['advertiserName'] ?? 'Awin Partner',
+                            'title'       => $item['campaignName'] ?? 'Special Offer',
+                            'description' => $item['description'] ?? '',
+                            'link'        => $item['trackingLink'] ?? '#',
+                            'network'     => 'Awin',
+                            'type'        => 'offer',
                         ];
                     });
                 }

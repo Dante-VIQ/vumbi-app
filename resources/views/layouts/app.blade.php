@@ -23,7 +23,7 @@
     <meta property="og:title" content="@yield('og_title', 'Vumbi Ventures - From overlooked places, we build remarkable solutions')">
     <meta property="og:description" content="@yield('og_description', 'From overlooked places, we build remarkable solutions. Discover our ecosystem of digital platforms including SkillDNA and Discover Africa.')">
     <meta property="og:image" content="@yield('og_image', asset('images/vumbi-ventures-og.jpg'))">
-
+<meta name="msvalidate.01" content="AEDCCE160C527FD2AC01FAEB0CF741F6" />
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', 'Vumbi Ventures')">

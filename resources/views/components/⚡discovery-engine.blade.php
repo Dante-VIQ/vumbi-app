@@ -5,6 +5,8 @@ use App\Models\Blog;
 use App\Models\Doctor;
 use App\Models\Culture;
 use App\Services\TravelPayoutsService;
+use App\Services\BonusArriveService;
+use App\Services\AwinService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
@@ -82,7 +84,7 @@ new class extends Component {
     private function fetchHotels()
     {
         try {
-            $service = app(TravelpayoutsService::class);
+            $service = app(TravelPayoutsService::class);
             return $service->searchHotels($this->search, 5);
         } catch (\Exception $e) {
             return [];
@@ -92,7 +94,7 @@ new class extends Component {
     private function fetchTours()
     {
         try {
-            $service = app(TravelpayoutsService::class);
+            $service = app(TravelPayoutsService::class);
             return $service->searchTours($this->search, 5);
         } catch (\Exception $e) {
             return [];

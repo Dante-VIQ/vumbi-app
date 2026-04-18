@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -7,61 +8,77 @@ use Illuminate\Support\Facades\Log;
 
 class TravelpayoutsService
 {
-    protected $apiUrl;
     protected $token;
     protected $marker;
-    protected $cacheTtl;
 
     public function __construct()
     {
-        $this->apiUrl = config('services.travelpayouts.api_url');
         $this->token = config('services.travelpayouts.token');
         $this->marker = config('services.travelpayouts.marker');
-        $this->cacheTtl = config('services.travelpayouts.cache_ttl', 3600);
     }
 
-    public function searchHotels(string $location, ?string $checkIn = null, ?string $checkOut = null, int $adults = 2, int $limit = 5): array
+    /**
+     * Search Hotels - Main Method
+     */
+    public function searchHotels(string $location, int $limit = 6)
     {
-        if (empty($this->token)) return [];
+        if (empty($this->token) || empty($this->marker)) {
+            Log::warning('Travelpayouts: Missing token or marker');
+            return [];
+        }
 
-        $cacheKey = 'travelpayouts_hotels_' . md5($location . $checkIn . $checkOut . $adults . $limit);
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($location, $checkIn, $checkOut, $adults, $limit) {
-            $response = Http::withHeaders(['X-Access-Token' => $this->token])
-                ->get($this->apiUrl . '/hotels/search', [
-                    'query' => $location,
-                    'check_in' => $checkIn ?? now()->addDay()->toDateString(),
-                    'check_out' => $checkOut ?? now()->addDays(3)->toDateString(),
-                    'adults' => $adults,
-                    'currency' => 'usd',
-                    'limit' => $limit,
-                    'marker' => $this->marker,
+        $cacheKey = 'tp_hotels_' . md5($location) . "_{$limit}";
+
+        return Cache::remember($cacheKey, now()->addHours(12), function () use ($location, $limit) {
+            try {
+                $response = Http::timeout(15)->get('https://engine.hotellook.com/api/v2/cache.json', [
+                    'location'     => $location,
+                    'checkIn'      => now()->addDays(30)->format('Y-m-d'),
+                    'checkOut'     => now()->addDays(37)->format('Y-m-d'),
+                    'adultsCount'  => 2,
+                    'currency'     => 'USD',
+                    'limit'        => $limit,
+                    'marker'       => $this->marker,
                 ]);
-            if ($response->failed()) return [];
-            $data = $response->json();
-            if (empty($data['data'])) return [];
-            return $this->formatResults($data['data']);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return $this->formatHotels($data);
+                } else {
+                    Log::error('Travelpayouts Hotel API Error: ' . $response->status() . ' - ' . $response->body());
+                    return [];
+                }
+            } catch (\Exception $e) {
+                Log::error('Travelpayouts Exception: ' . $e->getMessage());
+                return [];
+            }
         });
     }
 
-    protected function formatResults(array $results): array
+    /**
+     * Search Tours / Activities
+     */
+    public function searchTours(string $location, int $limit = 6)
     {
-        $formatted = [];
-        foreach ($results as $hotel) {
-            $formatted[] = [
-                'name' => $hotel['hotel_name'] ?? $hotel['name'] ?? 'Accommodation',
-                'price' => isset($hotel['price']) ? '$' . number_format($hotel['price'], 2) : 'Best rates',
-                'image' => $hotel['image'] ?? $hotel['photo'] ?? null,
-                'url' => $this->buildAffiliateLink($hotel),
-            ];
-        }
-        return $formatted;
+        // For now, we'll return empty or you can implement later
+        // Bonus Arrive is better for flights, this can be expanded
+        return [];
     }
 
-    protected function buildAffiliateLink(array $hotel): string
+    private function formatHotels(array $results): array
     {
-        $hotelId = $hotel['hotel_id'] ?? $hotel['id'] ?? 0;
-        $checkIn = $hotel['checkIn'] ?? now()->addDay()->toDateString();
-        $checkOut = $hotel['checkOut'] ?? now()->addDays(3)->toDateString();
-        return "https://www.travelpayouts.com/hotels/?marker={$this->marker}&hotel_id={$hotelId}&checkIn={$checkIn}&checkOut={$checkOut}&adults=2";
+        $formatted = [];
+
+        foreach ($results as $hotel) {
+            $formatted[] = [
+                'name'  => $hotel['name'] ?? 'Hotel',
+                'price' => isset($hotel['priceFrom']) ? '$' . number_format($hotel['priceFrom'], 2) : 'Best rates',
+                'image' => $hotel['photo'] ?? $hotel['thumbnail'] ?? null,
+                'url'   => $hotel['url'] ?? '#',
+                'rating'=> $hotel['rating'] ?? null,
+            ];
+        }
+
+        return $formatted;
     }
 }

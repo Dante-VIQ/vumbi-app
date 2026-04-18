@@ -17,35 +17,32 @@ class BonusArriveService
         $this->affiliateId = config('services.bonusarrive.affiliate_id');
     }
 
-    /**
-     * Search Flights from Bonus Arrive
-     */
     public function searchFlights(string $destination, int $limit = 5)
     {
         if (empty($this->apiKey)) {
             return [];
         }
 
-        $cacheKey = "bonusarrive_flights_" . strtolower($destination);
+        $cacheKey = 'bonusarrive_flights_' . md5($destination);
 
         return Cache::remember($cacheKey, now()->addHours(4), function () use ($destination, $limit) {
             try {
-                $response = Http::get('https://api.bonusarrive.com/flights/search', [
-                    'destination' => $destination,
+                $response = Http::get('https://api.bonusarrive.com/v1/flights', [
+                    'destination'  => $destination,
                     'affiliate_id' => $this->affiliateId,
-                    'limit' => $limit,
+                    'limit'        => $limit,
                 ]);
 
                 if ($response->successful()) {
-                    return collect($response->json('flights'))->take($limit)->map(function ($flight) {
+                    return collect($response->json('data'))->take($limit)->map(function ($flight) {
                         return [
                             'airline' => $flight['airline'] ?? 'Major Airline',
-                            'from' => $flight['departure'] ?? 'NBO',
-                            'to' => $flight['arrival'] ?? $destination,
-                            'price' => $flight['price'] ?? 'Best price',
-                            'link' => $flight['booking_url'] ?? '#',
-                            'type' => 'flight',
+                            'from'    => $flight['departure_city'] ?? 'NBO',
+                            'to'      => $flight['arrival_city'] ?? $destination,
+                            'price'   => isset($flight['price']) ? '$' . number_format($flight['price'], 2) : 'Best price',
+                            'link'    => $flight['booking_url'] ?? '#',
                             'network' => 'Bonus Arrive',
+                            'type'    => 'flight',
                         ];
                     });
                 }

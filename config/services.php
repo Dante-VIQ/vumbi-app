@@ -39,12 +39,10 @@ return [
         'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
-    'travelpayouts' => [
-        'api_url' => env('TRAVELPAYOUTS_API_URL', 'https://api.travelpayouts.com/v1'),
-        'token' => env('TRAVELPAYOUTS_TOKEN'),
-        'marker' => env('TRAVELPAYOUTS_MARKER'),
-        'cache_ttl' => env('TRAVELPAYOUTS_CACHE_TTL', 3600),
-    ],
+'travelpayouts' => [
+    'token'  => env('TRAVELPAYOUTS_TOKEN'),
+    'marker' => env('TRAVELPAYOUTS_MARKER'),
+],
 
         'awin' => [
         'api_key' => env('AWIN_API_KEY'),
