@@ -98,19 +98,34 @@ class Blog extends Model
 
     }
 
-    public function getFormattedDescriptionAttribute()
-    {
-        // Convert line breaks to <p> tags
-        $paragraphs = explode("\n\n", (string) $this->description);
-        $html = '';
-        foreach ($paragraphs as $paragraph) {
-            $paragraph = trim($paragraph);
-            if (! empty($paragraph)) {
-                // Use nl2br to preserve single line breaks inside paragraph
-                $html .= '<p>'.nl2br(e($paragraph)).'</p>';
-            }
-        }
+ /**
+ * Get the description with proper HTML paragraphs
+ *
+ * @return string
+ */
+public function getFormattedDescriptionAttribute()
+{
+    $text = (string) $this->description;
 
-        return $html;
+    if (empty($text)) {
+        return '';
     }
+
+    // Split by double newlines (paragraphs)
+    $paragraphs = explode("\n\n", $text);
+
+    $html = '';
+
+    foreach ($paragraphs as $paragraph) {
+        $paragraph = trim($paragraph);
+
+        if (!empty($paragraph)) {
+            // Convert single line breaks to <br> and escape the content
+            $formatted = nl2br(e($paragraph));
+            $html .= "<p>{$formatted}</p>";
+        }
+    }
+
+    return $html;
+}
 }
