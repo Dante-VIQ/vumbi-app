@@ -36,7 +36,7 @@ new class extends Component {
         $this->cultureEntries = Culture::latest()->limit(6)->get();
     }
 
-    public function exploreDestination($name)
+public function exploreDestination($name)
     {
         $this->search = $name;
         $this->searchPlace();
@@ -51,15 +51,12 @@ new class extends Component {
 
         $this->placeName = ucwords(trim($this->search));
 
-        // Run all APIs in parallel (faster)
-        $this->stories = $this->fetchStories();
-        $this->hotels = $this->fetchHotels();
-        $this->tours = $this->fetchTours();
-        $this->flights = $this->fetchFlights();
+        // Call all partner APIs
+        $this->stories    = $this->fetchStories();
+        $this->hotels     = $this->fetchHotels();
+        $this->tours      = $this->fetchTours();
+        $this->flights    = $this->fetchFlights();
         $this->awinOffers = $this->fetchAwinOffers();
-
-        // Combine and rank recommendations
-        $this->recommended = $this->combineRecommendations();
 
         $this->loading = false;
     }
@@ -71,22 +68,25 @@ new class extends Component {
         $this->tours = [];
         $this->flights = [];
         $this->awinOffers = [];
-        $this->recommended = [];
     }
 
     private function fetchStories()
     {
         return Blog::where('title', 'like', "%{$this->search}%")
             ->orWhere('description', 'like', "%{$this->search}%")
-            ->latest()->limit(4)->get();
+            ->orWhere('category', 'like', "%{$this->search}%")
+            ->latest()
+            ->limit(6)
+            ->get();
     }
 
     private function fetchHotels()
     {
         try {
-            $service = app(TravelPayoutsService::class);
-            return $service->searchHotels($this->search, 5);
+            $service = app(TravelpayoutsService::class);
+            return $service->searchHotels($this->search, 6);
         } catch (\Exception $e) {
+            \Log::error('Hotels API Error: ' . $e->getMessage());
             return [];
         }
     }
@@ -94,9 +94,10 @@ new class extends Component {
     private function fetchTours()
     {
         try {
-            $service = app(TravelPayoutsService::class);
-            return $service->searchTours($this->search, 5);
+            $service = app(TravelpayoutsService::class);
+            return $service->searchTours($this->search, 6);
         } catch (\Exception $e) {
+            \Log::error('Tours API Error: ' . $e->getMessage());
             return [];
         }
     }
@@ -105,8 +106,9 @@ new class extends Component {
     {
         try {
             $service = app(BonusArriveService::class);
-            return $service->searchFlights($this->search);
+            return $service->searchFlights($this->search, 5);
         } catch (\Exception $e) {
+            \Log::error('Flights API Error: ' . $e->getMessage());
             return [];
         }
     }
@@ -115,31 +117,13 @@ new class extends Component {
     {
         try {
             $service = app(AwinService::class);
-            return $service->searchOffers($this->search);
+            return $service->searchOffers($this->search, 6);
         } catch (\Exception $e) {
+            \Log::error('Awin API Error: ' . $e->getMessage());
             return [];
         }
     }
 
-    private function combineRecommendations()
-    {
-        $combined = collect();
-
-        // Add hotels
-        foreach ($this->hotels as $item)
-            $combined->push(['type' => 'hotel', 'data' => $item]);
-        // Add tours
-        foreach ($this->tours as $item)
-            $combined->push(['type' => 'tour', 'data' => $item]);
-        // Add flights
-        foreach ($this->flights as $item)
-            $combined->push(['type' => 'flight', 'data' => $item]);
-        // Add Awin offers
-        foreach ($this->awinOffers as $item)
-            $combined->push(['type' => 'awin', 'data' => $item]);
-
-        return $combined->take(8);
-    }
 
 
 };

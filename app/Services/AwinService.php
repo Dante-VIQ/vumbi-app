@@ -9,13 +9,18 @@ class AwinService
 {
     protected $apiKey;
     protected $publisherId;
+    protected $cacheTtl;
 
     public function __construct()
     {
-        $this->apiKey = config('services.awin.api_key');
+        $this->apiKey      = config('services.awin.api_key');
         $this->publisherId = config('services.awin.publisher_id');
+        $this->cacheTtl    = config('services.awin.cache_ttl', 21600); // 6 hours
     }
 
+    /**
+     * Search relevant offers from Awin
+     */
     public function searchOffers(string $keyword, int $limit = 6)
     {
         if (empty($this->apiKey) || empty($this->publisherId)) {
@@ -24,7 +29,7 @@ class AwinService
 
         $cacheKey = 'awin_offers_' . md5($keyword);
 
-        return Cache::remember($cacheKey, now()->addHours(6), function () use ($keyword, $limit) {
+        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($keyword, $limit) {
             try {
                 $response = Http::withHeaders([
                     'Authorization' => "Bearer {$this->apiKey}",
@@ -46,7 +51,7 @@ class AwinService
                     });
                 }
             } catch (\Exception $e) {
-                Log::error('Awin API Error: ' . $e->getMessage());
+                \Log::error('Awin API Error: ' . $e->getMessage());
             }
 
             return [];

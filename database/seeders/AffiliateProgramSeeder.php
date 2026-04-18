@@ -21,6 +21,7 @@ class AffiliateProgramSeeder extends Seeder
                 'cultural tour', 'historical site', 'wildlife viewing', 'national park'
             ]),
             'description' => 'Book authentic African safaris, cultural tours, and wildlife excursions with Viator.',
+            'affiliate_link' => 'https://viator.tpo.lu/82gryWLW',
             'priority' => 85,
             'active' => true,
         ]);
@@ -34,6 +35,7 @@ class AffiliateProgramSeeder extends Seeder
                 'local guide', 'village visit', 'cooking class', 'dhow cruise'
             ]),
             'description' => 'Discover unique African experiences – from spice tours in Zanzibar to gorilla trekking in Rwanda.',
+            'affiliate_link' => 'https://getyourguide.tpo.lu/FBbq3OSG',
             'priority' => 85,
             'active' => true,
         ]);
@@ -47,6 +49,7 @@ class AffiliateProgramSeeder extends Seeder
                 'waterfall', 'adventure sport', 'zip line', 'cultural show'
             ]),
             'description' => 'Book attraction tickets, day trips, and adventure activities across Africa.',
+            'affiliate_link' => 'https://klook.tpo.lu/zBNpcyAh',
             'priority' => 80,
             'active' => true,
         ]);
@@ -60,6 +63,7 @@ class AffiliateProgramSeeder extends Seeder
                 'palace', 'fort', 'monument', 'exhibition'
             ]),
             'description' => 'Skip-the-line tickets to Africa’s top museums, monuments, and cultural sites.',
+            'affiliate_link' => 'https://tiqets.tpo.lu/3vBHGFit',
             'priority' => 75,
             'active' => true,
         ]);
@@ -73,6 +77,7 @@ class AffiliateProgramSeeder extends Seeder
                 'mobile app', 'interactive map', 'heritage trail'
             ]),
             'description' => 'Self-guided audio tours and walking itineraries for independent explorers.',
+            'affiliate_link' => 'https://wegotrip.tpo.lu/vIPXNcyW',
             'priority' => 70,
             'active' => true,
         ]);
@@ -87,6 +92,7 @@ class AffiliateProgramSeeder extends Seeder
                 'beach resort', 'safari camp', 'vacation rental', 'apartment'
             ]),
             'description' => 'Find the best hotel deals, safari lodges, and beach resorts across Africa.',
+            'affiliate_link' => 'https://agoda.tpo.lu/A845F9VS',
             'priority' => 90,
             'active' => true,
         ]);
@@ -100,21 +106,8 @@ class AffiliateProgramSeeder extends Seeder
                 'budget stay', 'luxury hotel', 'family suite'
             ]),
             'description' => 'Compare hotel prices and book your perfect African stay – from budget to luxury.',
+            'affiliate_link' => 'https://trip.tpo.lu/mPQNdebS',
             'priority' => 85,
-            'active' => true,
-        ]);
-
-        // --- Flights & Transport ---
-        AffiliateProgram::create([
-            'network' => 'travelpayouts',
-            'program_name' => 'Kiwi.com',
-            'type' => 'flight',
-            'keywords' => json_encode([
-                'flight', 'air ticket', 'cheap flights', 'airline', 'airport transfer',
-                'connecting flight', 'international flight', 'domestic flight'
-            ]),
-            'description' => 'Book cheap flights to African destinations with Kiwi.com’s smart search.',
-            'priority' => 80,
             'active' => true,
         ]);
 
@@ -130,7 +123,7 @@ class AffiliateProgramSeeder extends Seeder
                 'personalized safari', 'city guide', 'translator'
             ]),
             'description' => 'Hire a local private guide for a truly personalised African adventure.',
-            'affiliate_link' => 'https://www.awin1.com/cread.php?awinmid=87121&awinaffid=2580697',
+            'affiliate_link' => 'https://tidd.ly/4tg38cr',
             'priority' => 75,
             'active' => true,
         ]);

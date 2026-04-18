@@ -47,10 +47,13 @@ return [
         'awin' => [
         'api_key' => env('AWIN_API_KEY'),
         'publisher_id' => env('AWIN_PUBLISHER_ID'),
+    'cache_ttl' => env('AWIN_CACHE_TTL', 21600),
     ],
 
     'bonusarrive' => [
         'api_key' => env('BONUSARRIVE_API_KEY'),
         'affiliate_id' => env('BONUSARRIVE_AFFILIATE_ID'),
+        'cache_ttl' => env('BONUSARRIVE_CACHE_TTL', 14400),
+
     ],
 ];
