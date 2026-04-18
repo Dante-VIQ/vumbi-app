@@ -6,6 +6,8 @@ use App\Models\AffiliateProgram;
 use App\Services\TravelpayoutsService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AffiliateMatcher;
+use App\Services\AffiliateExecutionService;
 
 new class extends Component {
     public $blog;
@@ -20,56 +22,100 @@ new class extends Component {
     public $commentEmail = '';
     public $commentContent = '';
     public $email = ''; // newsletter
+    public $contentBlocks = [];
+    public $affiliateResults = [];
 
-    public function mount(Blog $blog)
-    {
-        $this->blog = $blog->load('author');
+public function mount(Blog $blog)
+{
+    $this->blog = $blog->load('author');
 
-        if (!$this->blog) {
-            abort(404);
-        }
-
-        $this->contentType = $this->detectContentType($this->blog);
-        $this->detectedLocation = $this->detectLocation($this->blog);
-
-        // Related Posts
-        $this->relatedPosts = Blog::where('category', $this->blog->category)
-            ->where('id', '!=', $this->blog->id)
-            ->orderBy('created_at', 'desc')
-            ->limit(3)
-            ->get();
-
-        // Static Affiliates (Awin + Travelpayouts)
-        $this->recommendedAffiliates = AffiliateProgram::active()
-            ->where(function ($query) {
-                $terms = collect([
-                    $this->blog->category,
-                    $this->contentType,
-                    $this->blog->title,
-                    $this->blog->description ?? '',
-                    ...($this->blog->tags ?? [])
-                ])->filter()->map(fn($t) => strtolower(trim($t)));
-
-                foreach ($terms as $term) {
-                    $query->orWhere('type', 'like', "%{$term}%")
-                        ->orWhere('keywords', 'like', "%{$term}%")
-                        ->orWhereJsonContains('keywords', $term);
-                }
-            })
-            ->orderBy('priority', 'desc')
-            ->limit(6)
-            ->get();
-
-        // Dynamic Hotels
-        if ($this->detectedLocation && in_array($this->contentType, ['destination', 'culture'])) {
-            try {
-                $service = app(TravelpayoutsService::class);
-                $this->dynamicHotels = $service->searchHotels($this->detectedLocation, limit: 4);
-            } catch (\Exception $e) {
-                $this->dynamicHotels = [];
-            }
-        }
+    if (!$this->blog) {
+        abort(404);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Content Intelligence Layer
+    |--------------------------------------------------------------------------
+    */
+    $this->contentType = $this->detectContentType($this->blog);
+    $this->detectedLocation = $this->detectLocation($this->blog);
+    $this->contentBlocks = $this->splitContentIntoBlocks();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Affiliate Matching Engine (CORE MONETIZATION)
+    |--------------------------------------------------------------------------
+    */
+    $cacheKey = 'affiliate_results_' . $this->blog->id;
+
+    $this->affiliateResults = Cache::remember(
+        $cacheKey,
+        now()->addHours(12),
+        function () {
+
+            $plan = app(AffiliateMatcher::class)
+                ->buildPlan($this->blog);
+
+            $results = app(AffiliateExecutionService::class)
+                ->execute($plan, $this->detectedLocation);
+
+            /*
+            Fallback monetization if no intent triggered
+            */
+            if (empty($results)) {
+                $results['fallback'] = AffiliateProgram::active()
+                    ->orderBy('priority','desc')
+                    ->limit(3)
+                    ->get();
+            }
+
+            return $results;
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 3. Related Posts (Engagement Layer)
+    |--------------------------------------------------------------------------
+    */
+    $this->relatedPosts = Blog::where('category', $this->blog->category)
+        ->where('id', '!=', $this->blog->id)
+        ->latest()
+        ->limit(3)
+        ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 4. Static Affiliate Programs (Backup Widgets)
+    |--------------------------------------------------------------------------
+    */
+    $this->recommendedAffiliates = AffiliateProgram::active()
+        ->where(function ($query) {
+
+            $terms = collect([
+                $this->blog->category,
+                $this->contentType,
+                $this->blog->title,
+                $this->blog->description ?? '',
+                ...($this->blog->tags ?? [])
+            ])
+            ->filter()
+            ->map(fn ($t) => strtolower(trim($t)));
+
+            foreach ($terms as $term) {
+                $query->orWhere('type', 'like', "%{$term}%")
+                    ->orWhere('keywords', 'like', "%{$term}%")
+                    ->orWhereJsonContains('keywords', $term);
+            }
+        })
+        ->orderBy('priority','desc')
+        ->limit(6)
+        ->get();
+}
 
     // ==================== SEO: Dynamic Meta ===================
     // ==================== Content Analysis ====================
@@ -164,6 +210,33 @@ new class extends Component {
             // 'categories' => $this->categories,
         ];
     }
+
+private function splitContentIntoBlocks(): array
+{
+    if (!$this->blog || !$this->blog->formatted_description) {
+        return [];
+    }
+
+    $content = $this->blog->formatted_description;
+
+    /*
+    Split content while KEEPING H2 tags as separate blocks.
+    This lets us inject affiliate widgets between sections later.
+    */
+    $blocks = preg_split(
+        "/(<h2[^>]*>.*?<\/h2>)/i",
+        $content,
+        -1,
+        PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+    );
+
+    return $blocks ?: [];
+}
+
+private function shouldInsertWidget($blockIndex): bool
+{
+    return $blockIndex > 0 && $blockIndex % 2 === 0;
+}
 };
 
 ?>
@@ -362,78 +435,14 @@ new class extends Component {
         </div>
     </div>
 
-    {{-- SMART RECOMMENDATIONS SECTION --}}
-    @if($dynamicHotels || $recommendedAffiliates->count() > 0)
-        <section class="py-12 bg-indigo-night bg-opacity-30 border border-dust-mite rounded-2xl mt-12">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-10">
-                    <h3 class="text-3xl font-light text-raw-linen mb-3">Recommended for This Story</h3>
-                    <p class="text-[#C4B9A6]">Tailored experiences and booking options matched to this content</p>
-                </div>
+    @foreach($contentBlocks as $index => $block)
+    {{-- {!! $block !!} --}}
 
-                <div class="grid lg:grid-cols-12 gap-8">
-
-                    {{-- Dynamic Hotels from Travelpayouts API --}}
-                    @if($dynamicHotels && count($dynamicHotels) > 0)
-                        <div class="lg:col-span-7">
-                            <h4 class="text-xl text-sunflare mb-6 flex items-center gap-2">
-                                <i class="fas fa-hotel"></i> Hotels in {{ $detectedLocation }}
-                            </h4>
-                            <div class="grid md:grid-cols-2 gap-6">
-                                @foreach($dynamicHotels as $hotel)
-                                    <div class="bg-deep-earth rounded-xl overflow-hidden border border-dust-mite">
-                                        @if($hotel['image'] ?? false)
-                                            <img src="{{ $hotel['image'] }}" alt="{{ $hotel['name'] ?? 'Hotel' }}"
-                                                class="w-full h-48 object-cover">
-                                        @endif
-                                        <div class="p-5">
-                                            <h5 class="font-medium text-raw-linen">{{ $hotel['name'] ?? 'Luxury Stay' }}</h5>
-                                            <p class="text-sm text-[#C4B9A6]">{{ $hotel['price'] ?? 'Best rates available' }}</p>
-                                            <a href="{{ $hotel['url'] ?? '#' }}" target="_blank" rel="nofollow sponsored"
-                                                class="mt-4 block w-full text-center bg-sunflare text-deep-earth py-3 rounded-lg text-sm font-medium hover:bg-raw-linen transition">
-                                                View & Book →
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Static Affiliate Recommendations --}}
-                    @if($recommendedAffiliates->count() > 0)
-                        <div class="{{ $dynamicHotels ? 'lg:col-span-5' : 'lg:col-span-12' }}">
-                            <h4 class="text-xl text-sunflare mb-6">More Ways to Explore</h4>
-                            <div class="space-y-6">
-                                @foreach($recommendedAffiliates as $aff)
-                                    <div class="bg-deep-earth p-6 rounded-xl border border-dust-mite">
-                                        <span
-                                            class="text-xs uppercase tracking-widest text-terracotta">{{ strtoupper($aff->network) }}</span>
-                                        <h5 class="font-medium text-raw-linen mt-2">{{ $aff->program_name }}</h5>
-                                        <p class="text-sm text-[#C4B9A6] mt-1">{{ $aff->description }}</p>
-
-                                        @if($aff->widget_code)
-                                            <div class="mt-4">{!! $aff->widget_code !!}</div>
-                                        @elseif($aff->affiliate_link)
-                                            <a href="{{ $aff->affiliate_link }}" target="_blank" rel="nofollow sponsored"
-                                                class="mt-4 inline-block bg-sunflare text-deep-earth px-6 py-3 rounded-lg text-sm font-medium">
-                                                Explore Offers →
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                <p class="text-center text-xs text-[#C4B9A6] mt-10">
-                    These recommendations are dynamically matched to this story.
-                    Affiliate links may earn us a small commission at no extra cost to you.
-                </p>
-            </div>
-        </section>
+    @if($this->shouldInsertWidget($index))
+        @include('partials.inline-monetization')
     @endif
+@endforeach
+    {{-- SMART RECOMMENDATIONS SECTION --}}
 
     {{-- Related Posts --}}
     @if($relatedPosts->count() > 0)

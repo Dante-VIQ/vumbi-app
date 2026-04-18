@@ -50,6 +50,17 @@
       document.head.appendChild(script);
   })();
 </script>
+
+<script type="text/javascript">
+    (function(d, t) {
+        var script = d.createElement(t);
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = '//https://www.dwin2.com/pub.2580697.min.js';
+        var s = d.getElementsByTagName(t)[0];
+        s.parentNode.insertBefore(script, s);
+    }(document, 'script'));
+</script>
     {{-- Organization Schema --}}
     @php
     $organizationSchema = [
