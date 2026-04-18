@@ -220,6 +220,16 @@ new class extends Component {
                     {{ $blog->description }}
                 </p>
                 @endif --}}
+                @if ($blog->media_path)
+                    <img src="{{ asset($blog->media_path) }}" alt="{{ $blog->title }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                @else
+                    <div class="h-48 bg-[#2A3B4C] flex items-center justify-center">
+                        <span class="text-4xl text-[#C4B9A6]">📝</span>
+                    </div>
+                @endif
+
 
                 <div
                     class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-dust-mite mb-8">
