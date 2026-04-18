@@ -98,34 +98,23 @@ class Blog extends Model
 
     }
 
- /**
- * Get the description with proper HTML paragraphs
- *
- * @return string
+/**
+ * Get description with normalized line breaks (no HTML)
  */
 public function getFormattedDescriptionAttribute()
 {
     $text = (string) $this->description;
 
-    if (empty($text)) {
+    if (trim($text) === '') {
         return '';
     }
 
-    // Split by double newlines (paragraphs)
-    $paragraphs = explode("\n\n", $text);
+    // Normalize Windows/Mac line endings to Unix
+    $text = str_replace(["\r\n", "\r"], "\n", $text);
 
-    $html = '';
+    // Collapse excessive blank lines to max two
+    $text = preg_replace("/\n{3,}/", "\n\n", $text);
 
-    foreach ($paragraphs as $paragraph) {
-        $paragraph = trim($paragraph);
-
-        if (!empty($paragraph)) {
-            // Convert single line breaks to <br> and escape the content
-            $formatted = nl2br(e($paragraph));
-            $html .= "<p>{$formatted}</p>";
-        }
-    }
-
-    return $html;
+    return trim($text);
 }
 }
