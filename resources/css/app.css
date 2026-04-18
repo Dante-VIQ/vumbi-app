@@ -10,3 +10,11 @@
 .prose p:last-child {
     margin-bottom: 0;
 }
+
+.nav-link{
+    @apply text-neutral-700 hover:text-[#8B5A2B] transition;
+}
+
+.dropdown-item{
+    @apply w-full text-left px-4 py-2 rounded-lg hover:bg-red-50 hover:text-red-600;
+}
