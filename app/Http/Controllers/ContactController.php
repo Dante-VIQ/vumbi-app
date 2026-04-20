@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactFormSubmitted;
 
 class ContactController extends Controller
 {
-    // routes/web.php
-
-
-// app/Http/Controllers/ContactController.php
-public function submit(Request $request)
+    public function submit(Request $request)
 {
     $validated = $request->validate([
         'name' => 'required|string|max:255',
@@ -27,6 +25,7 @@ public function submit(Request $request)
 
     // Optionally store in database
 
-    return redirect()->route('contact')->with('success', 'Thank you! We'll get back to you within 24 hours.');
+    return redirect()->route('contact')->with('success', 'Thank you! We will get back to you within 24 hours.');
 }
+
 }

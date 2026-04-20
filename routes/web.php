@@ -24,7 +24,7 @@ Route::get('services', function () {
 
 Route::get('contact', function () {
     return view('pages.contact');
-});
+})->name('contact');
 
 Route::get('ecosystem', function () {
     return view('pages.ecosystem');
