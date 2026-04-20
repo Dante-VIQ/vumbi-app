@@ -241,236 +241,316 @@ private function shouldInsertWidget($blockIndex): bool
 
 ?>
 
-<div class="bg-deep-earth" x-data="{ 
-        copyMessage: false, 
-        shareMessage: false, 
-        shareMessageText: '' 
-     }" @share.window="
-        let platform = $event.detail.platform;
-        let url = $event.detail.url;
-        let title = $event.detail.title || '';
-        let shareUrl = '';
-        if(platform === 'twitter') {
-            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-        } else if(platform === 'facebook') {
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-        } else if(platform === 'linkedin') {
-            shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}`;
+<div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]">
+    {{-- Dynamic SEO Meta (handled via layoutData in component) --}}
+    @php
+        $seo = $this->layoutData();
+    @endphp
+    @section('title', $seo['title'])
+    @section('meta_description', $seo['description'])
+    @push('meta')
+        <meta property="og:title" content="{{ $seo['title'] }}">
+        <meta property="og:description" content="{{ $seo['description'] }}">
+        <meta property="og:image" content="{{ $seo['ogImage'] }}">
+        <meta property="og:type" content="article">
+        <meta property="article:published_time" content="{{ $blog->created_at->toIso8601String() }}">
+        <meta property="article:author" content="{{ $blog->author->name ?? 'Vumbi Ventures' }}">
+        <link rel="canonical" href="{{ $seo['canonical'] }}">
+    @endpush
+
+    {{-- @push('structured-data')
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "{{ $blog->title }}",
+          "image": "{{ $seo['ogImage'] }}",
+          "author": {
+            "@type": "Person",
+            "name": "{{ $blog->author->name ?? 'Vumbi Ventures' }}"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Vumbi Ventures",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "{{ asset('images/vumbi-logo.png') }}"
+            }
+          },
+          "datePublished": "{{ $blog->created_at->toIso8601String() }}",
+          "description": "{{ $seo['description'] }}"
         }
-        if(shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
-     " @copy-link.window="
-        navigator.clipboard.writeText(window.location.href);
-        copyMessage = true;
-        setTimeout(() => copyMessage = false, 3000);
-     " @comment-submitted.window="
-        shareMessageText = $event.detail.message;
-        shareMessage = true;
-        setTimeout(() => shareMessage = false, 3000);
-     " @subscribed.window="
-        shareMessageText = $event.detail.message;
-        shareMessage = true;
-        setTimeout(() => shareMessage = false, 3000);
-     ">
+        </script>
+    @endpush --}}
 
-    {{-- Hero Section --}}
-    <article class="pt-32 pb-12 bg-deep-earth">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto">
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="text-sm text-[#C4B9A6]">
-                        <i class="far fa-clock"></i>
-                        {{ $blog->reading_time ?? '8 min read' }}
-                    </span>
-                </div>
+    {{-- ===================== HERO HEADER ===================== --}}
+    <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">
+        <div class="absolute inset-0 grain opacity-[0.03]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,90,43,0.04),transparent_50%)]"></div>
 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-6 text-raw-linen">
-                    {{ $blog->title }}
-                </h1>
+        <div class="relative container mx-auto px-6 max-w-4xl">
+            {{-- Breadcrumbs --}}
+            <nav class="flex items-center gap-2 text-sm text-[#5C5C5C] mb-6">
+                <a href="{{ url('/') }}" class="hover:text-[#8B5A2B]">Home</a>
+                <span>/</span>
+                <a href="{{ url('/field-notes') }}" class="hover:text-[#8B5A2B]">Field Notes</a>
+                <span>/</span>
+                <span class="text-[#8B5A2B] truncate">{{ $blog->category ?? 'Story' }}</span>
+            </nav>
 
-                {{-- @if($blog->description)
-                <p
-                    class="prose prose-invert text-xl text-[#C4B9A6] leading-relaxed mb-8 border-l-4 border-sunflare pl-6">
+            <div class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-white/40 px-4 py-2 rounded-full shadow-sm mb-6">
+                <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>
+                <span class="uppercase tracking-wider text-xs font-medium">{{ $blog->category ?? 'Field Notes' }}</span>
+                <span class="text-[#5C5C5C]">·</span>
+                <span>{{ $blog->reading_time ?? '8 min read' }}</span>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight text-[#1A1A1A] mb-6">
+                {{ $blog->title }}
+            </h1>
+
+            {{-- @if($blog->description)
+                <p class="text-xl text-[#5C5C5C] leading-relaxed border-l-4 border-[#8B5A2B] pl-6">
                     {{ $blog->description }}
                 </p>
-                @endif --}}
-                <div
-                    class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-dust-mite mb-8">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-12 h-12 bg-terracotta rounded-full flex items-center justify-center text-raw-linen font-bold text-lg">
-                            {{ substr($blog->author->name ?? 'V', 0, 1) }}
-                        </div>
-                        <div>
-                            <div class="font-medium text-raw-linen">{{ $blog->author->name ?? 'Vumbi Ventures' }}</div>
-                            <div class="text-sm text-[#C4B9A6]">{{ $blog->author->title ?? 'Storyteller' }}</div>
-                        </div>
+            @endif --}}
+
+            {{-- Author & Meta --}}
+            <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-black/5 mt-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-[#F5EFE6] rounded-full flex items-center justify-center text-[#8B5A2B] font-bold text-lg border-2 border-white shadow-sm">
+                        {{ substr($blog->author->name ?? 'V', 0, 1) }}
                     </div>
-                    <div class="flex items-center gap-4 text-sm text-[#C4B9A6]">
-                        {{-- Date and views can be added if you have those fields --}}
+                    <div>
+                        <div class="font-semibold text-[#1A1A1A]">{{ $blog->author->name ?? 'Vumbi Ventures' }}</div>
+                        <div class="text-sm text-[#5C5C5C]">{{ $blog->author->title ?? 'Field Writer' }}</div>
                     </div>
+                </div>
+                <div class="text-sm text-[#5C5C5C]">
+                    {{ $blog->created_at->format('M d, Y') }}
                 </div>
             </div>
         </div>
-    </article>
+    </section>
 
-    {{-- Featured Media --}}
-    @if($blog->media_path && $blog->is_image)
-        <div class="container mx-auto px-6 -mt-8 mb-12">
+    {{-- ===================== FEATURED MEDIA ===================== --}}
+    @if($blog->media_path)
+        <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
-                <img src="{{ asset($blog->media_path) }}" alt="{{ $blog->title }}"
-                    class="w-full rounded-lg shadow-2xl object-cover max-h-[500px]" loading="lazy">
+                <img src="{{ Storage::url($blog->media_path) }}" alt="{{ $blog->title }}"
+                    class="w-full rounded-3xl shadow-xl object-cover max-h-[600px] border border-black/5"
+                    loading="eager">
             </div>
         </div>
     @endif
 
-    {{-- Main Content Area --}}
-    <div class="container mx-auto px-6 py-12">
-        <div class="grid lg:grid-cols-12 gap-8">
+    {{-- ===================== MAIN CONTENT + SIDEBAR ===================== --}}
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
+            {{-- MAIN ARTICLE CONTENT --}}
+            <div class="lg:col-span-8">
+                <article class="prose prose-lg max-w-none
+                    prose-headings:text-[#1A1A1A] prose-headings:font-semibold prose-headings:tracking-tight
+                    prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
+                    prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
+                    prose-p:text-[#3A3A3A] prose-p:leading-relaxed prose-p:mb-6
+                    prose-a:text-[#8B5A2B] prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-[#1A1A1A] prose-strong:font-semibold
+                    prose-blockquote:border-l-4 prose-blockquote:border-[#8B5A2B] prose-blockquote:bg-[#F5EFE6]/50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:italic prose-blockquote:text-[#5C5C5C]
+                    prose-ul:my-6 prose-li:text-[#3A3A3A]
+                    prose-img:rounded-2xl prose-img:shadow-md">
 
-            {{-- Sidebar --}}
-            <aside class="lg:col-span-3">
-                <div class="sticky top-28 space-y-6">
-                    {{-- Table of Contents (auto-generated) --}}
-                    <div class="bg-indigo-night bg-opacity-30 border border-dust-mite p-6 rounded-lg"
-                        x-data="{ tocItems: [] }" x-init="setTimeout(() => {
-                             const headings = document.querySelectorAll('.blog-content h2, .blog-content h3');
-                             headings.forEach((heading, idx) => {
-                                 heading.id = heading.id || `heading-${idx}`;
-                                 tocItems.push({
-                                     text: heading.textContent,
-                                     level: heading.tagName === 'H2' ? 2 : 3,
-                                     id: heading.id
-                                 });
-                             });
-                         }, 100)">
-                        <h3 class="font-medium text-sunflare mb-4 flex items-center gap-2">
-                            <i class="fas fa-list-ul"></i> Table of Contents
-                        </h3>
-                        <ul class="space-y-2 text-sm text-[#C4B9A6]">
-                            <template x-for="item in tocItems">
-                                <li>
-                                    <a :href="'#' + item.id" x-text="item.text"
-                                        :style="item.level === 3 ? 'padding-left: 1rem' : ''"
-                                        class="block hover:text-sunflare transition"></a>
-                                </li>
-                            </template>
-                        </ul>
-                        <p x-show="tocItems.length === 0" class="text-sm text-[#C4B9A6]">No headings found</p>
-                    </div>
+                    {{-- Render content blocks with inline affiliate widgets --}}
+                    @if(!empty($contentBlocks))
+                        @foreach($contentBlocks as $index => $block)
+                            {!! $block !!}
 
-                    {{-- Share Section --}}
-                    <div class="bg-indigo-night bg-opacity-30 border border-dust-mite p-6 rounded-lg">
-                        <h3 class="font-medium text-sunflare mb-4 flex items-center gap-2">
-                            <i class="fas fa-share-alt"></i> Share this story
-                        </h3>
-                        <div class="flex gap-3">
-                            <button wire:click="shareOnTwitter"
-                                class="w-10 h-10 border border-dust-mite rounded-full flex items-center justify-center hover:bg-sunflare hover:border-sunflare hover:text-deep-earth transition text-[#C4B9A6] hover:text-deep-earth">
-                                <i class="fab fa-twitter"></i>
-                            </button>
-                            <button wire:click="shareOnLinkedIn"
-                                class="w-10 h-10 border border-dust-mite rounded-full flex items-center justify-center hover:bg-sunflare hover:border-sunflare hover:text-deep-earth transition text-[#C4B9A6] hover:text-deep-earth">
-                                <i class="fab fa-linkedin-in"></i>
-                            </button>
-                            <button wire:click="shareOnFacebook"
-                                class="w-10 h-10 border border-dust-mite rounded-full flex items-center justify-center hover:bg-sunflare hover:border-sunflare hover:text-deep-earth transition text-[#C4B9A6] hover:text-deep-earth">
-                                <i class="fab fa-facebook-f"></i>
-                            </button>
-                            <button wire:click="copyToClipboard"
-                                class="w-10 h-10 border border-dust-mite rounded-full flex items-center justify-center hover:bg-sunflare hover:border-sunflare hover:text-deep-earth transition text-[#C4B9A6] hover:text-deep-earth">
-                                <i class="fas fa-link"></i>
-                            </button>
-                        </div>
-                        <div x-show="copyMessage" x-cloak class="text-xs text-sunflare mt-2 text-center">
-                            Link copied to clipboard!
-                        </div>
-                        <div x-show="shareMessage" x-cloak class="text-xs text-sunflare mt-2 text-center"
-                            x-text="shareMessageText"></div>
-                    </div>
+                            @if($this->shouldInsertWidget($index))
+                                {{-- Inline Monetization Widget --}}
+                                <div class="not-prose my-8 p-6 bg-white rounded-2xl border border-[#8B5A2B]/20 shadow-sm">
+                                    <p class="text-sm font-medium text-[#8B5A2B] uppercase tracking-wider mb-3">📍 While You're Here</p>
+                                    <div class="grid sm:grid-cols-2 gap-4">
+                                        @forelse($affiliateResults['inline'] ?? [] as $offer)
+                                            <a href="{{ $offer['url'] }}" target="_blank" rel="nofollow sponsored"
+                                               class="block p-4 bg-[#FCFAF7] rounded-xl border border-black/5 hover:border-[#8B5A2B]/30 hover:shadow-md transition group">
+                                                @if(!empty($offer['image']))
+                                                    <img src="{{ $offer['image'] }}" alt="{{ $offer['title'] }}" class="w-full h-32 object-cover rounded-lg mb-3">
+                                                @endif
+                                                <h4 class="font-semibold text-[#1A1A1A] group-hover:text-[#8B5A2B]">{{ $offer['title'] }}</h4>
+                                                <p class="text-sm text-[#5C5C5C] mt-1">{{ $offer['description'] ?? '' }}</p>
+                                                <span class="inline-block mt-2 text-sm font-medium text-[#8B5A2B]">View Deal →</span>
+                                            </a>
+                                        @empty
+                                            {{-- Fallback static affiliate (e.g., Booking.com) --}}
+                                            <a href="#" class="block p-4 bg-[#FCFAF7] rounded-xl border border-black/5 hover:border-[#8B5A2B]/30 hover:shadow-md transition">
+                                                <h4 class="font-semibold">Find Hotels in {{ $detectedLocation ?? 'Kenya' }}</h4>
+                                                <p class="text-sm text-[#5C5C5C] mt-1">Search and compare prices from top booking sites.</p>
+                                                <span class="inline-block mt-2 text-sm font-medium text-[#8B5A2B]">Search Now →</span>
+                                            </a>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @else
+                        {!! $blog->formatted_description !!}
+                    @endif
+                </article>
 
-                    {{-- Newsletter Signup --}}
-                    <div class="bg-terracotta p-6 rounded-lg text-raw-linen">
-                        <h3 class="font-medium mb-2">Enjoying Field Notes?</h3>
-                        <p class="text-sm text-raw-linen/80 mb-4">Get new stories delivered to your inbox monthly.</p>
-                        <form wire:submit.prevent="subscribeFromArticle" class="flex flex-col gap-2">
-                            <input type="email" wire:model="email" placeholder="Your email"
-                                class="px-3 py-2 rounded-lg bg-raw-linen text-deep-earth focus:outline-none focus:ring-2 focus:ring-sunflare">
-                            <button type="submit"
-                                class="bg-sunflare text-deep-earth px-4 py-2 rounded-lg font-medium hover:bg-raw-linen transition">
-                                Subscribe
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </aside>
-
-            {{-- Main Article Content --}}
-            <div class="lg:col-span-6">
-                <div
-                    class="prose prose-lg prose-invert max-w-none 
-                prose-headings:text-raw-linen 
-                prose-p:text-[#C4B9A6] prose-p:leading-relaxed prose-p:mb-5
-                prose-strong:text-sunflare prose-strong:font-semibold
-                prose-a:text-sunflare prose-a:no-underline hover:prose-a:underline
-                prose-blockquote:border-l-4 prose-blockquote:border-sunflare prose-blockquote:pl-6 prose-blockquote:italic">
-                    {!! $blog->formatted_description !!}
-                </div>
-
-                {{-- Author Bio (if available) --}}
+                {{-- Author Bio --}}
                 @if($blog->author && $blog->author->bio)
-                    <div class="mt-12 pt-8 border-t border-dust-mite">
-                        <div class="flex items-start gap-4">
-                            <div
-                                class="w-16 h-16 bg-terracotta rounded-full flex items-center justify-center text-raw-linen text-2xl font-bold flex-shrink-0">
+                    <div class="mt-12 pt-8 border-t border-black/5">
+                        <div class="flex items-start gap-5">
+                            <div class="w-16 h-16 bg-[#F5EFE6] rounded-full flex items-center justify-center text-[#8B5A2B] text-2xl font-bold flex-shrink-0 border-2 border-white shadow-sm">
                                 {{ substr($blog->author->name ?? 'V', 0, 1) }}
                             </div>
                             <div>
-                                <h4 class="font-medium text-raw-linen">About {{ $blog->author->name ?? 'the Author' }}</h4>
-                                <p class="text-sm text-[#C4B9A6]">{{ $blog->author->bio }}</p>
+                                <h4 class="font-semibold text-lg text-[#1A1A1A]">{{ $blog->author->name }}</h4>
+                                <p class="text-sm text-[#5C5C5C]">{{ $blog->author->bio }}</p>
                             </div>
                         </div>
                     </div>
                 @endif
+
+                {{-- Share Section (Mobile friendly) --}}
+                <div class="mt-10 pt-6 border-t border-black/5 flex items-center justify-between">
+                    <span class="text-sm font-medium text-[#5C5C5C]">Share this story:</span>
+                    <div class="flex gap-3">
+                        <button wire:click="shareOnTwitter" class="w-10 h-10 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white hover:border-[#8B5A2B] transition text-[#5C5C5C]">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button wire:click="shareOnLinkedIn" class="w-10 h-10 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white hover:border-[#8B5A2B] transition text-[#5C5C5C]">
+                            <i class="fab fa-linkedin-in"></i>
+                        </button>
+                        <button wire:click="shareOnFacebook" class="w-10 h-10 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white hover:border-[#8B5A2B] transition text-[#5C5C5C]">
+                            <i class="fab fa-facebook-f"></i>
+                        </button>
+                        <button wire:click="copyToClipboard" class="w-10 h-10 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white hover:border-[#8B5A2B] transition text-[#5C5C5C]">
+                            <i class="fas fa-link"></i>
+                        </button>
+                    </div>
+                </div>
+                <div x-show="copyMessage" x-cloak class="text-sm text-green-600 mt-2 text-right">Link copied!</div>
             </div>
+
+            {{-- ===================== SIDEBAR ===================== --}}
+            <aside class="lg:col-span-4 space-y-8">
+                {{-- Primary CTA: Travel Booking --}}
+                <div class="bg-gradient-to-br from-[#8B5A2B] to-[#5C3A1E] p-6 rounded-2xl text-white shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2">Discover {{ $detectedLocation ?? 'Africa' }}</h3>
+                    <p class="text-white/80 text-sm mb-4">Book handpicked hotels, safaris & experiences.</p>
+                    <a href="{{ url('/discover?search='.urlencode($detectedLocation ?? '')) }}"
+                       class="inline-block w-full bg-white text-[#8B5A2B] text-center py-3 rounded-xl font-medium hover:bg-[#F5EFE6] transition">
+                        Explore Destinations →
+                    </a>
+                </div>
+
+                {{-- Affiliate Offers Widget --}}
+                @if(!empty($affiliateResults['sidebar']) || $recommendedAffiliates->count())
+                    <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span>🎯</span> Recommended for You
+                        </h3>
+                        <div class="space-y-4">
+                            @php $sidebarOffers = $affiliateResults['sidebar'] ?? $recommendedAffiliates; @endphp
+                            @foreach($sidebarOffers->take(3) as $offer)
+                                <a href="{{ $offer['url'] ?? '#' }}" target="_blank" rel="nofollow sponsored"
+                                   class="flex gap-3 group">
+                                    @if(!empty($offer['image']))
+                                        <img src="{{ $offer['image'] }}" class="w-16 h-16 rounded-lg object-cover">
+                                    @endif
+                                    <div>
+                                        <h4 class="font-medium text-[#1A1A1A] group-hover:text-[#8B5A2B] text-sm">{{ $offer['title'] ?? $offer->name }}</h4>
+                                        <p class="text-xs text-[#5C5C5C] mt-0.5">{{ Str::limit($offer['description'] ?? '', 40) }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Table of Contents (if headings exist) --}}
+                <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm" x-data="{ tocItems: [] }" x-init="
+                    setTimeout(() => {
+                        const headings = document.querySelectorAll('.prose h2, .prose h3');
+                        headings.forEach((h, i) => {
+                            h.id = h.id || `heading-${i}`;
+                            tocItems.push({ text: h.textContent, level: h.tagName, id: h.id });
+                        });
+                    }, 200)
+                ">
+                    <h3 class="font-semibold text-lg mb-3">On This Page</h3>
+                    <ul class="space-y-1 text-sm">
+                        <template x-for="item in tocItems">
+                            <li>
+                                <a :href="'#' + item.id" x-text="item.text"
+                                   :class="item.level === 'H3' ? 'pl-4 text-[#5C5C5C]' : 'font-medium'"
+                                   class="block py-1 hover:text-[#8B5A2B] transition"></a>
+                            </li>
+                        </template>
+                    </ul>
+                    <p x-show="tocItems.length === 0" class="text-sm text-[#5C5C5C]">No headings</p>
+                </div>
+
+                {{-- Newsletter --}}
+                <div class="bg-[#F5EFE6] p-6 rounded-2xl border border-[#8B5A2B]/10">
+                    <h3 class="font-semibold text-lg text-[#1A1A1A] mb-2">Field Notes Dispatch</h3>
+                    <p class="text-sm text-[#5C5C5C] mb-4">Get travel stories and insider tips in your inbox.</p>
+                    <form wire:submit.prevent="subscribeFromArticle">
+                        <input type="email" wire:model="email" placeholder="Your email"
+                            class="w-full px-4 py-3 rounded-xl border border-black/10 bg-white mb-3 focus:outline-none focus:border-[#8B5A2B]">
+                        <button type="submit"
+                            class="w-full bg-[#8B5A2B] text-white py-3 rounded-xl font-medium hover:bg-[#5C3A1E] transition">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div x-show="shareMessage" x-cloak x-text="shareMessageText" class="text-sm text-green-600 mt-2"></div>
+                </div>
+
+                {{-- Related Posts (if not enough in main section) --}}
+                @if($relatedPosts->count() > 0)
+                    <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4">Related Stories</h3>
+                        <div class="space-y-4">
+                            @foreach($relatedPosts as $post)
+                                <a href="{{ route('blog.show', $post->id) }}" class="flex gap-3 group">
+                                    @if($post->media_path)
+                                        <img src="{{ Storage::url($post->media_path) }}" class="w-16 h-16 rounded-lg object-cover">
+                                    @endif
+                                    <div>
+                                        <h4 class="font-medium text-[#1A1A1A] group-hover:text-[#8B5A2B] text-sm line-clamp-2">{{ $post->title }}</h4>
+                                        <p class="text-xs text-[#5C5C5C] mt-1">{{ $post->created_at->format('M d') }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </aside>
         </div>
     </div>
 
-    @foreach($contentBlocks as $index => $block)
-    {{-- {!! $block !!} --}}
-
-    @if($this->shouldInsertWidget($index))
-        @include('partials.inline-monetization')
-    @endif
-@endforeach
-    {{-- SMART RECOMMENDATIONS SECTION --}}
-
-    {{-- Related Posts --}}
+    {{-- ===================== FULL-WIDTH RELATED POSTS ===================== --}}
     @if($relatedPosts->count() > 0)
-        <section class="py-12 bg-deep-earth">
+        <section class="py-16 bg-white mt-12">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-10">
-                    <h2 class="text-3xl font-light text-raw-linen mb-3">You Might Also Enjoy</h2>
-                    <p class="text-[#C4B9A6]">More stories from Vumbi Ventures</p>
+                    <h2 class="text-3xl font-semibold text-[#1A1A1A] mb-3">More Field Notes</h2>
+                    <p class="text-[#5C5C5C]">Stories from overlooked places</p>
                 </div>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($relatedPosts as $related)
-                        <a href="{{ route('blog.show', $related->id) }}"
-                            class="group block bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-xl overflow-hidden">
-                            @if($related->media_path && $related->is_image)
-                                <img src="{{ Storage::url($related->media_path) }}" alt="{{ $related->title }}"
-                                    class="w-full h-48 object-cover group-hover:scale-105 transition" loading="lazy">
+                <div class="grid md:grid-cols-3 gap-6">
+                    @foreach($relatedPosts->take(3) as $post)
+                        <a href="{{ route('blog.show', $post->id) }}" class="group block bg-[#FCFAF7] rounded-2xl overflow-hidden border border-black/5 hover:shadow-lg transition">
+                            @if($post->media_path)
+                                <div class="aspect-[16/9] overflow-hidden">
+                                    <img src="{{ Storage::url($post->media_path) }}" alt="{{ $post->title }}"
+                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                </div>
                             @endif
                             <div class="p-6">
-                                <h3 class="text-xl font-light text-raw-linen group-hover:text-sunflare line-clamp-2">
-                                    {{ $related->title }}
-                                </h3>
-                                <p class="text-sm text-[#C4B9A6] line-clamp-3 mt-2">
-                                    {{ Str::limit(strip_tags($related->excerpt ?? $related->description), 100) }}
-                                </p>
-                                <div
-                                    class="mt-4 text-sunflare text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                                    Read More <span>→</span>
-                                </div>
+                                <div class="text-xs uppercase tracking-wider text-[#8B5A2B] mb-2">{{ $post->category }}</div>
+                                <h3 class="text-xl font-semibold group-hover:text-[#8B5A2B] transition line-clamp-2">{{ $post->title }}</h3>
+                                <p class="text-sm text-[#5C5C5C] mt-2 line-clamp-2">{{ Str::limit(strip_tags($post->description), 100) }}</p>
                             </div>
                         </a>
                     @endforeach
@@ -479,72 +559,51 @@ private function shouldInsertWidget($blockIndex): bool
         </section>
     @endif
 
-    {{-- Comments Section (optional) --}}
-    <section class="py-12 bg-indigo-night bg-opacity-20">
-        <div class="container mx-auto px-6">
-            <div class="max-w-3xl mx-auto">
-                <h3 class="text-2xl font-light text-raw-linen mb-6">Comments</h3>
+    {{-- ===================== COMMENTS SECTION ===================== --}}
+    {{-- <section class="py-16 bg-[#FCFAF7]">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h3 class="text-2xl font-semibold mb-8">Join the Conversation</h3>
 
-                {{-- Comment Form --}}
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite p-6 rounded-lg mb-8">
-                    <h4 class="font-medium text-sunflare mb-4">Leave a Comment</h4>
-                    <form wire:submit.prevent="submitComment" class="space-y-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <input type="text" wire:model="commentName" placeholder="Your Name *"
-                                    class="w-full bg-transparent border border-dust-mite px-4 py-2 text-raw-linen focus:border-sunflare focus:outline-none rounded">
-                                @error('commentName') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <input type="email" wire:model="commentEmail" placeholder="Your Email *"
-                                    class="w-full bg-transparent border border-dust-mite px-4 py-2 text-raw-linen focus:border-sunflare focus:outline-none rounded">
-                                @error('commentEmail') <span class="text-red-500 text-xs">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div>
-                            <textarea wire:model="commentContent" rows="4" placeholder="Your Comment *"
-                                class="w-full bg-transparent border border-dust-mite px-4 py-2 text-raw-linen focus:border-sunflare focus:outline-none rounded resize-none"></textarea>
-                            @error('commentContent') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="save-info" class="border border-dust-mite">
-                            <label for="save-info" class="text-sm text-[#C4B9A6]">Save my name and email for next
-                                time</label>
-                        </div>
-                        <button type="submit"
-                            class="bg-terracotta text-raw-linen px-6 py-2 rounded hover:bg-sunflare hover:text-deep-earth transition font-medium">
-                            Post Comment
-                        </button>
-                    </form>
-                </div>
+            Comment Form
+            <div class="bg-white rounded-2xl border border-black/5 p-6 shadow-sm mb-8">
+                <form wire:submit.prevent="submitComment" class="space-y-4">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <input type="text" wire:model="commentName" placeholder="Your Name *"
+                            class="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:border-[#8B5A2B]">
+                        <input type="email" wire:model="commentEmail" placeholder="Your Email *"
+                            class="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:border-[#8B5A2B]">
+                    </div>
+                    <textarea wire:model="commentContent" rows="4" placeholder="Share your thoughts..."
+                        class="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:border-[#8B5A2B] resize-none"></textarea>
+                    <button type="submit"
+                        class="bg-[#8B5A2B] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#5C3A1E] transition">
+                        Post Comment
+                    </button>
+                </form>
+                @error('commentName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('commentEmail') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('commentContent') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            </div>
 
-                <div class="bg-indigo-night bg-opacity-30 border border-dust-mite p-8 rounded-lg text-center">
-                    <i class="fas fa-comments text-4xl text-sunflare mb-3"></i>
-                    <p class="text-[#C4B9A6]">Be the first to comment on this story.</p>
-                </div>
+            Comments List (Placeholder)
+            <div class="bg-white rounded-2xl border border-black/5 p-8 text-center">
+                <i class="far fa-comments text-4xl text-[#8B5A2B]/30 mb-3"></i>
+                <p class="text-[#5C5C5C]">No comments yet. Be the first to share your thoughts!</p>
             </div>
         </div>
-    </section>
+    </section> --}}
 
+    {{-- Notification Toasts --}}
+    <div x-show="copyMessage || shareMessage" x-cloak
+         class="fixed bottom-6 right-6 bg-white shadow-xl rounded-xl px-5 py-3 text-sm border border-black/5 z-50"
+         x-text="copyMessage ? 'Link copied!' : shareMessageText">
+    </div>
 </div>
 
+@push('styles')
 <style>
-    [x-cloak] {
-        display: none !important;
-    }
-
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
+    .grain { background-image: url("https://grainy-gradients.vercel.app/noise.svg"); opacity: 0.03; pointer-events: none; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    [x-cloak] { display: none !important; }
 </style>
+@endpush

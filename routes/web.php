@@ -34,6 +34,15 @@ Route::get('discover', function () {
     return view('pages.discovery');
 });
 
+
+Route::get('/destinations/{slug}', function ($slug) {
+    return view('pages.destination', ['slug' => $slug]);
+})->name('destination.show');
+
+Route::get('/cultures/{slug}', function ($slug) {
+    return view('pages.culture', ['slug' => $slug]);
+})->name('culture.show');
+
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 // ======================
