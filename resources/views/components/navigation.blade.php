@@ -3,13 +3,11 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <!-- NAV ROW -->
         <div class="flex h-16 items-center justify-between">
 
             <!-- Logo -->
             <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 bg-[#8B5A2B] rounded-full flex items-center justify-center
-                            transition group-hover:scale-110">
+                <div class="w-10 h-10 bg-[#8B5A2B] rounded-full flex items-center justify-center transition group-hover:scale-110">
                     <span class="text-white font-bold text-lg">V</span>
                 </div>
 
@@ -18,59 +16,82 @@
                 </span>
             </a>
 
-            <!-- Desktop Menu -->
-            <div class="hidden lg:flex items-center gap-8 text-[15px] font-medium">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/about" class="nav-link">About</a>
-                <a href="/services" class="nav-link">Services</a>
-                <a href="/ecosystem" class="nav-link">Ecosystem</a>
-                <a href="/discover" class="nav-link">Discovery</a>
-                <a href="/blog" class="nav-link">Field Notes</a>
-                <a href="/contact" class="nav-link">Contact</a>
+            <!-- Desktop Navigation -->
+            <nav class="hidden lg:flex items-center gap-8 text-[15px] font-medium"
+                 aria-label="Primary navigation">
+
+                <a href="/discover" class="nav-link font-semibold text-[#8B5A2B]">
+                    Discover
+                </a>
+
+                <a href="/blog" class="nav-link">
+                    Guides
+                </a>
+
+                <a href="/ecosystem" class="nav-link">
+                    Ecosystem
+                </a>
+
+                <a href="/services" class="nav-link">
+                    Work With Us
+                </a>
+
+                <a href="/about" class="nav-link">
+                    About
+                </a>
+
+                <a href="/contact" class="nav-link">
+                    Contact
+                </a>
 
                 @role('master|engineer')
-                <a href="/admin/africa" class="nav-link">Africa</a>
+                    <a href="/admin/africa" class="nav-link">
+                        Admin
+                    </a>
                 @endrole
-            </div>
+            </nav>
 
-            <!-- Right Actions -->
+            <!-- Right Side Actions -->
             <div class="hidden lg:flex items-center gap-5">
 
-                <!-- CTA -->
-                <a href="/contact"
+                <!-- PRIMARY CTA -->
+                <a href="/discover"
                    class="bg-[#8B5A2B] text-white px-6 py-2.5 rounded-full
-                          hover:bg-[#6B421F] transition shadow-sm hover:shadow-md">
-                    Partner With Us
+                          hover:bg-[#6B421F] transition shadow-sm hover:shadow-md font-medium">
+                    Start Exploring
                 </a>
 
                 @auth
-                <!-- Profile dropdown -->
-                <div class="relative" @click.away="profileOpen=false">
-                    <button @click="profileOpen=!profileOpen"
-                            class="flex items-center gap-2 text-sm">
-                        <div class="text-right leading-tight hidden xl:block">
-                            <div class="font-semibold">{{ Auth::user()->name }}</div>
-                            <div class="text-xs text-gray-500">{{ Auth::user()->email }}</div>
-                        </div>
-                        <div class="w-9 h-9 bg-neutral-200 rounded-full"></div>
-                    </button>
+                    <div class="relative" @click.away="profileOpen=false">
 
-                    <div x-show="profileOpen" x-transition
-                         class="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border p-2">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button class="dropdown-item">
-                                Log out
-                            </button>
-                        </form>
+                        <button @click="profileOpen=!profileOpen"
+                                class="flex items-center gap-2 text-sm">
+
+                            <div class="text-right leading-tight hidden xl:block">
+                                <div class="font-semibold">{{ Auth::user()->name }}</div>
+                                <div class="text-xs text-gray-500">{{ Auth::user()->email }}</div>
+                            </div>
+
+                            <div class="w-9 h-9 bg-neutral-200 rounded-full"></div>
+                        </button>
+
+                        <div x-show="profileOpen" x-transition
+                             class="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border p-2">
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-lg">
+                                    Log out
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
                 @else
-                <a href="{{ route('login') }}" class="nav-link">Login</a>
-                <a href="{{ route('register') }}"
-                   class="bg-slate-900 text-white px-4 py-2 rounded-full text-sm">
-                    Register
-                </a>
+                    <a href="{{ route('login') }}" class="nav-link">Login</a>
+                    <a href="{{ route('register') }}"
+                       class="bg-slate-900 text-white px-4 py-2 rounded-full text-sm">
+                        Join
+                    </a>
                 @endauth
 
             </div>
@@ -79,9 +100,9 @@
             <button @click="mobileOpen=true" class="lg:hidden p-2">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
+
         </div>
     </div>
-
 
     <!-- MOBILE MENU -->
     <div x-show="mobileOpen" x-transition
@@ -98,31 +119,32 @@
             </div>
 
             <div class="flex flex-col space-y-4 text-lg font-medium">
-                <a href="/" @click="mobileOpen=false">Home</a>
-                <a href="/about" @click="mobileOpen=false">About</a>
-                <a href="/services" @click="mobileOpen=false">Services</a>
+
+                <a href="/discover" @click="mobileOpen=false">Discover</a>
+                <a href="/blog" @click="mobileOpen=false">Guides</a>
                 <a href="/ecosystem" @click="mobileOpen=false">Ecosystem</a>
-                <a href="/discover" @click="mobileOpen=false">Discovery</a>
-                <a href="/blog" @click="mobileOpen=false">Field Notes</a>
+                <a href="/services" @click="mobileOpen=false">Work With Us</a>
+                <a href="/about" @click="mobileOpen=false">About</a>
                 <a href="/contact" @click="mobileOpen=false">Contact</a>
 
                 @role('master|engineer')
-                <a href="/admin/africa" @click="mobileOpen=false">Africa</a>
+                    <a href="/admin/africa" @click="mobileOpen=false">Admin</a>
                 @endrole
             </div>
 
             <div class="pt-6 border-t space-y-4">
-                <a href="/contact"
-                   class="block text-center bg-[#8B5A2B] text-white py-3 rounded-full">
-                    Partner With Us
+
+                <a href="/discover"
+                   class="block text-center bg-[#8B5A2B] text-white py-3 rounded-full font-medium">
+                    Start Exploring
                 </a>
 
                 @guest
-                <a href="{{ route('login') }}" class="block text-center py-2">Login</a>
-                <a href="{{ route('register') }}"
-                   class="block text-center bg-slate-900 text-white py-3 rounded-full">
-                    Register
-                </a>
+                    <a href="{{ route('login') }}" class="block text-center py-2">Login</a>
+                    <a href="{{ route('register') }}"
+                       class="block text-center bg-slate-900 text-white py-3 rounded-full">
+                        Join
+                    </a>
                 @endguest
             </div>
         </div>

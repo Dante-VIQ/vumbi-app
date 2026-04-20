@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SitemapController;
 use App\Models\Blog;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SitemapController;
+
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
@@ -32,6 +34,7 @@ Route::get('discover', function () {
     return view('pages.discovery');
 });
 
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 // ======================
 // BLOG ROUTES (Public)

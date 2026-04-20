@@ -1,603 +1,333 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Vumbi Ventures - Let\'s Build Something Remarkable')
-@section('description', 'Get in touch with Vumbi Ventures. Whether you\'re a potential partner, client, investor, or just curious about what we\'re building, we\'d love to hear from you.')
-@section('keywords', 'contact Vumbi Ventures, partner with us, web development inquiry, African innovation, get in touch, Nairobi, Accra')
+@section('title', 'Contact Vumbi Ventures — Book Travel or Discuss a Project')
+@section('meta_description', 'Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities. We respond within 24 hours.')
+
+@section('content')
+
+@push('meta')
+    <meta name="description" content="Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities. We respond within 24 hours.">
+    <meta name="keywords" content="contact Vumbi Ventures, Africa travel inquiry, web development quote, partnership Africa">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Contact Vumbi Ventures — Book Travel or Discuss a Project">
+    <meta property="og:description" content="Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities.">
+    <meta property="og:image" content="{{ asset('images/vumbi-contact-og.jpg') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact Vumbi Ventures">
+    <meta name="twitter:description" content="Get in touch with Vumbi Ventures for travel bookings or web development.">
+    <meta name="twitter:image" content="{{ asset('images/vumbi-contact-og.jpg') }}">
+@endpush
+
+@push('structured-data')
+
+@php
+        $contactpageSchema = [
+      "@context" => "https://schema.org",
+      "@type" => "ContactPage",
+      "name" => "Contact Vumbi Ventures",
+      "description" => "Contact Vumbi Ventures for African travel bookings, web development inquiries, or partnerships.",
+      "url" => "{{ url()->current() }}",
+      "mainEntity" => [
+        "@type" => "Organization",
+        "name" => "Vumbi Ventures",
+        "email" => "hello@vumbiventures.com",
+        "telephone" => "+254-XXX-XXX-XXX",
+        "address" => [
+          "@type" => "PostalAddress",
+          "addressLocality" => "Nairobi",
+          "addressCountry" => "Kenya"
+      ],
+      ]
+        ];
+
+    @endphp
+
+    <script type="application/ld+json">
+    {!! json_encode($contactpageSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+@endpush
 
 @push('styles')
 <style>
-    .contact-card {
-        transition: all 0.3s ease;
+    :root {
+        --earth: #8B5A2B;
+        --earth-deep: #5C3A1E;
+        --ink: #1A1A1A;
+        --muted: #5C5C5C;
+        --dust: #F5EFE6;
     }
-    
-    .contact-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(139, 90, 43, 0.1), 0 10px 10px -5px rgba(139, 90, 43, 0.04);
+
+    body {
+        background: #FCFAF7;
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
     }
-    
-    .map-overlay {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .map-overlay::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(139, 90, 43, 0.1) 0%, transparent 50%);
+
+    .grain {
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        opacity: 0.03;
         pointer-events: none;
     }
-    
-    .form-input:focus {
+
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-primary {
+        background: var(--earth);
+        color: white;
+        border: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        box-shadow: 0 6px 14px rgba(139, 90, 43, 0.12);
+    }
+    .btn-primary:hover {
+        background: var(--earth-deep);
+        transform: translateY(-2px);
+        box-shadow: 0 14px 24px rgba(92, 58, 30, 0.18);
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        transition: border-color 0.2s;
+    }
+    .input-field:focus {
+        outline: none;
+        border-color: var(--earth);
         box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1);
     }
-    
-    .office-flag {
-        position: relative;
-        display: inline-block;
+
+    .contact-card {
+        background: white;
+        border-radius: 1.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s;
     }
-    
-    .office-flag::before {
-        content: '';
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, #8B5A2B, #D98C5F);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
+    .contact-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 30px -12px rgba(139, 90, 43, 0.1);
     }
-    
-    .office-flag:hover::before {
-        transform: scaleX(1);
+
+    .section-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+    @media (max-width: 768px) {
+        .section-title { font-size: 1.9rem; }
     }
 </style>
 @endpush
 
-@push('schema')
-    @php
-        $contactSchema = [
-            "@context" => "https://schema.org",
-            "@type" => "ContactPage",
-            "@id" => url('/contact') . "#contact",
-            "name" => "Contact Vumbi Ventures",
-            "description" => "Get in touch with Vumbi Ventures for partnerships, inquiries, or just to say hello.",
-            "url" => url('/contact'),
-            "mainEntity" => [
-                "@type" => "Organization",
-                "name" => "Vumbi Ventures",
-                "address" => [
-                    "@type" => "PostalAddress",
-                    "addressLocality" => "Nairobi",
-                    "addressCountry" => "KE"
-                ],
-                "email" => "hello@vumbiventures.com",
-                "telephone" => "+254 700 000 000",
-                "contactPoint" => [
-                    [
-                        "@type" => "ContactPoint",
-                        "contactType" => "customer service",
-                        "email" => "hello@vumbiventures.com",
-                        "availableLanguage" => ["English", "Swahili"]
-                    ],
-                    [
-                        "@type" => "ContactPoint",
-                        "contactType" => "partner program",
-                        "email" => "partners@vumbiventures.com",
-                        "availableLanguage" => ["English"]
-                    ],
-                    [
-                        "@type" => "ContactPoint",
-                        "contactType" => "talent pipeline",
-                        "email" => "talent@vumbiventures.com",
-                        "availableLanguage" => ["English", "Swahili", "French"]
-                    ]
-                ]
-            ]
-        ];
-    @endphp
-    <script type="application/ld+json">
-    {!! json_encode($contactSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
-    </script>
-@endpush
+{{-- ===================== HERO ===================== --}}
+<section class="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16">
+    <div class="absolute inset-0 grain"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,90,43,0.04),transparent_50%)]"></div>
 
-@section('content')
-    <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 bg-white overflow-hidden">
-        <!-- Background decoration -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute top-20 right-0 w-96 h-96 bg-[#8B5A2B]/5 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-80 h-80 bg-[#D98C5F]/5 rounded-full blur-3xl"></div>
-            
-            <!-- Floating dust particles -->
-            <div class="absolute top-40 left-20 w-2 h-2 bg-[#8B5A2B]/20 rounded-full animate-pulse-slow"></div>
-            <div class="absolute bottom-40 right-40 w-3 h-3 bg-[#D98C5F]/20 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
-            <div class="absolute top-60 right-60 w-1.5 h-1.5 bg-[#C7B5A6]/30 rounded-full animate-pulse-slow" style="animation-delay: 2s;"></div>
-        </div>
+    <div class="relative container mx-auto px-6 text-center max-w-4xl">
+        <span class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-white/40 px-4 py-2 rounded-full shadow-sm">
+            <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>
+            Let's Connect
+        </span>
 
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                <div class="inline-block mb-6">
-                    <span class="bg-[#E5E0D9] text-[#8B5A2B] px-4 py-2 rounded-full text-sm font-medium">
-                        <i class="fas fa-paper-plane mr-2"></i>Get In Touch
-                    </span>
-                </div>
-                <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                    Let's <span class="text-[#8B5A2B] relative">
-                        Connect
-                        <span class="absolute bottom-2 left-0 w-full h-3 bg-[#D98C5F]/20 -z-10"></span>
-                    </span>
-                </h1>
-                <p class="text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto">
-                    Whether you're a potential partner, client, investor, or just curious about what we're building, 
-                    we'd love to hear from you. From overlooked places, we build remarkable solutions together.
-                </p>
-            </div>
-        </div>
-    </section>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold mt-6 leading-tight tracking-tight">
+            Ready to <span class="text-[#8B5A2B] relative inline-block">
+                start?
+                <span class="absolute -bottom-1 left-0 w-full h-1 bg-[#D98C5F]/30 rounded-full"></span>
+            </span>
+        </h1>
 
-    <!-- Contact Cards -->
-    <section class="py-12 dust-bg">
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- General Inquiries -->
-                <div class="contact-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition">
-                    <div class="w-14 h-14 bg-[#8B5A2B]/10 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-envelope text-2xl text-[#8B5A2B]"></i>
-                    </div>
-                    <h3 class="font-bold mb-2">General Inquiries</h3>
-                    <p class="text-sm text-[#6B6B6B] mb-3">For general questions and information</p>
-                    <a href="mailto:hello@vumbiventures.com" class="text-[#8B5A2B] font-semibold hover:underline inline-flex items-center gap-1">
-                        hello@vumbiventures.com
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
-                    <div class="mt-3 text-xs text-[#6B6B6B]">
-                        <i class="fas fa-clock mr-1"></i> Response within 24h
-                    </div>
-                </div>
+        <p class="mt-4 text-[#5C5C5C] text-lg max-w-2xl mx-auto">
+            Whether you're planning an African adventure or need a website that drives results — we're here to help.
+        </p>
+    </div>
+</section>
 
-                <!-- Partner Program -->
-                <div class="contact-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition">
-                    <div class="w-14 h-14 bg-[#2C5F2D]/10 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-handshake text-2xl text-[#2C5F2D]"></i>
-                    </div>
-                    <h3 class="font-bold mb-2">Partner Program</h3>
-                    <p class="text-sm text-[#6B6B6B] mb-3">Join our network of local businesses</p>
-                    <a href="mailto:partners@vumbiventures.com" class="text-[#2C5F2D] font-semibold hover:underline inline-flex items-center gap-1">
-                        partners@vumbiventures.com
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
-                    <div class="mt-3 text-xs text-[#6B6B6B]">
-                        <i class="fas fa-clock mr-1"></i> Response within 48h
-                    </div>
-                </div>
+{{-- ===================== CONTACT FORM + INFO ===================== --}}
+<section class="container mx-auto px-6 py-8">
+    <div class="grid lg:grid-cols-3 gap-8">
+        {{-- Contact Form (spans 2 cols on large) --}}
+        <div class="lg:col-span-2">
+            <div class="glass-panel rounded-3xl p-6 md:p-8 shadow-xl">
+                <h2 class="text-2xl font-semibold mb-6">Send us a message</h2>
 
-                <!-- Talent Pipeline -->
-                <div class="contact-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition">
-                    <div class="w-14 h-14 bg-[#D98C5F]/10 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-user-tie text-2xl text-[#D98C5F]"></i>
+                {{-- Success Message (Livewire or session flash) --}}
+                @if(session('success'))
+                    <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl">
+                        {{ session('success') }}
                     </div>
-                    <h3 class="font-bold mb-2">Talent Pipeline</h3>
-                    <p class="text-sm text-[#6B6B6B] mb-3">Join our network of experts</p>
-                    <a href="mailto:talent@vumbiventures.com" class="text-[#D98C5F] font-semibold hover:underline inline-flex items-center gap-1">
-                        talent@vumbiventures.com
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
-                    <div class="mt-3 text-xs text-[#6B6B6B]">
-                        <i class="fas fa-clock mr-1"></i> Response within 3-5 days
-                    </div>
-                </div>
+                @endif
 
-                <!-- Press & Media -->
-                <div class="contact-card bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition">
-                    <div class="w-14 h-14 bg-[#C7B5A6]/30 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-newspaper text-2xl text-[#6B6B6B]"></i>
-                    </div>
-                    <h3 class="font-bold mb-2">Press & Media</h3>
-                    <p class="text-sm text-[#6B6B6B] mb-3">Media inquiries and interviews</p>
-                    <a href="mailto:press@vumbiventures.com" class="text-[#6B6B6B] font-semibold hover:underline inline-flex items-center gap-1">
-                        press@vumbiventures.com
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
-                    <div class="mt-3 text-xs text-[#6B6B6B]">
-                        <i class="fas fa-clock mr-1"></i> Response within 24h
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                <form action="{{ route('contact.submit') }}" method="POST" class="space-y-5">
+                    @csrf
 
-    <!-- Main Contact Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-12">
-                <!-- Contact Form -->
-                <div>
-                    <div class="mb-8">
-                        <h2 class="text-3xl font-bold mb-3">Send Us a Message</h2>
-                        <p class="text-[#6B6B6B]">Fill out the form below and we'll get back to you as soon as possible.</p>
-                    </div>
-
-                    <form wire:submit.prevent="submitContact" class="space-y-6">
-                        <!-- Name Field -->
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-2">First Name <span class="text-red-500">*</span></label>
-                                <input type="text" wire:model="first_name" required
-                                    class="form-input w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white transition">
-                                @error('first_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2">Last Name</label>
-                                <input type="text" wire:model="last_name"
-                                    class="form-input w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white transition">
-                            </div>
-                        </div>
-
-                        <!-- Email Field -->
+                    <div class="grid md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium mb-2">Email <span class="text-red-500">*</span></label>
-                            <input type="email" wire:model="email" required
-                                class="form-input w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white transition">
-                            @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <label for="name" class="block text-sm font-medium text-[#5C5C5C] mb-1">Full Name *</label>
+                            <input type="text" name="name" id="name" required
+                                   class="input-field" placeholder="Your name">
                         </div>
-
-                        <!-- Phone Field -->
                         <div>
-                            <label class="block text-sm font-medium mb-2">Phone (Optional)</label>
-                            <input type="tel" wire:model="phone"
-                                class="form-input w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white transition">
+                            <label for="email" class="block text-sm font-medium text-[#5C5C5C] mb-1">Email Address *</label>
+                            <input type="email" name="email" id="email" required
+                                   class="input-field" placeholder="you@example.com">
                         </div>
+                    </div>
 
-                        <!-- Subject / Interest -->
+                    <div class="grid md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium mb-2">I'm interested in <span class="text-red-500">*</span></label>
-                            <select wire:model="interest" required
-                                class="w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white">
-                                <option value="">Select an option</option>
-                                <option value="general">General Inquiry</option>
-                                <option value="partner">Partner Program</option>
-                                <option value="talent">Talent Pipeline</option>
-                                <option value="client">Web Development Services</option>
-                                <option value="investor">Investment Opportunity</option>
-                                <option value="press">Press & Media</option>
-                                <option value="other">Other</option>
-                            </select>
-                            @error('interest') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <label for="phone" class="block text-sm font-medium text-[#5C5C5C] mb-1">Phone (optional)</label>
+                            <input type="tel" name="phone" id="phone"
+                                   class="input-field" placeholder="+254 XXX XXX XXX">
                         </div>
-
-                        <!-- Message Field -->
                         <div>
-                            <label class="block text-sm font-medium mb-2">Message <span class="text-red-500">*</span></label>
-                            <textarea rows="5" wire:model="message" required
-                                class="form-input w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white transition resize-none"
-                                placeholder="Tell us about your project, idea, or inquiry..."></textarea>
-                            @error('message') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <!-- How did you hear about us? -->
-                        <div>
-                            <label class="block text-sm font-medium mb-2">How did you hear about us?</label>
-                            <select wire:model="referral"
-                                class="w-full px-4 py-3 rounded-xl border border-[#E5E0D9] focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-white">
-                                <option value="">Select an option</option>
-                                <option value="social">Social Media</option>
-                                <option value="search">Search Engine</option>
-                                <option value="referral">Referral</option>
-                                <option value="field-notes">Field Notes Blog</option>
-                                <option value="event">Event</option>
+                            <label for="inquiry_type" class="block text-sm font-medium text-[#5C5C5C] mb-1">I'm interested in *</label>
+                            <select name="inquiry_type" id="inquiry_type" required class="input-field">
+                                <option value="">-- Please select --</option>
+                                <option value="travel">Travel Booking / Discovery</option>
+                                <option value="web_dev">Web Development Services</option>
+                                <option value="partnership">Partnership Opportunity</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
-
-                        <!-- Newsletter Checkbox -->
-                        <div class="flex items-start gap-3">
-                            <input type="checkbox" wire:model="newsletter" id="newsletter" class="mt-1">
-                            <label for="newsletter" class="text-sm text-[#6B6B6B]">
-                                Subscribe to Field Notes - monthly stories from overlooked places
-                            </label>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div>
-                            <button type="submit" 
-                                class="w-full bg-[#8B5A2B] text-white px-6 py-4 rounded-xl hover:bg-[#6B421F] transition font-medium inline-flex items-center justify-center gap-2 text-lg"
-                                wire:loading.attr="disabled">
-                                <span wire:loading.remove>
-                                    Send Message <i class="fas fa-paper-plane"></i>
-                                </span>
-                                <span wire:loading>
-                                    <i class="fas fa-spinner fa-spin mr-2"></i> Sending...
-                                </span>
-                            </button>
-                        </div>
-
-                        <!-- Privacy Note -->
-                        <p class="text-xs text-[#6B6B6B] text-center">
-                            By submitting this form, you agree to our <a href="#" class="text-[#8B5A2B] hover:underline">Privacy Policy</a> and consent to being contacted.
-                        </p>
-                    </form>
-                </div>
-
-                <!-- Contact Information & Map -->
-                <div>
-                    <!-- Office Locations -->
-                    <div class="bg-[#F9F5F0] p-8 rounded-3xl mb-8">
-                        <h3 class="text-2xl font-bold mb-6">Our Offices</h3>
-                        
-                        <div class="space-y-6">
-                            <!-- Nairobi Office -->
-                            <div class="flex gap-4">
-                                <div class="w-12 h-12 bg-[#8B5A2B] rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-map-pin text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="font-bold">Nairobi, Kenya</h4>
-                                        <span class="text-xs bg-[#8B5A2B]/10 text-[#8B5A2B] px-2 py-1 rounded-full">Headquarters</span>
-                                    </div>
-                                    <p class="text-[#6B6B6B] text-sm mb-2">
-                                        <i class="fas fa-building mr-2"></i> Innovation Hub, Westlands<br>
-                                        <i class="fas fa-phone mr-2"></i> +254 700 000 000<br>
-                                        <i class="fas fa-clock mr-2"></i> Mon-Fri, 8:00 - 18:00 EAT
-                                    </p>
-                                    <a href="#" class="office-flag text-sm text-[#8B5A2B] font-medium">View on map →</a>
-                                </div>
-                            </div>
-
-                            <!-- Accra Office -->
-                            <div class="flex gap-4">
-                                <div class="w-12 h-12 bg-[#D98C5F] rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-map-pin text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="font-bold">Accra, Ghana</h4>
-                                        <span class="text-xs bg-[#D98C5F]/10 text-[#D98C5F] px-2 py-1 rounded-full">West Africa Hub</span>
-                                    </div>
-                                    <p class="text-[#6B6B6B] text-sm mb-2">
-                                        <i class="fas fa-building mr-2"></i> Osu, Accra<br>
-                                        <i class="fas fa-phone mr-2"></i> +233 30 000 000<br>
-                                        <i class="fas fa-clock mr-2"></i> Mon-Fri, 8:00 - 17:00 GMT
-                                    </p>
-                                    <a href="#" class="office-flag text-sm text-[#D98C5F] font-medium">View on map →</a>
-                                </div>
-                            </div>
-
-                            <!-- Kigali Office (Future) -->
-                            <div class="flex gap-4 opacity-75">
-                                <div class="w-12 h-12 bg-[#C7B5A6] rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-map-pin text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h4 class="font-bold">Kigali, Rwanda</h4>
-                                        <span class="text-xs bg-[#C7B5A6]/20 text-[#6B6B6B] px-2 py-1 rounded-full">Coming Soon</span>
-                                    </div>
-                                    <p class="text-[#6B6B6B] text-sm">
-                                        <i class="fas fa-clock mr-2"></i> Opening 2025
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Quick Connect -->
-                    <div class="bg-white p-8 rounded-3xl shadow-sm mb-8">
-                        <h3 class="text-xl font-bold mb-4">Quick Connect</h3>
-                        <div class="space-y-4">
-                            <a href="mailto:hello@vumbiventures.com" class="flex items-center gap-3 text-[#6B6B6B] hover:text-[#8B5A2B] transition">
-                                <div class="w-10 h-10 bg-[#F9F5F0] rounded-full flex items-center justify-center">
-                                    <i class="fas fa-envelope text-[#8B5A2B]"></i>
-                                </div>
-                                <span>hello@vumbiventures.com</span>
-                            </a>
-                            <a href="tel:+254700000000" class="flex items-center gap-3 text-[#6B6B6B] hover:text-[#8B5A2B] transition">
-                                <div class="w-10 h-10 bg-[#F9F5F0] rounded-full flex items-center justify-center">
-                                    <i class="fas fa-phone-alt text-[#8B5A2B]"></i>
-                                </div>
-                                <span>+254 700 000 000</span>
-                            </a>
-                            <div class="flex items-center gap-3 text-[#6B6B6B]">
-                                <div class="w-10 h-10 bg-[#F9F5F0] rounded-full flex items-center justify-center">
-                                    <i class="fas fa-clock text-[#8B5A2B]"></i>
-                                </div>
-                                <span>Response within 24-48 hours</span>
-                            </div>
-                        </div>
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-[#5C5C5C] mb-1">Subject</label>
+                        <input type="text" name="subject" id="subject"
+                               class="input-field" placeholder="What's this about?">
                     </div>
 
-                    <!-- Social Connect -->
-                    <div class="bg-white p-8 rounded-3xl shadow-sm">
-                        <h3 class="text-xl font-bold mb-4">Follow Our Journey</h3>
-                        <p class="text-sm text-[#6B6B6B] mb-6">Connect with us on social media for updates, stories, and behind-the-scenes content.</p>
-                        
-                        <div class="flex flex-wrap gap-3">
-                            <a href="#" target="_blank" rel="noopener noreferrer" 
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-twitter text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-linkedin-in text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-instagram text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-github text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-youtube text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"
-                                class="w-12 h-12 bg-[#F9F5F0] rounded-full flex items-center justify-center hover:bg-[#8B5A2B] group transition">
-                                <i class="fab fa-tiktok text-[#8B5A2B] group-hover:text-white"></i>
-                            </a>
-                        </div>
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-[#5C5C5C] mb-1">Message *</label>
+                        <textarea name="message" id="message" rows="5" required
+                                  class="input-field" placeholder="Tell us more about your inquiry..."></textarea>
                     </div>
-                </div>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" name="consent" id="consent" required class="w-4 h-4 text-[#8B5A2B] rounded border-gray-300">
+                        <label for="consent" class="text-sm text-[#5C5C5C]">
+                            I agree to be contacted about this inquiry. (We'll never spam you.)
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-3 rounded-xl text-base">
+                        Send Message
+                    </button>
+
+                    <p class="text-xs text-[#5C5C5C] text-center mt-4">
+                        We typically respond within 24 hours.
+                    </p>
+                </form>
             </div>
         </div>
-    </section>
 
-    <!-- Map Section -->
-    <section class="py-12 dust-bg">
-        <div class="container mx-auto px-6">
-            <div class="bg-white rounded-3xl overflow-hidden shadow-sm">
-                <div class="grid lg:grid-cols-3">
-                    <!-- Map -->
-                    <div class="lg:col-span-2 h-96 bg-[#F9F5F0] relative map-overlay">
-                        <!-- Placeholder map - replace with actual Google Maps iframe -->
-                        <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#8B5A2B]/10 to-[#D98C5F]/10">
-                            <div class="text-center">
-                                <i class="fas fa-map-marked-alt text-6xl text-[#8B5A2B]/30 mb-4"></i>
-                                <p class="text-[#6B6B6B]">Interactive Map Loading...</p>
-                                <p class="text-xs text-[#6B6B6B] mt-2">Nairobi · Accra · Kigali (Coming Soon)</p>
-                            </div>
-                        </div>
-                        <!-- Replace with actual Google Maps embed:
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.123456789!2d36.821946!3d-1.292066!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMTcnMzEuNSJTIDM2wrA0OScyMC4wIkU!5e0!3m2!1sen!2ske!4v1234567890" 
-                                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                        -->
-                    </div>
-
-                    <!-- Map Info -->
-                    <div class="p-8 bg-white">
-                        <h3 class="text-xl font-bold mb-4">Visit Us</h3>
-                        <p class="text-sm text-[#6B6B6B] mb-6">
-                            We'd love to meet you in person. Schedule a visit to our innovation hubs in Nairobi or Accra.
-                        </p>
-
-                        <div class="space-y-4 mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-[#F9F5F0] rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-[#8B5A2B] text-xs"></i>
-                                </div>
-                                <span class="text-sm">Tours available by appointment</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-[#F9F5F0] rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-[#8B5A2B] text-xs"></i>
-                                </div>
-                                <span class="text-sm">Virtual meetings available worldwide</span>
-                            </div>
-                        </div>
-
-                        <a href="#" class="inline-flex items-center gap-2 text-[#8B5A2B] font-semibold hover:underline">
-                            Schedule a visit <i class="fas fa-calendar-alt"></i>
-                        </a>
-                    </div>
+        {{-- Contact Info Cards --}}
+        <div class="space-y-6">
+            {{-- Email Card --}}
+            <div class="contact-card p-6">
+                <div class="w-12 h-12 bg-[#F5EFE6] rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B5A2B" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-3">Frequently Asked <span class="text-[#8B5A2B]">Questions</span></h2>
-                <p class="text-[#6B6B6B]">Quick answers to common questions about connecting with us.</p>
+                <h3 class="font-semibold text-lg">Email Us</h3>
+                <p class="text-[#5C5C5C] text-sm mt-1">For general inquiries:</p>
+                <a href="mailto:africa@vumbiventures.com" class="text-[#8B5A2B] font-medium hover:underline block mt-2">africa@vumbiventures.com</a>
+                <p class="text-[#5C5C5C] text-sm mt-3">For travel support:</p>
+                <a href="mailto:info@vumbiventures.com" class="text-[#8B5A2B] font-medium hover:underline block mt-1">info@vumbiventures.com</a>
             </div>
 
-            <div class="max-w-3xl mx-auto space-y-4">
-                <!-- FAQ 1 -->
-                <div class="bg-[#F9F5F0] rounded-xl overflow-hidden" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-[#E5E0D9] transition">
-                        <span class="font-semibold">How quickly do you respond to inquiries?</span>
-                        <i class="fas fa-chevron-down transition" :class="{ 'rotate-180': open }"></i>
-                    </button>
-                    <div x-show="open" x-collapse class="px-6 pb-4 text-[#6B6B6B]">
-                        We aim to respond to all inquiries within 24-48 hours. For partner and talent inquiries, it may take 3-5 business days as we carefully review each submission.
-                    </div>
+            {{-- WhatsApp Card --}}
+            <div class="contact-card p-6">
+                <div class="w-12 h-12 bg-[#F5EFE6] rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#8B5A2B"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.162.574 4.189 1.575 5.938L.033 23.967l6.273-1.497A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.965 0-3.807-.472-5.425-1.303l-3.865.922.957-3.735A9.953 9.953 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/><path d="M17.5 14.5c-.3.85-1.5 1.5-2.5 1.5-1.5 0-3.5-1-5-2.5s-2.5-3.5-2.5-5c0-1 .65-2.2 1.5-2.5.2-.1.4-.1.6 0 .2.1.4.3.5.5.2.5.5 1.2.6 1.5.1.3.1.5 0 .7-.1.2-.3.4-.5.6-.2.2-.3.4-.3.6s.1.4.3.6c.5.8 1.5 1.8 2.5 2.3.2.1.4.2.6.1.2-.1.4-.3.6-.5.2-.2.4-.3.7-.2.3.1 1 .5 1.5.6.2.1.4.3.5.5.1.2.1.5 0 .7z"/></svg>
                 </div>
-
-                <!-- FAQ 2 -->
-                <div class="bg-[#F9F5F0] rounded-xl overflow-hidden" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-[#E5E0D9] transition">
-                        <span class="font-semibold">Can I visit your office without an appointment?</span>
-                        <i class="fas fa-chevron-down transition" :class="{ 'rotate-180': open }"></i>
-                    </button>
-                    <div x-show="open" x-collapse class="px-6 pb-4 text-[#6B6B6B]">
-                        We recommend scheduling an appointment to ensure someone is available to meet with you. However, you're always welcome to stop by and leave a message at our reception.
-                    </div>
-                </div>
-
-                <!-- FAQ 3 -->
-                <div class="bg-[#F9F5F0] rounded-xl overflow-hidden" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-[#E5E0D9] transition">
-                        <span class="font-semibold">Do you work with international clients?</span>
-                        <i class="fas fa-chevron-down transition" :class="{ 'rotate-180': open }"></i>
-                    </button>
-                    <div x-show="open" x-collapse class="px-6 pb-4 text-[#6B6B6B]">
-                        Absolutely! While our roots are in Africa, we work with clients and partners from around the world. We're experienced in remote collaboration and can accommodate any timezone.
-                    </div>
-                </div>
-
-                <!-- FAQ 4 -->
-                <div class="bg-[#F9F5F0] rounded-xl overflow-hidden" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-[#E5E0D9] transition">
-                        <span class="font-semibold">How can I become a Vumbi Partner?</span>
-                        <i class="fas fa-chevron-down transition" :class="{ 'rotate-180': open }"></i>
-                    </button>
-                    <div x-show="open" x-collapse class="px-6 pb-4 text-[#6B6B6B]">
-                        Great to hear you're interested! Please use the contact form and select "Partner Program" as your interest, or email us directly at partners@vumbiventures.com with information about your business.
-                    </div>
-                </div>
-
-                <!-- FAQ 5 -->
-                <div class="bg-[#F9F5F0] rounded-xl overflow-hidden" x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-[#E5E0D9] transition">
-                        <span class="font-semibold">Do you offer internships or volunteer opportunities?</span>
-                        <i class="fas fa-chevron-down transition" :class="{ 'rotate-180': open }"></i>
-                    </button>
-                    <div x-show="open" x-collapse class="px-6 pb-4 text-[#6B6B6B]">
-                        Yes! We occasionally offer internships and volunteer positions. Please check our Careers page or send your CV to talent@vumbiventures.com with "Internship" in the subject line.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-16 bg-[#8B5A2B] relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <i class="fas fa-dust-storm absolute top-10 left-10 text-white text-8xl"></i>
-            <i class="fas fa-paper-plane absolute bottom-10 right-10 text-white text-8xl rotate-12"></i>
-        </div>
-        
-        <div class="container mx-auto px-6 text-center relative z-10">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Start a Conversation?</h2>
-            <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Whether you have a project in mind, want to partner with us, or just want to say hello — we're all ears.
-            </p>
-            <div class="flex flex-wrap gap-4 justify-center">
-                <a href="#" class="bg-white text-[#8B5A2B] px-8 py-3 rounded-full hover:bg-[#F9F5F0] transition font-medium inline-flex items-center gap-2">
-                    <i class="fas fa-calendar-alt"></i> Schedule a Call
-                </a>
-                <a href="mailto:hello@vumbiventures.com" class="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-[#8B5A2B] transition font-medium">
-                    hello@vumbiventures.com
+                <h3 class="font-semibold text-lg">WhatsApp</h3>
+                <p class="text-[#5C5C5C] text-sm mt-1">Quick questions? Chat with us.</p>
+                <a href="https://wa.me/254734591543" target="_blank" rel="noopener" class="inline-block mt-3 text-[#8B5A2B] font-medium hover:underline">
+                    +254 734 591 543 →
                 </a>
             </div>
+
+            {{-- Location Card --}}
+            <div class="contact-card p-6">
+                <div class="w-12 h-12 bg-[#F5EFE6] rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B5A2B" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3 class="font-semibold text-lg">Our Base</h3>
+                <p class="text-[#5C5C5C] text-sm mt-1">Nairobi, Kenya</p>
+                <p class="text-[#5C5C5C] text-sm">Working across Africa</p>
+                {{-- Optional mini map or flag --}}
+            </div>
+
+            {{-- Social Links --}}
+            <div class="contact-card p-6">
+                <h3 class="font-semibold text-lg mb-3">Follow Along</h3>
+                <div class="flex gap-4">
+                    <a href="https://twitter.com/vumbiventures" target="_blank" class="text-[#5C5C5C] hover:text-[#8B5A2B] transition">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://linkedin.com/company/vumbi-ventures" target="_blank" class="text-[#5C5C5C] hover:text-[#8B5A2B] transition">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://instagram.com/vumbiventures" target="_blank" class="text-[#5C5C5C] hover:text-[#8B5A2B] transition">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
+
+{{-- ===================== MAP / LOCATION VISUAL ===================== --}}
+{{-- ===================== MAP / LOCATION VISUAL ===================== --}}
+<section class="container mx-auto px-6 py-12">
+    <div class="rounded-3xl overflow-hidden border border-black/5 shadow-lg h-72 md:h-96 bg-[#E8DFD5]">
+        {{-- OpenStreetMap Embed – free, no API key required --}}
+        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=36.05%2C-0.35%2C36.10%2C-0.30&amp;layer=mapnik&amp;marker=-0.325%2C36.075"
+                style="border: 0;">
+        </iframe>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center justify-between mt-4">
+        <p class="text-sm text-[#5C5C5C]">
+            📍 P448+FW, Nakuru, Kenya — serving clients across Africa and beyond.
+        </p>
+        <div class="flex gap-3">
+            <a href="https://www.openstreetmap.org/directions?engine=graphhopper_car&route=%3B-0.325%2C36.075"
+               target="_blank" rel="noopener"
+               class="inline-flex items-center gap-1 text-sm font-medium text-[#8B5A2B] hover:underline mt-2 sm:mt-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 0-10 10c0 5 10 13 10 13s10-8 10-13a10 10 0 0 0-10-10z"/><circle cx="12" cy="12" r="3"/></svg>
+                Directions (OSM) →
+            </a>
+            <a href="https://maps.google.com/?q=P448%2BFW+Nakuru%2C+Kenya"
+               target="_blank" rel="noopener"
+               class="inline-flex items-center gap-1 text-sm font-medium text-[#8B5A2B] hover:underline mt-2 sm:mt-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 0 0 20 15 15 0 0 0 0-20z"/><path d="M2 12h20"/></svg>
+                Google Maps →
+            </a>
+        </div>
+    </div>
+    <p class="text-xs text-[#8B5A2B]/60 text-center mt-2">Map data © OpenStreetMap contributors</p>
+</section>
+
+{{-- ===================== FAQ QUICK LINKS ===================== --}}
+<section class="container mx-auto px-6 py-8 text-center">
+    <p class="text-[#5C5C5C]">
+        Looking for something specific?
+        <a href="{{ url('/services') }}" class="text-[#8B5A2B] font-medium hover:underline mx-2">Our Services</a> •
+        <a href="{{ url('/discover') }}" class="text-[#8B5A2B] font-medium hover:underline mx-2">Travel Discovery</a> •
+        <a href="{{ url('/field-notes') }}" class="text-[#8B5A2B] font-medium hover:underline mx-2">Field Notes</a>
+    </p>
+</section>
+
 @endsection
-
-@push('scripts')
-<script>
-    // Add any page-specific JavaScript here
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('faq', () => ({
-            open: false
-        }))
-    })
-</script>
-@endpush
