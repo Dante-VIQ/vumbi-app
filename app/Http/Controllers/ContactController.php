@@ -21,7 +21,7 @@ class ContactController extends Controller
     ]);
 
     // Send email notification to admin
-    Mail::to('hello@vumbiventures.com')->send(new ContactFormSubmitted($validated));
+    Mail::to('africa@vumbiventures.com')->send(new ContactFormSubmitted($validated));
 
     // Optionally store in database
 
