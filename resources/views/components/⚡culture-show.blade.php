@@ -41,7 +41,11 @@ new class extends Component
     {
         // Use your existing affiliate services
         try {
-            $plan = app(AffiliateMatcher::class)->buildPlanForLocation($location);
+            $matcher = app(AffiliateMatcher::class);
+            $plan = method_exists($matcher, 'match') ? $matcher->match($location) : [];
+            if (empty($plan)) {
+                return [];
+            }
             return app(AffiliateExecutionService::class)->execute($plan, $location);
         } catch (\Exception $e) {
             return [];
