@@ -9,7 +9,9 @@
             <div class="relative">
                 <div class="absolute inset-0 bg-[#8B5A2B]/20 rounded-xl blur-md group-hover:bg-[#8B5A2B]/30 transition-all duration-300"></div>
                 <div class="relative w-10 h-10 bg-[#8B5A2B] rounded-full flex items-center justify-center transition group-hover:scale-110">
-                    <span class="text-white font-bold text-lg">V</span>
+                <img src="/images/logo.png" alt="GB Handyman Logo"
+                    class="relative h-10 md:h-12 w-auto object-contain transform group-hover:scale-105 transition-all duration-300"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 </div>
             </div>
             <div class="flex flex-col">
@@ -25,7 +27,7 @@
             @php
                 $navItems = [
                     '/discover' => ['Discover', 'fas fa-compass'],
-                    '/field-notes' => ['Field Notes', 'fas fa-pen-fade'],
+                    '/blog' => ['Field Notes', 'fas fa-pen-fade'],
                     '/services' => ['Services', 'fas fa-toolbox'],
                     '/about' => ['About', 'fas fa-info-circle'],
                     '/contact' => ['Contact', 'fas fa-envelope'],

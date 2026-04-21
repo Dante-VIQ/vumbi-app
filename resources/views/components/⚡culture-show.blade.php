@@ -76,7 +76,7 @@ new class extends Component
           "image": "{{ Storage::url($culture->image) }}",
           "description": "{{ Str::limit(strip_tags($culture->detail), 155) }}",
           "author": { "@type": "Organization", "name": "Vumbi Ventures" },
-          "publisher": { "@type": "Organization", "name": "Vumbi Ventures", "logo": { "@type": "ImageObject", "url": "{{ asset('images/vumbi-logo.png') }}" } },
+          "publisher": { "@type": "Organization", "name": "Vumbi Ventures", "logo": { "@type": "ImageObject", "url": "{{ asset('images/logo.png') }}" } },
           "datePublished": "{{ $culture->created_at->toIso8601String() }}"
         }
         </script>
