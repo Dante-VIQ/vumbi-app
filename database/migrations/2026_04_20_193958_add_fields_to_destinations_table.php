@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->string('guard_name')->default('web')->after('name');
+        Schema::table('destinations', function (Blueprint $table) {
+            //
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn('guard_name');
+        Schema::table('destinations', function (Blueprint $table) {
+            //
         });
     }
 };

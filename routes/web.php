@@ -4,11 +4,31 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
+use App\Livewire\Admin\CultureManager;
+use App\Livewire\Admin\DestinationManager;
 use App\Models\Blog;
+use App\Models\Destination;
 use Illuminate\Support\Facades\Route;
 
 
+
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
+
+Route::get('/doctor/{id}', function ($id) {
+    $destination = Destination::where('legacy_doctor_id', $id)->first();
+    if ($destination) {
+        return redirect()->route('destination.show', $destination, 301);
+    }
+    abort(404);
+})->where('id', '[0-9]+');
+
+// Also handle plural /doctors/{id}
+Route::get('/doctors/{id}', function ($id) {
+    return redirect()->route('doctor.redirect', ['id' => $id], 301);
+})->where('id', '[0-9]+');
+
+// Named route for convenience
+Route::get('/doctor/{id}')->name('doctor.redirect');
 
 Route::get('/', function () {
     return view('home');
@@ -96,6 +116,15 @@ Route::middleware(['auth', 'role:master|engineer'])->prefix('admin')->group(func
     // Blog CRUD
     Route::resource('blogs', BlogController::class);
     Route::delete('blogs/bulk/delete', [BlogController::class, 'bulkDestroy'])->name('blogs.bulk-destroy');
+
+   Route::get('places', function () {
+    return view('pages.destination-manager');
+});
+
+   Route::get('people', function () {
+    return view('pages.culture-manager');
+});
+
 });
 
 Route::get('header', function () {
