@@ -89,7 +89,7 @@
         <div class="container mx-auto px-6">
             <p class="text-center text-sm uppercase tracking-wider text-[#6B6B6B] mb-8">Our Travel Partners</p>
             <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
-                <img src="https://placehold.co/120x40/f5efe6/8B5A2B?text=Booking.com" alt="Booking.com"
+                <img src="https://placehold.co/120x40/f5efe6/8B5A2B?text=BonusArrive.com" alt="BonusArrive.com"
                     class="trust-logo h-8 md:h-10 w-auto object-contain">
                 <img src="https://placehold.co/120x40/f5efe6/8B5A2B?text=Expedia" alt="Expedia"
                     class="trust-logo h-8 md:h-10 w-auto object-contain">
