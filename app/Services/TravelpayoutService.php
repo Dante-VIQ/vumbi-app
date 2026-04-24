@@ -3,82 +3,147 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class TravelpayoutsService
+class TravelPayoutsService
 {
-    protected $token;
-    protected $marker;
+    protected string $token;
+    protected string $marker;
+    protected string $baseUrl;
 
     public function __construct()
     {
-        $this->token = config('services.travelpayouts.token');
-        $this->marker = config('services.travelpayouts.marker');
+        $this->token   = config('services.travelpayouts.token');
+        $this->marker  = config('services.travelpayouts.marker');
+        $this->baseUrl = config('services.travelpayouts.base_url');
     }
 
     /**
-     * Search Hotels - Main Method
+     * Search hotels by location name.
      */
-    public function searchHotels(string $location, int $limit = 6)
+    public function searchHotels(string $location, int $limit = 6): array
     {
-        if (empty($this->token) || empty($this->marker)) {
-            Log::warning('Travelpayouts: Missing token or marker');
-            return [];
-        }
-
-        $cacheKey = 'tp_hotels_' . md5($location) . "_{$limit}";
-
-        return Cache::remember($cacheKey, now()->addHours(12), function () use ($location, $limit) {
-            try {
-                $response = Http::timeout(15)->get('https://engine.hotellook.com/api/v2/cache.json', [
-                    'location'     => $location,
-                    'checkIn'      => now()->addDays(30)->format('Y-m-d'),
-                    'checkOut'     => now()->addDays(37)->format('Y-m-d'),
-                    'adultsCount'  => 2,
-                    'currency'     => 'USD',
-                    'limit'        => $limit,
-                    'marker'       => $this->marker,
+        try {
+            $response = Http::withToken($this->token)
+                ->get("{$this->baseUrl}/v2/prices/latest", [
+                    'currency'   => 'usd',
+                    'limit'      => $limit,
+                    'token'      => $this->token,
+                    'marker'     => $this->marker,
+                    'destination' => $this->resolveLocation($location),
                 ]);
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    return $this->formatHotels($data);
-                } else {
-                    Log::error('Travelpayouts Hotel API Error: ' . $response->status() . ' - ' . $response->body());
-                    return [];
-                }
-            } catch (\Exception $e) {
-                Log::error('Travelpayouts Exception: ' . $e->getMessage());
-                return [];
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return $this->formatHotelResults($data['data'] ?? [], $limit);
             }
-        });
+
+            Log::error('Travelpayouts Hotels API failed', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+
+            return [];
+        } catch (\Exception $e) {
+            Log::error('Travelpayouts Hotels exception', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
+            return [];
+        }
     }
 
     /**
-     * Search Tours / Activities
+     * Search tours/experiences.
      */
-    public function searchTours(string $location, int $limit = 6)
+    public function searchTours(string $location, int $limit = 6): array
     {
-        // For now, we'll return empty or you can implement later
-        // Bonus Arrive is better for flights, this can be expanded
+        try {
+            $response = Http::withToken($this->token)
+                ->get("{$this->baseUrl}/v2/tours/search", [
+                    'term'     => $location,
+                    'limit'    => $limit,
+                    'token'    => $this->token,
+                    'marker'   => $this->marker,
+                ]);
+
+            if ($response->successful()) {
+                return $this->formatTourResults($response->json(), $limit);
+            }
+
+            Log::error('Travelpayouts Tours API failed', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Travelpayouts Tours exception', [
+                'message' => $e->getMessage(),
+            ]);
+        }
+
         return [];
     }
 
-    private function formatHotels(array $results): array
+    /**
+     * Map a location string to a Travelpayouts destination code.
+     * This is a simplified example; you might use a database table or external lookup.
+     */
+    protected function resolveLocation(string $location): string
     {
-        $formatted = [];
+        // Commonly searched destinations for Kenya
+        $map = [
+            'maasai mara' => 'KE',
+            'diani'       => 'KE',
+            'nakuru'      => 'KE',
+            'lamu'        => 'KE',
+            'nairobi'     => 'NBO',
+            'mombasa'     => 'MBA',
+            'kenya'       => 'KE',
+        ];
 
-        foreach ($results as $hotel) {
-            $formatted[] = [
-                'name'  => $hotel['name'] ?? 'Hotel',
-                'price' => isset($hotel['priceFrom']) ? '$' . number_format($hotel['priceFrom'], 2) : 'Best rates',
-                'image' => $hotel['photo'] ?? $hotel['thumbnail'] ?? null,
-                'url'   => $hotel['url'] ?? '#',
-                'rating'=> $hotel['rating'] ?? null,
+        $key = strtolower(trim($location));
+
+        return $map[$key] ?? 'KE'; // default to Kenya
+    }
+
+    /**
+     * Format raw hotel data into clean array for the front-end.
+     */
+    private function formatHotelResults(array $hotels, int $limit): array
+    {
+        $results = [];
+
+        foreach (array_slice($hotels, 0, $limit) as $hotel) {
+            $results[] = [
+                'name'   => $hotel['hotel_name'] ?? 'Hotel',
+                'image'  => $hotel['hotel_image'] ?? null,
+                'price'  => isset($hotel['price']) ? '$' . $hotel['price'] : 'N/A',
+                'url'    => $hotel['link'] ?? '#',
+                'rating' => $hotel['stars'] ?? null,
             ];
         }
 
-        return $formatted;
+        return $results;
+    }
+
+    /**
+     * Format raw tour data.
+     */
+    private function formatTourResults(array $data, int $limit): array
+    {
+        $results = [];
+
+        foreach (array_slice($data['data'] ?? [], 0, $limit) as $tour) {
+            $results[] = [
+                'name'     => $tour['title'] ?? 'Tour',
+                'price'    => isset($tour['price']) ? '$' . $tour['price'] : 'N/A',
+                'duration' => $tour['duration'] ?? '',
+                'url'      => $tour['url'] ?? '#',
+            ];
+        }
+
+        return $results;
     }
 }

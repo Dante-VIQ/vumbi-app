@@ -42,6 +42,7 @@ return [
 'travelpayouts' => [
     'token'  => env('TRAVELPAYOUTS_TOKEN'),
     'marker' => env('TRAVELPAYOUTS_MARKER'),
+    'base_url' => env('TRAVELPAYOUTS_BASE_URL', 'https://api.travelpayouts.com'),
 ],
 
         'awin' => [

@@ -136,7 +136,7 @@
                             'location' => 'South Africa',
                             'price' => 'From $1,650 pp',
                             'image' => 'https://placehold.co/600x400/e8dfd5/8B5A2B?text=Cape+Town',
-                            'link' => '/discover/cape-town'
+                            'link' => 'https://www.vumbiventures.com/discover/cape-town'
                         ],
                     ];
                 @endphp

@@ -124,8 +124,8 @@ return [
     ],
 
     // config/app.php
-'master_roles'   => env('MASTER_ROLES', 'user,engineer,master'),
-'engineer_email' => env('ENGINEER_EMAIL'),
-'master_emails'  => env('MASTER_EMAILS'),
-'run_role_setup' => env('RUN_ROLE_SETUP', false), // for controlled execution
+    'master_roles' => env('MASTER_ROLES', 'user,engineer,master'),
+    'engineer_email' => env('ENGINEER_EMAIL'),
+    'master_emails' => env('MASTER_EMAILS'),
+    'run_role_setup' => env('RUN_ROLE_SETUP', false), // for controlled execution
 ];
