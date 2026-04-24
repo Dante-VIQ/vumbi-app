@@ -109,6 +109,8 @@ new class extends Component {
     {
         $this->reset(['cultureId', 'name', 'location', 'detail', 'image', 'existingImage', 'isEditing']);
     }
+
+    
 };
 ?>
 
