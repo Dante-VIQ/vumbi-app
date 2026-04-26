@@ -211,13 +211,13 @@ private function descriptionToHtml(string $text): string
 
 private function splitContentIntoBlocks(): array
 {
-    if (!$this->blog || !$this->blog->formatted_description) {
+    if (!$this->blog || !$this->blog->description) {
         return [];
     }
 
     // 🔥 Convert TEXT → HTML first
     $content = $this->descriptionToHtml(
-        $this->blog->formatted_description
+        $this->blog->description
     );
 
     /*
