@@ -215,11 +215,13 @@ private function splitContentIntoBlocks(): array
         return [];
     }
 
-    $content = $this->blog->formatted_description;
+    // 🔥 Convert TEXT → HTML first
+    $content = $this->descriptionToHtml(
+        $this->blog->formatted_description
+    );
 
     /*
     Split content while KEEPING H2 tags as separate blocks.
-    This lets us inject affiliate widgets between sections later.
     */
     $blocks = preg_split(
         "/(<h2[^>]*>.*?<\/h2>)/i",
