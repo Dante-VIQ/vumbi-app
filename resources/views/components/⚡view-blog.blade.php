@@ -203,17 +203,20 @@ private function splitContentIntoBlocks(): array
     libxml_use_internal_errors(true);
 
     $dom = new \DOMDocument();
-    $dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    // ✅ Proper UTF-8 handling (Livewire safe)
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+
+    $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
     $blocks = [];
     $currentBlock = '';
 
     foreach ($dom->documentElement->childNodes as $node) {
 
-        // Convert node back to HTML
         $nodeHtml = $dom->saveHTML($node);
 
-        // If node is H2 → close previous block and isolate H2
+        // isolate H2 blocks
         if ($node->nodeName === 'h2') {
             if (trim($currentBlock) !== '') {
                 $blocks[] = $currentBlock;
@@ -224,11 +227,9 @@ private function splitContentIntoBlocks(): array
             continue;
         }
 
-        // Otherwise accumulate content until next H2
         $currentBlock .= $nodeHtml;
     }
 
-    // Push remaining content
     if (trim($currentBlock) !== '') {
         $blocks[] = $currentBlock;
     }
