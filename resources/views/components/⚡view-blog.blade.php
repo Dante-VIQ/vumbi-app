@@ -198,10 +198,7 @@ private function splitContentIntoBlocks(): array
         return [];
     }
 
-    // 🔥 Convert TEXT → HTML first
-    $content = $this->descriptionToHtml(
-        $this->blog->description
-    );
+    
 
     /*
     Split content while KEEPING H2 tags as separate blocks.
