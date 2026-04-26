@@ -190,24 +190,7 @@ public function mount(Blog $blog)
         ];
     }
 
-private function descriptionToHtml(string $text): string
-{
-    // Escape first (security)
-    $text = e($text);
 
-    // Convert double line breaks into paragraphs
-    $paragraphs = preg_split("/\n\s*\n/", $text);
-
-    $html = '';
-
-    foreach ($paragraphs as $p) {
-        // Single line breaks become <br>
-        $p = nl2br(trim($p));
-        $html .= "<p>{$p}</p>";
-    }
-
-    return $html;
-}
 
 private function splitContentIntoBlocks(): array
 {
