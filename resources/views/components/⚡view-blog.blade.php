@@ -198,19 +198,42 @@ private function splitContentIntoBlocks(): array
         return [];
     }
 
-    
+    $html = $this->blog->description;
 
-    /*
-    Split content while KEEPING H2 tags as separate blocks.
-    */
-    $blocks = preg_split(
-        "/(<h2[^>]*>.*?<\/h2>)/i",
-        $content,
-        -1,
-        PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
-    );
+    libxml_use_internal_errors(true);
 
-    return $blocks ?: [];
+    $dom = new \DOMDocument();
+    $dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $blocks = [];
+    $currentBlock = '';
+
+    foreach ($dom->documentElement->childNodes as $node) {
+
+        // Convert node back to HTML
+        $nodeHtml = $dom->saveHTML($node);
+
+        // If node is H2 → close previous block and isolate H2
+        if ($node->nodeName === 'h2') {
+            if (trim($currentBlock) !== '') {
+                $blocks[] = $currentBlock;
+                $currentBlock = '';
+            }
+
+            $blocks[] = $nodeHtml;
+            continue;
+        }
+
+        // Otherwise accumulate content until next H2
+        $currentBlock .= $nodeHtml;
+    }
+
+    // Push remaining content
+    if (trim($currentBlock) !== '') {
+        $blocks[] = $currentBlock;
+    }
+
+    return $blocks;
 }
 
 private function shouldInsertWidget($blockIndex): bool
