@@ -372,7 +372,7 @@ private function shouldInsertWidget($blockIndex): bool
                             @endif
                         @endforeach
                     @else
-                        {!! $blog->formatted_description !!}
+                     {!! nl2br(e($blog->formatted_description)) !!}
                     @endif
                 </article>
 
