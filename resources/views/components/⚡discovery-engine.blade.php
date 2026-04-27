@@ -2,7 +2,7 @@
 
 use Livewire\Component;
 use App\Models\Blog;
-use App\Models\Doctor;
+use App\Models\Destination;
 use App\Models\Culture;
 use App\Services\TravelPayoutsService;
 use App\Services\BonusArriveService;
@@ -27,7 +27,7 @@ public $attractions = [];
 
     public function mount()
     {
-        $this->destinations = Doctor::latest()->limit(6)->get();
+        $this->destinations = Destination::latest()->limit(6)->get();
         $this->cultureEntries = Culture::latest()->limit(6)->get();
     }
 
