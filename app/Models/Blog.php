@@ -98,23 +98,5 @@ class Blog extends Model
 
     }
 
-/**
- * Get description with normalized line breaks (no HTML)
- */
-public function getFormattedDescriptionAttribute()
-{
-    $text = (string) $this->description;
 
-    if (trim($text) === '') {
-        return '';
-    }
-
-    // Normalize Windows/Mac line endings to Unix
-    $text = str_replace(["\r\n", "\r"], "\n", $text);
-
-    // Collapse excessive blank lines to max two
-    $text = preg_replace("/\n{3,}/", "\n\n", $text);
-
-    return trim($text);
-}
 }

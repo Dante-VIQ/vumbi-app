@@ -190,26 +190,51 @@ public function mount(Blog $blog)
         ];
     }
 
+
+
 private function splitContentIntoBlocks(): array
 {
-    if (!$this->blog || !$this->blog->formatted_description) {
+    if (!$this->blog || !$this->blog->description) {
         return [];
     }
 
-    $content = $this->blog->formatted_description;
+    $html = $this->blog->description;
 
-    /*
-    Split content while KEEPING H2 tags as separate blocks.
-    This lets us inject affiliate widgets between sections later.
-    */
-    $blocks = preg_split(
-        "/(<h2[^>]*>.*?<\/h2>)/i",
-        $content,
-        -1,
-        PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
-    );
+    libxml_use_internal_errors(true);
 
-    return $blocks ?: [];
+    $dom = new \DOMDocument();
+
+    // ✅ Proper UTF-8 handling (Livewire safe)
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+
+    $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $blocks = [];
+    $currentBlock = '';
+
+    foreach ($dom->documentElement->childNodes as $node) {
+
+        $nodeHtml = $dom->saveHTML($node);
+
+        // isolate H2 blocks
+        if ($node->nodeName === 'h2') {
+            if (trim($currentBlock) !== '') {
+                $blocks[] = $currentBlock;
+                $currentBlock = '';
+            }
+
+            $blocks[] = $nodeHtml;
+            continue;
+        }
+
+        $currentBlock .= $nodeHtml;
+    }
+
+    if (trim($currentBlock) !== '') {
+        $blocks[] = $currentBlock;
+    }
+
+    return $blocks;
 }
 
 private function shouldInsertWidget($blockIndex): bool
@@ -372,7 +397,7 @@ private function shouldInsertWidget($blockIndex): bool
                             @endif
                         @endforeach
                     @else
-                        {!! $blog->formatted_description !!}
+                     {!! nl2br(e($blog->formatted_description)) !!}
                     @endif
                 </article>
 
