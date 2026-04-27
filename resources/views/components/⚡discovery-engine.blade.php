@@ -22,6 +22,8 @@ new class extends Component {
 
     public $destinations = [];
     public $cultureEntries = [];
+public $placeInfo = null;
+public $attractions = [];
 
     public function mount()
     {
@@ -47,10 +49,30 @@ new class extends Component {
         $this->tours = $this->fetchTours();
         $this->flights = $this->fetchFlights();
         $this->awinOffers = $this->fetchAwinOffers();
-
+$this->placeInfo = $this->fetchPlaceInfo();
+$this->attractions = $this->fetchAttractions();
         $this->loading = false;
     }
 
+    private function fetchPlaceInfo()
+{
+    try {
+        return app(\App\Services\PlaceDiscoveryService::class)
+            ->getPlaceSummary($this->search);
+    } catch (\Exception $e) {
+        return null;
+    }
+}
+
+private function fetchAttractions()
+{
+    try {
+        return app(\App\Services\PlaceDiscoveryService::class)
+            ->getAttractions($this->search, 6);
+    } catch (\Exception $e) {
+        return [];
+    }
+}
     private function fetchStories()
     {
         return Blog::where('title', 'like', "%{$this->search}%")
@@ -152,6 +174,85 @@ new class extends Component {
                 @endfor
             </div>
         </div>
+
+        @if($placeInfo)
+<section class="mb-12">
+    <div class="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+
+        <div class="md:flex">
+            
+            {{-- Image --}}
+            @if(!empty($placeInfo['image']))
+                <div class="md:w-1/3">
+                    <img src="{{ $placeInfo['image'] }}"
+                        class="w-full h-full object-cover aspect-[4/3]"
+                        alt="{{ $placeInfo['title'] }}">
+                </div>
+            @endif
+
+            {{-- Content --}}
+            <div class="p-6 md:p-8 md:w-2/3">
+                
+                <h2 class="text-2xl font-semibold">
+                    {{ $placeInfo['title'] ?? $placeName }}
+                </h2>
+
+                <p class="text-[#5C5C5C] mt-3 leading-relaxed">
+                    {{ $placeInfo['description'] ?? 'No description available yet.' }}
+                </p>
+
+                @if(!empty($placeInfo['source']))
+                    <a href="{{ $placeInfo['source'] }}"
+                       target="_blank"
+                       class="inline-block mt-4 text-sm font-medium text-[#8B5A2B] hover:underline">
+                        Read more on Wikipedia →
+                    </a>
+                @endif
+
+            </div>
+        </div>
+
+    </div>
+</section>
+@endif
+
+@if(!empty($attractions))
+<section class="mb-12">
+
+    <div class="flex items-end justify-between mb-6">
+        <div>
+            <h3 class="text-xl font-semibold">Things to Do</h3>
+            <p class="text-[#5C5C5C] mt-1">Top attractions around {{ $placeName }}</p>
+        </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        @foreach($attractions as $attraction)
+            <div class="bg-white rounded-2xl p-5 border border-black/5 shadow-sm hover:shadow-md transition">
+
+                <h4 class="font-semibold text-lg">
+                    {{ $attraction['name'] }}
+                </h4>
+
+                @if(!empty($attraction['kind']))
+                    <p class="text-sm text-[#5C5C5C] mt-2 capitalize">
+                        {{ str_replace(',', ' • ', $attraction['kind']) }}
+                    </p>
+                @endif
+
+                <div class="mt-4 text-sm text-[#8B5A2B] font-medium">
+                    Explore attraction →
+                </div>
+
+            </div>
+        @endforeach
+
+    </div>
+</section>
+@endif
+
+
 
     {{-- ===================== INITIAL STATE (Before Search) ===================== --}}
     @elseif(empty($placeName))
