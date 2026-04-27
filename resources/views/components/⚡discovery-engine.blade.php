@@ -22,8 +22,8 @@ new class extends Component {
 
     public $destinations = [];
     public $cultureEntries = [];
-public $placeInfo = null;
-public $attractions = [];
+    public $placeInfo = null;
+    public $attractions = [];
 
     public function mount()
     {
@@ -49,30 +49,30 @@ public $attractions = [];
         $this->tours = $this->fetchTours();
         $this->flights = $this->fetchFlights();
         $this->awinOffers = $this->fetchAwinOffers();
-$this->placeInfo = $this->fetchPlaceInfo();
-$this->attractions = $this->fetchAttractions();
+        $this->placeInfo = $this->fetchPlaceInfo();
+        $this->attractions = $this->fetchAttractions();
         $this->loading = false;
     }
 
     private function fetchPlaceInfo()
-{
-    try {
-        return app(\App\Services\PlaceDiscoveryService::class)
-            ->getPlaceSummary($this->search);
-    } catch (\Exception $e) {
-        return null;
+    {
+        try {
+            return app(\App\Services\PlaceDiscoveryService::class)
+                ->getPlaceSummary($this->search);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
-}
 
-private function fetchAttractions()
-{
-    try {
-        return app(\App\Services\PlaceDiscoveryService::class)
-            ->getAttractions($this->search, 6);
-    } catch (\Exception $e) {
-        return [];
+    private function fetchAttractions()
+    {
+        try {
+            return app(\App\Services\PlaceDiscoveryService::class)
+                ->getAttractions($this->search, 6);
+        } catch (\Exception $e) {
+            return [];
+        }
     }
-}
     private function fetchStories()
     {
         return Blog::where('title', 'like', "%{$this->search}%")
@@ -121,10 +121,12 @@ private function fetchAttractions()
     {{-- ===================== HERO ===================== --}}
     <section class="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16">
         <div class="absolute inset-0 grain opacity-[0.03]"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(139,90,43,0.04),transparent_50%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(139,90,43,0.04),transparent_50%)]">
+        </div>
 
         <div class="relative container mx-auto px-6 text-center max-w-4xl">
-            <span class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-white/40 px-4 py-2 rounded-full shadow-sm">
+            <span
+                class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-white/40 px-4 py-2 rounded-full shadow-sm">
                 <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>
                 Vumbi Discovery Engine
             </span>
@@ -141,15 +143,17 @@ private function fetchAttractions()
             </p>
 
             <form wire:submit.prevent="searchPlace" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
-                <input type="text"
-                    wire:model="search"
-                    placeholder="Search Maasai Mara, Diani, Lamu..."
+                <input type="text" wire:model="search" placeholder="Search Maasai Mara, Diani, Lamu..."
                     class="flex-1 px-5 py-4 rounded-xl border border-black/10 bg-white shadow-sm focus:outline-none focus:border-[#8B5A2B] focus:ring-1 focus:ring-[#8B5A2B]/20 transition">
 
                 <button type="submit"
                     class="btn-primary px-8 py-4 rounded-xl font-medium inline-flex items-center justify-center gap-2 shadow-md">
                     <span>Explore</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
                 </button>
             </form>
         </div>
@@ -159,7 +163,8 @@ private function fetchAttractions()
     @if($loading)
         <div class="container mx-auto px-6 py-16">
             <div class="text-center mb-8">
-                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#8B5A2B] border-r-transparent"></div>
+                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#8B5A2B] border-r-transparent">
+                </div>
                 <p class="mt-4 text-[#5C5C5C]">Discovering the best of {{ $placeName ?: 'Africa' }}...</p>
             </div>
 
@@ -175,86 +180,11 @@ private function fetchAttractions()
             </div>
         </div>
 
-        @if($placeInfo)
-<section class="mb-12">
-    <div class="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
-
-        <div class="md:flex">
-            
-            {{-- Image --}}
-            @if(!empty($placeInfo['image']))
-                <div class="md:w-1/3">
-                    <img src="{{ $placeInfo['image'] }}"
-                        class="w-full h-full object-cover aspect-[4/3]"
-                        alt="{{ $placeInfo['title'] }}">
-                </div>
-            @endif
-
-            {{-- Content --}}
-            <div class="p-6 md:p-8 md:w-2/3">
-                
-                <h2 class="text-2xl font-semibold">
-                    {{ $placeInfo['title'] ?? $placeName }}
-                </h2>
-
-                <p class="text-[#5C5C5C] mt-3 leading-relaxed">
-                    {{ $placeInfo['description'] ?? 'No description available yet.' }}
-                </p>
-
-                @if(!empty($placeInfo['source']))
-                    <a href="{{ $placeInfo['source'] }}"
-                       target="_blank"
-                       class="inline-block mt-4 text-sm font-medium text-[#8B5A2B] hover:underline">
-                        Read more on Wikipedia →
-                    </a>
-                @endif
-
-            </div>
-        </div>
-
-    </div>
-</section>
-@endif
-
-@if(!empty($attractions))
-<section class="mb-12">
-
-    <div class="flex items-end justify-between mb-6">
-        <div>
-            <h3 class="text-xl font-semibold">Things to Do</h3>
-            <p class="text-[#5C5C5C] mt-1">Top attractions around {{ $placeName }}</p>
-        </div>
-    </div>
-
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        @foreach($attractions as $attraction)
-            <div class="bg-white rounded-2xl p-5 border border-black/5 shadow-sm hover:shadow-md transition">
-
-                <h4 class="font-semibold text-lg">
-                    {{ $attraction['name'] }}
-                </h4>
-
-                @if(!empty($attraction['kind']))
-                    <p class="text-sm text-[#5C5C5C] mt-2 capitalize">
-                        {{ str_replace(',', ' • ', $attraction['kind']) }}
-                    </p>
-                @endif
-
-                <div class="mt-4 text-sm text-[#8B5A2B] font-medium">
-                    Explore attraction →
-                </div>
-
-            </div>
-        @endforeach
-
-    </div>
-</section>
-@endif
 
 
 
-    {{-- ===================== INITIAL STATE (Before Search) ===================== --}}
+
+        {{-- ===================== INITIAL STATE (Before Search) ===================== --}}
     @elseif(empty($placeName))
 
         {{-- Curated Destinations --}}
@@ -268,12 +198,11 @@ private function fetchAttractions()
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($destinations as $destination)
-                    <div class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition duration-300">
+                    <div
+                        class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition duration-300">
                         <div class="aspect-[4/3] overflow-hidden">
-                            <img src="{{ Storage::url($destination->media_path) }}"
-                                alt="{{ $destination->name }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                                loading="lazy">
+                            <img src="{{ Storage::url($destination->media_path) }}" alt="{{ $destination->name }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         </div>
                         <div class="p-5">
                             <h3 class="font-semibold text-lg">{{ $destination->name }}</h3>
@@ -302,17 +231,17 @@ private function fetchAttractions()
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($cultureEntries as $culture)
-                    <div class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition duration-300">
+                    <div
+                        class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition duration-300">
                         <div class="aspect-[4/3] overflow-hidden">
-                            <img src="{{ Storage::url($culture->image) }}"
-                                alt="{{ $culture->name }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                                loading="lazy">
+                            <img src="{{ Storage::url($culture->image) }}" alt="{{ $culture->name }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         </div>
                         <div class="p-5">
                             <h3 class="font-semibold text-lg">{{ $culture->name }}</h3>
                             <p class="text-sm text-[#5C5C5C] mt-1 line-clamp-2">{{ Str::limit($culture->detail, 90) }}</p>
-                            <a href="{{ route('culture.show', $culture->id) }}" class="inline-block mt-3 text-sm font-medium text-[#8B5A2B] hover:underline">
+                            <a href="{{ route('culture.show', $culture->id) }}"
+                                class="inline-block mt-3 text-sm font-medium text-[#8B5A2B] hover:underline">
                                 Read more →
                             </a>
                         </div>
@@ -323,7 +252,7 @@ private function fetchAttractions()
             </div>
         </section>
 
-    {{-- ===================== SEARCH RESULTS ===================== --}}
+        {{-- ===================== SEARCH RESULTS ===================== --}}
     @else
         <div class="container mx-auto px-6 py-8">
             <div class="mb-8">
@@ -331,7 +260,8 @@ private function fetchAttractions()
                     Results for <span class="text-[#8B5A2B]">"{{ $placeName }}"</span>
                 </h2>
                 <p class="text-[#5C5C5C] mt-1">
-                    {{ count($hotels) + count($tours) + count($flights) + count($stories) + count($awinOffers) }} discoveries found
+                    {{ count($hotels) + count($tours) + count($flights) + count($stories) + count($awinOffers) }}
+                    discoveries found
                 </p>
             </div>
 
@@ -344,11 +274,11 @@ private function fetchAttractions()
                     </h3>
                     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($hotels as $hotel)
-                            <div class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition">
+                            <div
+                                class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition">
                                 @if(!empty($hotel['image']))
                                     <div class="aspect-[4/3] overflow-hidden">
-                                        <img src="{{ $hotel['image'] }}"
-                                            alt="{{ $hotel['name'] }}"
+                                        <img src="{{ $hotel['image'] }}" alt="{{ $hotel['name'] }}"
                                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                             loading="lazy">
                                     </div>
@@ -364,12 +294,14 @@ private function fetchAttractions()
                                             <span>{{ $hotel['rating'] }}</span>
                                         </div>
                                     @endif
-                                    <a href="{{ $hotel['url'] ?? '#' }}"
-                                        target="_blank"
-                                        rel="nofollow sponsored"
-                                        class="block w-full mt-4 btn-primary py-2.5 rounded-lg text-center text-sm font-medium">
-                                        View Deal →
-                                    </a>
+                              @if(!empty($hotel['url']))
+<a href="{{ $hotel['url'] }}"
+   target="_blank"
+   rel="nofollow sponsored noopener"
+   class="block w-full mt-4 btn-primary py-2.5 rounded-lg text-center text-sm font-medium">
+   View Deal →
+</a>
+@endif
                                 </div>
                             </div>
                         @endforeach
@@ -377,6 +309,80 @@ private function fetchAttractions()
                 </section>
             @endif
 
+                    @if($placeInfo)
+            <section class="mb-12">
+                <div class="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+
+                    <div class="md:flex">
+
+                        {{-- Image --}}
+                        @if(!empty($placeInfo['image']))
+                            <div class="md:w-1/3">
+                                <img src="{{ $placeInfo['image'] }}" class="w-full h-full object-cover aspect-[4/3]"
+                                    alt="{{ $placeInfo['title'] }}">
+                            </div>
+                        @endif
+
+                        {{-- Content --}}
+                        <div class="p-6 md:p-8 md:w-2/3">
+
+                            <h2 class="text-2xl font-semibold">
+                                {{ $placeInfo['title'] ?? $placeName }}
+                            </h2>
+
+                            <p class="text-[#5C5C5C] mt-3 leading-relaxed">
+                                {{ $placeInfo['description'] ?? 'No description available yet.' }}
+                            </p>
+
+                            @if(!empty($placeInfo['source']))
+                                <a href="{{ $placeInfo['source'] }}" target="_blank"
+                                    class="inline-block mt-4 text-sm font-medium text-[#8B5A2B] hover:underline">
+                                    Read more on Wikipedia →
+                                </a>
+                            @endif
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        @endif
+
+        @if(!empty($attractions))
+            <section class="mb-12">
+
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-semibold">Things to Do</h3>
+                        <p class="text-[#5C5C5C] mt-1">Top attractions around {{ $placeName }}</p>
+                    </div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    @foreach($attractions as $attraction)
+                        <div class="bg-white rounded-2xl p-5 border border-black/5 shadow-sm hover:shadow-md transition">
+
+                            <h4 class="font-semibold text-lg">
+                                {{ $attraction['name'] }}
+                            </h4>
+
+                            @if(!empty($attraction['kind']))
+                                <p class="text-sm text-[#5C5C5C] mt-2 capitalize">
+                                    {{ str_replace(',', ' • ', $attraction['kind']) }}
+                                </p>
+                            @endif
+
+                            <div class="mt-4 text-sm text-[#8B5A2B] font-medium">
+                                Explore attraction →
+                            </div>
+
+                        </div>
+                    @endforeach
+
+                </div>
+            </section>
+        @endif
             {{-- Tours & Experiences --}}
             @if(count($tours))
                 <section class="mb-12">
@@ -394,9 +400,7 @@ private function fetchAttractions()
                                 @if(!empty($tour['duration']))
                                     <p class="text-sm text-[#5C5C5C] mt-2">{{ $tour['duration'] }}</p>
                                 @endif
-                                <a href="{{ $tour['url'] ?? '#' }}"
-                                    target="_blank"
-                                    rel="nofollow sponsored"
+                                <a href="{{ $tour['url'] ?? '#' }}" target="_blank" rel="nofollow sponsored"
                                     class="inline-block mt-4 text-sm font-medium text-[#8B5A2B] hover:underline">
                                     Book Experience →
                                 </a>
@@ -424,9 +428,7 @@ private function fetchAttractions()
                                     <p class="text-[#8B5A2B] font-semibold mt-2">{{ $flight['price'] }}</p>
                                 @endif
                                 @if(!empty($flight['url']))
-                                    <a href="{{ $flight['url'] }}"
-                                        target="_blank"
-                                        rel="nofollow sponsored"
+                                    <a href="{{ $flight['url'] }}" target="_blank" rel="nofollow sponsored"
                                         class="inline-block mt-3 text-sm font-medium text-[#8B5A2B] hover:underline">
                                         Check Flights →
                                     </a>
@@ -448,9 +450,7 @@ private function fetchAttractions()
                             <div class="bg-white rounded-2xl p-5 border border-black/5 shadow-sm hover:shadow-lg transition">
                                 <h4 class="font-semibold">{{ $offer['title'] ?? 'Limited Deal' }}</h4>
                                 <p class="text-sm text-[#5C5C5C] mt-1">{{ $offer['description'] ?? '' }}</p>
-                                <a href="{{ $offer['url'] ?? '#' }}"
-                                    target="_blank"
-                                    rel="nofollow sponsored"
+                                <a href="{{ $offer['url'] ?? '#' }}" target="_blank" rel="nofollow sponsored"
                                     class="inline-block mt-3 text-sm font-medium text-[#8B5A2B] hover:underline">
                                     Get Offer →
                                 </a>
@@ -472,15 +472,15 @@ private function fetchAttractions()
                                 class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-lg transition block">
                                 @if($story->media_path)
                                     <div class="aspect-[4/3] overflow-hidden">
-                                        <img src="{{ Storage::url($story->media_path) }}"
-                                            alt="{{ $story->title }}"
+                                        <img src="{{ Storage::url($story->media_path) }}" alt="{{ $story->title }}"
                                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                             loading="lazy">
                                     </div>
                                 @endif
                                 <div class="p-5">
                                     <h4 class="font-semibold text-lg group-hover:text-[#8B5A2B] transition">{{ $story->title }}</h4>
-                                    <p class="text-sm text-[#5C5C5C] mt-2 line-clamp-2">{{ Str::limit(strip_tags($story->description), 100) }}</p>
+                                    <p class="text-sm text-[#5C5C5C] mt-2 line-clamp-2">
+                                        {{ Str::limit(strip_tags($story->description), 100) }}</p>
                                     <span class="inline-block mt-3 text-sm font-medium text-[#8B5A2B]">Read story →</span>
                                 </div>
                             </a>
@@ -505,24 +505,26 @@ private function fetchAttractions()
 </div>
 
 @push('styles')
-<style>
-    .btn-primary {
-        background: #8B5A2B;
-        color: white;
-        border: none;
-        font-weight: 500;
-        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
-        box-shadow: 0 6px 14px rgba(139, 90, 43, 0.12);
-    }
-    .btn-primary:hover {
-        background: #5C3A1E;
-        transform: translateY(-2px);
-        box-shadow: 0 14px 24px rgba(92, 58, 30, 0.18);
-    }
-    .grain {
-        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-        opacity: 0.035;
-        pointer-events: none;
-    }
-</style>
+    <style>
+        .btn-primary {
+            background: #8B5A2B;
+            color: white;
+            border: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+            box-shadow: 0 6px 14px rgba(139, 90, 43, 0.12);
+        }
+
+        .btn-primary:hover {
+            background: #5C3A1E;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px rgba(92, 58, 30, 0.18);
+        }
+
+        .grain {
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+            opacity: 0.035;
+            pointer-events: none;
+        }
+    </style>
 @endpush
