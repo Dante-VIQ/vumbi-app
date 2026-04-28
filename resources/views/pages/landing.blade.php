@@ -122,42 +122,42 @@
                 'name' => 'Maasai Mara',
                 'location' => 'Kenya',
                 'description' => 'Iconic savanna famous for the Great Migration and incredible wildlife.',
-                'image' => 'https://source.unsplash.com/600x400/?maasai-mara,safari',
+                'image' => 'https://unsplash.com/photos/red-and-yellow-hot-air-balloon-over-field-with-zebras-kjOBqwMUnWw',
                 'link' => '/discover/maasai-mara'
             ],
             [
                 'name' => 'Diani Beach',
                 'location' => 'Kenya',
                 'description' => 'Pristine white sand beaches with turquoise waters and luxury resorts.',
-                'image' => 'https://source.unsplash.com/600x400/?diani-beach,kenya',
+                'image' => 'https://unsplash.com/photos/a-sandy-beach-with-chairs-and-thatched-huts-nmLUMFjMvFA',
                 'link' => '/discover/diani'
             ],
             [
                 'name' => 'Nakuru',
                 'location' => 'Kenya',
                 'description' => 'Home to Lake Nakuru National Park and thousands of flamingos.',
-                'image' => 'https://source.unsplash.com/600x400/?lake-nakuru,flamingo',
+                'image' => 'https://unsplash.com/photos/blue-and-yellow-flamingos-standing-in-water-3V071984kqo',
                 'link' => '/discover/nakuru'
             ],
             [
                 'name' => 'Lamu Island',
                 'location' => 'Kenya',
                 'description' => 'Ancient Swahili town and UNESCO World Heritage site with rich culture.',
-                'image' => 'https://source.unsplash.com/600x400/?lamu-island,kenya',
+                'image' => 'https://unsplash.com/photos/a-body-of-water-with-a-bunch-of-houses-on-it-I2JrrXqxsu0',
                 'link' => '/discover/lamu'
             ],
             [
                 'name' => 'Arusha',
                 'location' => 'Tanzania',
                 'description' => 'Gateway to Mount Kilimanjaro and the famous Serengeti.',
-                'image' => 'https://source.unsplash.com/600x400/?arusha,kilimanjaro',
+                'image' => 'https://unsplash.com/photos/an-aerial-view-of-a-large-building-in-a-city-qn4QRM9dj9U',
                 'link' => '/discover/arusha'
             ],
             [
                 'name' => 'Zanzibar',
                 'location' => 'Tanzania',
                 'description' => 'Spice islands with stunning beaches and vibrant Swahili culture.',
-                'image' => 'https://source.unsplash.com/600x400/?zanzibar,beach',
+                'image' => 'https://unsplash.com/photos/island-e6dRLBx6Kg8',
                 'link' => '/discover/zanzibar'
             ],
         ];
