@@ -362,7 +362,7 @@ new class extends Component {
     @endif
 </div>
 
-{{-- @push('styles')
+@push('styles')
     <style>
         .btn-primary {
             background: #8B5A2B;
@@ -385,4 +385,4 @@ new class extends Component {
             pointer-events: none;
         }
     </style>
-@endpush --}}
+@endpush

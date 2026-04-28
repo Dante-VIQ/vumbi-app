@@ -104,62 +104,98 @@
     </section>
 
     {{-- ================= FEATURED DESTINATIONS (PRIMARY OFFERING) ================= --}}
-    <section id="destinations" class="py-24 bg-[#FCFAF7]">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-wrap justify-between items-end mb-14">
-                <div>
-                    <h2 class="section-title">Where will you go?</h2>
-                    <p class="section-sub">Handpicked African experiences — book with confidence</p>
-                </div>
-                <a href="{{ url('/discover') }}" class="text-[#8B5A2B] font-medium hover:underline mt-4 md:mt-0">View all
-                    destinations →</a>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @php
-                    $destinations = [
-                        [
-                            'name' => 'Serengeti Safari',
-                            'location' => 'Tanzania',
-                            'price' => 'From $2,450 pp',
-                            'image' => 'https://placehold.co/600x400/e8dfd5/8B5A2B?text=Serengeti',
-                            'link' => '/discover/serengeti'
-                        ],
-                        [
-                            'name' => 'Zanzibar Beach Escape',
-                            'location' => 'Zanzibar',
-                            'price' => 'From $1,890 pp',
-                            'image' => 'https://placehold.co/600x400/e8dfd5/8B5A2B?text=Zanzibar',
-                            'link' => '/discover/zanzibar'
-                        ],
-                        [
-                            'name' => 'Cape Town & Winelands',
-                            'location' => 'South Africa',
-                            'price' => 'From $1,650 pp',
-                            'image' => 'https://placehold.co/600x400/e8dfd5/8B5A2B?text=Cape+Town',
-                            'link' => '/discover/cape-town'
-                        ],
-                    ];
-                @endphp
-                @foreach($destinations as $dest)
-                    <a href="{{ $dest['link'] }}" class="destination-card overflow-hidden group block">
-                        <div class="aspect-[4/3] overflow-hidden">
-                            <img src="{{ $dest['image'] }}" alt="{{ $dest['name'] }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="p-5">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h3 class="font-semibold text-lg text-[#1A1A1A]">{{ $dest['name'] }}</h3>
-                                    <p class="text-sm text-[#6B6B6B]">{{ $dest['location'] }}</p>
-                                </div>
-                                <span class="text-sm font-medium text-[#8B5A2B]">{{ $dest['price'] }}</span>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
+ {{-- Popular East African Destinations --}}
+<section class="container mx-auto px-6 py-16">
+    <div class="flex items-end justify-between mb-10">
+        <div>
+            <h2 class="text-3xl md:text-4xl font-light text-raw-linen">Popular East African Destinations</h2>
+            <p class="text-[#C4B9A6] mt-2">Click on any destination to explore hotels, tours, flights, and exclusive deals</p>
         </div>
-    </section>
+        <a href="/discover" class="text-sunflare hover:text-white transition text-sm font-medium flex items-center gap-2">
+            View All <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    @php
+        $eastAfricanDestinations = [
+            [
+                'name' => 'Maasai Mara',
+                'location' => 'Kenya',
+                'description' => 'Iconic savanna famous for the Great Migration and incredible wildlife.',
+                'image' => 'https://source.unsplash.com/600x400/?maasai-mara,safari',
+                'link' => '/discover/maasai-mara'
+            ],
+            [
+                'name' => 'Diani Beach',
+                'location' => 'Kenya',
+                'description' => 'Pristine white sand beaches with turquoise waters and luxury resorts.',
+                'image' => 'https://source.unsplash.com/600x400/?diani-beach,kenya',
+                'link' => '/discover/diani'
+            ],
+            [
+                'name' => 'Nakuru',
+                'location' => 'Kenya',
+                'description' => 'Home to Lake Nakuru National Park and thousands of flamingos.',
+                'image' => 'https://source.unsplash.com/600x400/?lake-nakuru,flamingo',
+                'link' => '/discover/nakuru'
+            ],
+            [
+                'name' => 'Lamu Island',
+                'location' => 'Kenya',
+                'description' => 'Ancient Swahili town and UNESCO World Heritage site with rich culture.',
+                'image' => 'https://source.unsplash.com/600x400/?lamu-island,kenya',
+                'link' => '/discover/lamu'
+            ],
+            [
+                'name' => 'Arusha',
+                'location' => 'Tanzania',
+                'description' => 'Gateway to Mount Kilimanjaro and the famous Serengeti.',
+                'image' => 'https://source.unsplash.com/600x400/?arusha,kilimanjaro',
+                'link' => '/discover/arusha'
+            ],
+            [
+                'name' => 'Zanzibar',
+                'location' => 'Tanzania',
+                'description' => 'Spice islands with stunning beaches and vibrant Swahili culture.',
+                'image' => 'https://source.unsplash.com/600x400/?zanzibar,beach',
+                'link' => '/discover/zanzibar'
+            ],
+        ];
+    @endphp
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($eastAfricanDestinations as $dest)
+            <a href="{{ $dest['link'] }}" 
+               class="group block bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-3xl overflow-hidden transition-all duration-300">
+
+                <!-- Image -->
+                <div class="aspect-[4/3] overflow-hidden">
+                    <img src="{{ $dest['image'] }}" 
+                         alt="{{ $dest['name'] }}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                         loading="lazy">
+                </div>
+
+                <!-- Content -->
+                <div class="p-6">
+                    <h3 class="font-semibold text-2xl text-raw-linen group-hover:text-sunflare transition">
+                        {{ $dest['name'] }}
+                    </h3>
+                    <p class="text-[#C4B9A6] mt-1 text-sm">{{ $dest['location'] }}</p>
+                    
+                    <p class="text-[#C4B9A6] mt-3 text-sm line-clamp-3">
+                        {{ $dest['description'] }}
+                    </p>
+
+                    <div class="mt-6 text-sunflare text-sm font-medium flex items-center gap-2 group-hover:gap-3 transition-all">
+                        See Hotels, Tours & Deals 
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        @endforeach
+    </div>
+</section>
 
     {{-- ================= SECONDARY OFFERING: WEB DEVELOPMENT SERVICES ================= --}}
     <section id="services" class="py-24 bg-white scroll-mt-16">
