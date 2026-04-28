@@ -42,6 +42,14 @@
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     <script src="https://www.dwin2.com/pub.2580697.min.js"></script>
+
+    <script>
+  var ahrefs_analytics_script = document.createElement('script');
+  ahrefs_analytics_script.async = true;
+  ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
+  ahrefs_analytics_script.setAttribute('data-key', '86XMcrcnBj1CKAdhUIRDSg');
+  document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
+</script>
     
     {{-- Styles --}}
     @livewireStyles
