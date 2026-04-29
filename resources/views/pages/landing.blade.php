@@ -57,27 +57,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="relative flex justify-center lg:justify-end fade-up delay-2">
-                    <div class="glass-panel rounded-[2.5rem] p-5 md:p-6 shadow-2xl float max-w-md w-full">
-                        {{-- Replace with actual destination image or video --}}
-                        <img src="{{ asset('images/hero-destination.jpg') }}" alt="Serengeti sunset with safari vehicle"
-                            class="rounded-3xl w-full h-[380px] md:h-[420px] object-cover shadow-inner" loading="eager"
-                            width="600" height="420">
-                        <div class="mt-5 text-center px-2">
-                            <p class="font-semibold text-[#1A1A1A] text-lg">Serengeti Migration Safari</p>
-                            <p class="text-sm text-[#6B6B6B] mt-1 flex items-center justify-center gap-2">
-                                <span>From $2,450 pp</span><span class="w-1 h-1 bg-[#8B5A2B] rounded-full"></span>
-                                <span>5 days</span>
-                            </p>
-                            <a href="/discover/serengeti"
-                                class="inline-block mt-3 text-sm font-medium text-[#8B5A2B] hover:underline">View deal →</a>
-                        </div>
-                    </div>
+                <div class="swiper hero-slider relative flex justify-center lg:justify-end fade-up delay-2" >
+                    <x-gallery-card />
                     <div
                         class="absolute -bottom-4 -right-2 md:-right-6 bg-white/80 backdrop-blur-xl shadow-xl rounded-2xl p-4 w-44 border border-white/50 float-slow">
                         <div class="text-xs uppercase tracking-wider text-[#8B5A2B] font-medium">Best Price</div>
                         <div class="font-bold text-xl text-[#1A1A1A] mt-1">Guarantee</div>
-                        <div class="h-0.5 w-8 bg-[#D98C5F]/40 mt-2 rounded-full"></div>
+                        <div class="h-0.5 w-8 bg-[#D98C5F]/40 mt-2 rounded-full">
                     </div>
                 </div>
             </div>
@@ -104,7 +90,7 @@
     </section>
 
     {{-- ================= FEATURED DESTINATIONS (PRIMARY OFFERING) ================= --}}
- {{-- Popular East African Destinations --}}
+    {{-- Popular East African Destinations --}}
 <section class="container mx-auto px-6 py-16">
     <div class="flex items-end justify-between mb-10">
         <div>
@@ -122,43 +108,43 @@
                 'name' => 'Maasai Mara',
                 'location' => 'Kenya',
                 'description' => 'Iconic savanna famous for the Great Migration and incredible wildlife.',
-                'image' => 'https://unsplash.com/photos/red-and-yellow-hot-air-balloon-over-field-with-zebras-kjOBqwMUnWw',
-                'link' => '/discover/maasai-mara'
+                'image' => '/images/maasai-mara.jpg',
+                'link' => '/discover?search=' . urlencode('Maasai Mara')
             ],
             [
                 'name' => 'Diani Beach',
                 'location' => 'Kenya',
                 'description' => 'Pristine white sand beaches with turquoise waters and luxury resorts.',
-                'image' => 'https://unsplash.com/photos/a-sandy-beach-with-chairs-and-thatched-huts-nmLUMFjMvFA',
-                'link' => '/discover/diani'
+                'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                'link' => '/discover?search=' . urlencode('Diani Beach')
             ],
             [
                 'name' => 'Nakuru',
                 'location' => 'Kenya',
                 'description' => 'Home to Lake Nakuru National Park and thousands of flamingos.',
-                'image' => 'https://unsplash.com/photos/blue-and-yellow-flamingos-standing-in-water-3V071984kqo',
-                'link' => '/discover/nakuru'
+                'image' => '/images/nakuru.jpg',
+                'link' => '/discover?search=' . urlencode('Nakuru')
             ],
             [
                 'name' => 'Lamu Island',
                 'location' => 'Kenya',
                 'description' => 'Ancient Swahili town and UNESCO World Heritage site with rich culture.',
-                'image' => 'https://unsplash.com/photos/a-body-of-water-with-a-bunch-of-houses-on-it-I2JrrXqxsu0',
-                'link' => '/discover/lamu'
+                'image' => '/images/lamu-island.jpg',
+                'link' => '/discover?search=' . urlencode('Lamu Island')
             ],
             [
                 'name' => 'Arusha',
                 'location' => 'Tanzania',
                 'description' => 'Gateway to Mount Kilimanjaro and the famous Serengeti.',
-                'image' => 'https://unsplash.com/photos/an-aerial-view-of-a-large-building-in-a-city-qn4QRM9dj9U',
-                'link' => '/discover/arusha'
+                'image' => '/images/arusha.jpg',
+                'link' => '/discover?search=' . urlencode('Arusha')
             ],
             [
                 'name' => 'Zanzibar',
                 'location' => 'Tanzania',
                 'description' => 'Spice islands with stunning beaches and vibrant Swahili culture.',
-                'image' => 'https://unsplash.com/photos/island-e6dRLBx6Kg8',
-                'link' => '/discover/zanzibar'
+                'image' => '/images/zanzibar-beach.jpg',
+                'link' => '/discover?search=' . urlencode('Zanzibar')
             ],
         ];
     @endphp
