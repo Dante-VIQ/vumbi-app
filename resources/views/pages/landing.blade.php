@@ -267,7 +267,7 @@
                 <a href="/field-notes" class="text-[#8B5A2B] font-medium hover:underline mt-4 md:mt-0">Read all notes →</a>
             </div>
                 @php
-                    $blogs = App\Models\Blog::latest()->with('author')->get();
+                    $blogs = App\Models\Blog::latest()->with('author')->take(3)->get();
 
                 @endphp
         @if($blogs->count())
