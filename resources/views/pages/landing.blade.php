@@ -257,7 +257,7 @@
     </section>
 
     {{-- ================= FIELD NOTES (TRAVEL CONTENT FOR SEO) ================= --}}
-    <section class="py-24 bg-white">
+    <section class="py-24 bg-white container mx-auto px-6 pb-24">
         <div class="container mx-auto px-6">
             <div class="flex flex-wrap justify-between items-end mb-14">
                 <div>
@@ -266,46 +266,57 @@
                 </div>
                 <a href="/field-notes" class="text-[#8B5A2B] font-medium hover:underline mt-4 md:mt-0">Read all notes →</a>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
                 @php
-                    $notes = [
-                        [
-                            'title' => 'The Best Time to Visit the Serengeti (Month by Month)',
-                            'date' => 'Mar 12, 2026',
-                            'excerpt' => 'Plan your safari around the Great Migration with our detailed guide.',
-                            'image' => 'https://placehold.co/600x400/f5efe6/8B5A2B?text=Serengeti+Guide'
-                        ],
-                        [
-                            'title' => 'Zanzibar Beyond the Beaches: Stone Town & Spice Farms',
-                            'date' => 'Feb 28, 2026',
-                            'excerpt' => 'Discover the cultural heart of the Spice Island.',
-                            'image' => 'https://placehold.co/600x400/f5efe6/8B5A2B?text=Zanzibar+Culture'
-                        ],
-                        [
-                            'title' => 'How We Build Travel Systems for Overlooked Destinations',
-                            'date' => 'Jan 15, 2026',
-                            'excerpt' => 'Inside the Vumbi approach to travel intelligence.',
-                            'image' => 'https://placehold.co/600x400/f5efe6/8B5A2B?text=Travel+Systems'
-                        ],
-                    ];
+                    $blogs = App\Models\Blog::latest()->with('author')->get();
+
                 @endphp
-                @foreach($notes as $note)
-                    <div class="insight-card overflow-hidden group">
-                        <div class="aspect-[16/9] overflow-hidden">
-                            <img src="{{ $note['image'] }}" alt="{{ $note['title'] }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
+        @if($blogs->count())
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                @foreach($blogs as $blog)
+                    <article class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-xl hover:border-[#8B5A2B]/20 transition duration-300">
+                        @if($blog->media_path)
+                            <div class="h-52 overflow-hidden">
+                                <img src="{{ asset($blog->media_path) }}"
+                                    alt="{{ $blog->title }}"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            </div>
+                        @endif
+
                         <div class="p-6">
-                            <div class="text-xs uppercase tracking-wider text-[#8B5A2B] mb-2">{{ $note['date'] }}</div>
-                            <h3 class="font-semibold text-lg text-[#1A1A1A] group-hover:text-[#8B5A2B] transition-colors">
-                                {{ $note['title'] }}
+                            <div class="flex items-center justify-between text-xs text-[#6B6B6B]">
+                                <span class="uppercase tracking-wider">{{ $blog->category }}</span>
+                                <span>{{ $blog->reading_time ?? '5 min read' }}</span>
+                            </div>
+
+                            <h3 class="mt-3 text-xl font-semibold group-hover:text-[#8B5A2B] transition-colors">
+                                <a href="{{ route('blog.show', $blog->id) }}">{{ $blog->title }}</a>
                             </h3>
-                            <p class="text-sm text-[#5C5C5C] mt-2 leading-relaxed">{{ $note['excerpt'] }}</p>
+
+                            <p class="text-sm text-[#5C5C5C] mt-3 line-clamp-3">
+                                {{ Str::limit(strip_tags($blog->description), 120) }}
+                            </p>
+
+                            <div class="mt-5 flex items-center justify-between">
+                                <span class="text-xs text-[#6B6B6B]">
+                                    {{ $blog->author->name ?? 'Field Writer' }}
+                                </span>
+
+                                <a href="{{ route('blog.show', $blog->id) }}"
+                                   class="text-sm font-medium text-[#8B5A2B] hover:text-[#5C3A1E] transition">
+                                    Read →
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 @endforeach
             </div>
-        </div>
+        @else
+            <div class="text-center py-20 text-[#6B6B6B]">
+                <p class="text-lg">No stories found.</p>
+                <p class="text-sm mt-2">Try adjusting your search or filters.</p>
+            </div>
+        @endif
     </section>
 
     {{-- ================= TEAM (OPTIONAL, KEEP OR REMOVE) ================= --}}
