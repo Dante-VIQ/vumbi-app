@@ -296,3 +296,37 @@
        @include('pages.landing')
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const heroSwiper = new Swiper('#heroSlider', {
+        loop: true,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+        },
+        speed: 800,
+        slidesPerView: 1,
+        spaceBetween: 20,
+        centeredSlides: true,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+            768: {
+                slidesPerView: 1,
+            }
+        },
+        // Important for your design
+        observer: true,
+        observeParents: true,
+    });
+});
+</script>
+@endpush

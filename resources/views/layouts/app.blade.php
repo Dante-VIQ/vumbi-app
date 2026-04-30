@@ -43,7 +43,7 @@
     {{-- Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://www.dwin2.com/pub.2580697.min.js"></script>
 
     <script>
@@ -54,6 +54,14 @@
         document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
     </script>
 
+<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
+  (function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.src = 'https://emrldtp.cc/NDY1NDg3.js?t=465487';
+      document.head.appendChild(script);
+  })();
+</script>
     {{-- Styles --}}
     @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -128,7 +136,7 @@
     {{-- Scripts --}}
     @livewireScripts
     @stack('scripts')
-   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {{-- Google Analytics --}}
     @production
@@ -144,56 +152,6 @@
 
 
     @endproduction
-        <script>
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const heroSwiper = new Swiper('.hero-slider', {
-                    // Optional parameters
-                    direction: 'horizontal',
-                    loop: {{ !empty($heroImages) && count($heroImages) > 1 ? 'true' : 'false' }},
-                    speed: 1000,
-                    autoplay: {
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    },
-                    effect: 'fade',
-                    fadeEffect: {
-                        crossFade: true
-                    },
-
-                    // Navigation arrows
-                    navigation: {{ !empty($heroImages) && count($heroImages) > 1
-            ? `{
-                                                                                    nextEl: '.swiper-button-next',
-                                                                                    prevEl: '.swiper-button-prev',
-                                                                                }`
-            : 'false' }},
-
-                    // Pagination
-                    pagination: {{ !empty($heroImages) && count($heroImages) > 1
-            ? `{
-                                                                                    el: '.swiper-pagination',
-                                                                                    clickable: true,
-                                                                                    dynamicBullets: true,
-                                                                                }`
-            : 'false' }},
-
-                    // Only enable autoplay if we have multiple images
-                    {{ empty($heroImages) || count($heroImages) <= 1 ? 'autoplay: true,' : '' }}
-                });
-
-                // Pause autoplay on hover (only if we have autoplay)
-                @if (!empty($heroImages) && count($heroImages) > 1)
-                    heroSwiper.el.addEventListener('mouseenter', function () {
-                        heroSwiper.autoplay.stop();
-                    });
-
-                    heroSwiper.el.addEventListener('mouseleave', function () {
-                        heroSwiper.autoplay.start();
-                    });
-                @endif
-            });
-        </script>
 </body>
 
 </html>

@@ -57,15 +57,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="swiper hero-slider relative flex justify-center lg:justify-end fade-up delay-2" >
                     <x-gallery-card />
-                    <div
-                        class="absolute -bottom-4 -right-2 md:-right-6 bg-white/80 backdrop-blur-xl shadow-xl rounded-2xl p-4 w-44 border border-white/50 float-slow">
-                        <div class="text-xs uppercase tracking-wider text-[#8B5A2B] font-medium">Best Price</div>
-                        <div class="font-bold text-xl text-[#1A1A1A] mt-1">Guarantee</div>
-                        <div class="h-0.5 w-8 bg-[#D98C5F]/40 mt-2 rounded-full">
-                    </div>
-                </div>
+
             </div>
         </div>
     </section>
@@ -268,7 +261,6 @@
             </div>
                 @php
                     $blogs = App\Models\Blog::latest()->with('author')->take(3)->get();
-
                 @endphp
         @if($blogs->count())
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
