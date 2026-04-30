@@ -115,6 +115,7 @@ Route::middleware(['auth', 'role:master|engineer'])->prefix('admin')->group(func
     });
     // Blog CRUD
     Route::resource('blogs', BlogController::class);
+    Route::resource('cultures', \App\Http\Controllers\CultureController::class);
     Route::delete('blogs/bulk/delete', [BlogController::class, 'bulkDestroy'])->name('blogs.bulk-destroy');
 
    Route::get('places', function () {
