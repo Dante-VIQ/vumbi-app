@@ -46,7 +46,7 @@
             @endforeach
 
             @role('master|engineer')
-                <a href="/africa"
+                <a href="/admin/africa"
                    class="relative px-4 py-2.5 text-gray-600 hover:text-[#8B5A2B] font-medium transition-all duration-200 group">
                     <span class="relative z-10 flex items-center gap-2">
                         <i class="fas fa-lock text-sm text-gray-400 group-hover:text-[#8B5A2B]"></i>
@@ -162,7 +162,7 @@
                 @endforeach
 
                 @role('master|engineer')
-                    <a href="/africa" @click="mobileOpen = false"
+                    <a href="/admin/africa" @click="mobileOpen = false"
                        class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-700 hover:bg-[#F5EFE6] hover:text-[#8B5A2B] transition-all duration-200">
                         <i class="fas fa-lock w-5 text-center text-gray-400"></i>
                         Admin
