@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Edit Culture')
 
@@ -8,7 +8,7 @@
 
         <!-- Header -->
         <div class="mb-8">
-            <a href="{{ route('admin.cultures.index') }}" 
+            <a href="{{ route('cultures.index') }}" 
                class="inline-flex items-center text-gray-500 hover:text-gray-700 mb-4">
                 ← Back to Cultures
             </a>
@@ -17,7 +17,7 @@
 
         <div class="bg-white rounded-3xl shadow-sm p-8">
 
-            <form action="{{ route('admin.cultures.update', $culture) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('cultures.update', $culture) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -88,7 +88,7 @@
                             Update Culture
                         </button>
                         
-                        <a href="{{ route('admin.cultures.index') }}"
+                        <a href="{{ route('cultures.index') }}"
                            class="border border-gray-300 hover:bg-gray-50 px-8 py-3.5 rounded-2xl font-medium transition text-center flex-1 sm:flex-none">
                             Cancel
                         </a>
