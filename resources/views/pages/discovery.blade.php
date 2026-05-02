@@ -73,7 +73,7 @@
                 <h2 class="text-3xl font-light text-raw-linen mb-10 text-center">Culture & Stories</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($cultureEntries as $culture)
-                        <a href="{{ route('blog.show', $culture->id) }}" 
+                        <a href="{{ route('culture.show', $culture->id) }}" 
                            class="group bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-3xl overflow-hidden transition-all">
                             @if($culture->media_path)
                                 <img src="{{ Storage::url($culture->media_path) }}" 
