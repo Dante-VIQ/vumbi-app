@@ -30,7 +30,7 @@
 
         <!-- Search + Filter -->
         <div class="bg-white rounded-2xl shadow-sm p-5 mb-6">
-            <form method="GET" action="{{ route('admin.cultures.index') }}" class="flex flex-wrap gap-4 items-center">
+            <form method="GET" action="{{ route('cultures.index') }}" class="flex flex-wrap gap-4 items-center">
                 <div class="flex-1 min-w-[280px]">
                     <div class="relative">
                         <input type="text" 
