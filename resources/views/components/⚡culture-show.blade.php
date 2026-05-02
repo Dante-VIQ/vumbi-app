@@ -67,7 +67,7 @@ new class extends Component
         <link rel="canonical" href="{{ url()->current() }}">
     @endpush
 
-    @push('structured-data')
+    {{-- @push('structured-data')
         <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -80,7 +80,7 @@ new class extends Component
           "datePublished": "{{ $culture->created_at->toIso8601String() }}"
         }
         </script>
-    @endpush
+    @endpush --}}
 
     {{-- Hero --}}
     <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">
