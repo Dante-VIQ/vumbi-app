@@ -77,7 +77,7 @@
                                     <div class="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-md transition-all hover:shadow-lg">
                                         <img src="{{ asset($media->media_path) }}" 
                                              alt="{{ $media->title }}"
-                                             class="w-full h-[260px] sm:h-[320px] md:h-[380px] lg:h-[420px] object-cover"
+                                             class="w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover rounded-2xl shadow-2xl"
                                              loading="eager">
                                         
                                         <div class="p-4 sm:p-5 md:p-6 text-center">
