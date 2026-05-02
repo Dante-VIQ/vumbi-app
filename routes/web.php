@@ -18,7 +18,7 @@ use App\Http\Controllers\CultureController;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
-Route::post('/discover/search', DiscoveryController::class)->name('discovery.search');
+
 
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->first();
@@ -64,6 +64,7 @@ Route::get('/discover', function () {
     return view('pages.discovery', compact('destinations', 'cultureEntries'));
 })->name('pages.discovery');
 
+Route::post('/discover/search', DiscoveryController::class)->name('discovery.search');
 
 Route::get('/destinations/{slug}', function ($slug) {
     return view('pages.destination', ['slug' => $slug]);
