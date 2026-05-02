@@ -13,7 +13,7 @@
                 <p class="text-gray-600 mt-1">Manage all cultural destinations and experiences</p>
             </div>
             
-            <a href="{{ route('admin.cultures.create') }}" 
+            <a href="{{ route('cultures.create') }}" 
                class="bg-[#8B5A2B] hover:bg-[#6B421F] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition shadow-sm">
                 <span class="text-xl leading-none">+</span>
                 <span>Add New Culture</span>
@@ -110,12 +110,12 @@
                                 <!-- Actions -->
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center gap-4">
-                                        <a href="{{ route('admin.cultures.edit', $culture) }}" 
+                                        <a href="{{ route('cultures.edit', $culture) }}" 
                                            class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
                                             <span>✏️</span> Edit
                                         </a>
                                         
-                                        <form action="{{ route('admin.cultures.destroy', $culture) }}" 
+                                        <form action="{{ route('cultures.destroy', $culture) }}" 
                                               method="POST" 
                                               onsubmit="return confirm('Are you sure you want to delete this culture?')">
                                             @csrf
