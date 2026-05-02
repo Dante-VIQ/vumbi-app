@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\CultureController;
 use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
@@ -12,13 +11,14 @@ use App\Models\Blog;
 use App\Models\Culture;
 use App\Models\Destination;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CultureController;
 
 
 
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
-Route::get('/discover/search', DiscoveryController::class)->name('discovery.search');
+Route::post('/discover/search', DiscoveryController::class)->name('discovery.search');
 
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->first();
@@ -57,7 +57,7 @@ Route::get('ecosystem', function () {
 });
 
 // routes/web.php
-Route::post('/discover', function () {
+Route::get('/discover', function () {
     // Load initial data for the static browse mode — exactly what your mount() did
     $destinations = Destination::latest()->limit(6)->get();
     $cultureEntries = Culture::latest()->limit(6)->get();
@@ -125,7 +125,7 @@ Route::middleware(['auth', 'role:master|engineer'])->prefix('admin')->group(func
     });
     // Blog CRUD
     Route::resource('blogs', BlogController::class);
-    Route::resource('cultures', \App\Http\Controllers\CultureController::class);
+    Route::resource('cultures', CultureController::class);
     Route::delete('blogs/bulk/delete', [BlogController::class, 'bulkDestroy'])->name('blogs.bulk-destroy');
 
    Route::get('places', function () {
