@@ -12,26 +12,27 @@ class DiscoveryController extends Controller
         private DiscoveryService $discoveryService
     ) {}
 
-    public function __invoke(DiscoverySearchRequest $request): JsonResponse
-    {
-        $searchTerm = $request->searchTerm();
-        $results = $this->discoveryService->search($searchTerm);
 
-        // Separate the health statuses from the actual data for the meta block
-        $health = [];
-        $data = [];
-        foreach ($results as $key => $value) {
-            $health[$key] = $value['health'];
-            $data[$key]   = $value['items'];
-        }
+public function __invoke(DiscoverySearchRequest $request): JsonResponse
+{
+    $searchTerm = $request->searchTerm();
+    $interest   = $request->interest();
+    $results    = $this->discoveryService->search($searchTerm, $interest);
 
-        return response()->json([
-            'data' => $data,
-            'meta' => [
-                'place_name'   => $searchTerm,
-                'source_health' => $health,
-                'total'         => array_sum(array_map(fn($section) => is_array($section) || $section instanceof \Countable ? count($section) : ($section ? 1 : 0), $data)),
-            ],
-        ]);
+    $health = [];
+    $data   = [];
+    foreach ($results as $key => $value) {
+        $health[$key] = $value['health'];
+        $data[$key]   = $value['items'];
     }
+
+    return response()->json([
+        'data' => $data,
+        'meta' => [
+            'place_name'    => $searchTerm,
+            'source_health' => $health,
+            'total'         => array_sum(array_map(fn($s) => is_array($s) || $s instanceof \Countable ? count($s) : ($s ? 1 : 0), $data)),
+        ],
+    ]);
+}
 }

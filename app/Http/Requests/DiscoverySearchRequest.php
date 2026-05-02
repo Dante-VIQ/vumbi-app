@@ -11,12 +11,19 @@ class DiscoverySearchRequest extends FormRequest
         return true; // No auth needed for public search
     }
 
-    public function rules(): array
-    {
-        return [
-            'search' => 'required|string|min:2|max:100',
-        ];
-    }
+// app/Http/Requests/DiscoverySearchRequest.php
+public function rules(): array
+{
+    return [
+        'search'   => 'required|string|min:2|max:100',
+        'interest' => 'nullable|string|in:cuisine,art,safari,history,all',
+    ];
+}
+
+public function interest(): string
+{
+    return $this->validated('interest', 'all');
+}
 
     /**
      * Get the cleaned search term.
