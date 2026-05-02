@@ -248,7 +248,10 @@
             </div>
         </div>
     </section>
+
 <script async src="https://tpscr.com/content?trs=465487&shmarker=677991&powered_by=true&campaign_id=108&promo_id=8412" charset="utf-8"></script>
+
+
     {{-- ================= FIELD NOTES (TRAVEL CONTENT FOR SEO) ================= --}}
     <section class="py-24 bg-white container mx-auto px-6 pb-24">
         <div class="container mx-auto px-6">
