@@ -2,17 +2,23 @@
 
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CultureController;
+use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Livewire\Admin\CultureManager;
 use App\Livewire\Admin\DestinationManager;
 use App\Models\Blog;
+use App\Models\Culture;
 use App\Models\Destination;
 use Illuminate\Support\Facades\Route;
 
 
 
+
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
+
+Route::get('/discover/search', DiscoveryController::class)->name('discovery.search');
 
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->first();
@@ -50,9 +56,13 @@ Route::get('ecosystem', function () {
     return view('pages.ecosystem');
 });
 
-Route::get('discover', function () {
-    return view('pages.discovery');
-});
+// routes/web.php
+Route::post('/discover', function () {
+    // Load initial data for the static browse mode — exactly what your mount() did
+    $destinations = Destination::latest()->limit(6)->get();
+    $cultureEntries = Culture::latest()->limit(6)->get();
+    return view('pages.discovery', compact('destinations', 'cultureEntries'));
+})->name('pages.discovery');
 
 
 Route::get('/destinations/{slug}', function ($slug) {

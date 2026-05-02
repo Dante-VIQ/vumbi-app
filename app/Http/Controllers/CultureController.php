@@ -51,8 +51,8 @@ class CultureController extends Controller
 
         Culture::create($data);
 
-        return redirect()->route('cultures.index')
-                         ->with('message', 'Culture created successfully.');
+        // return redirect()->route('admin.cultures.index')
+        //                  ->with('message', 'Culture created successfully.');
     }
 
     /**
@@ -80,8 +80,8 @@ class CultureController extends Controller
 
         $culture->update($data);
 
-        return redirect()->route('cultures.index')
-                         ->with('message', 'Culture updated successfully.');
+        // return redirect()->route('admin.cultures.index')
+        //                  ->with('message', 'Culture updated successfully.');
     }
 
     /**
@@ -92,10 +92,10 @@ class CultureController extends Controller
         if ($culture->image) {
             Storage::disk('public_direct')->delete($culture->image);
         }
-we
+
         $culture->delete();
 
-        return redirect()->route('cultures.index')
+        return redirect()->route('admin.cultures.index')
                          ->with('message', 'Culture deleted successfully.');
     }
 }
