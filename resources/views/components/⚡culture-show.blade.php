@@ -62,7 +62,7 @@ new class extends Component
     @push('meta')
         <meta property="og:title" content="{{ $culture->name }} — Vumbi Ventures">
         <meta property="og:description" content="{{ Str::limit(strip_tags($culture->detail), 155) }}">
-        <meta property="og:image" content="{{ Storage::url($culture->image) }}">
+        <meta property="og:image" content="{{ asset($culture->image) }}">
         <meta property="og:type" content="article">
         <link rel="canonical" href="{{ url()->current() }}">
     @endpush
@@ -108,7 +108,7 @@ new class extends Component
     @if($culture->image)
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
-                <img src="{{ Storage::url($culture->image) }}" alt="{{ $culture->name }}"
+                <img src="{{ asset($culture->image) }}" alt="{{ $culture->name }}"
                     class="w-full rounded-3xl shadow-xl object-cover max-h-[500px] border border-black/5">
             </div>
         </div>

@@ -55,7 +55,7 @@
                         <button @click="exploreDestination('{{ addslashes($dest->name) }}')"
                                 class="group bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-3xl overflow-hidden transition-all">
                             @if($dest->media_path)
-                                <img src="{{ Storage::url($dest->media_path) }}" 
+                                <img src="{{ asset($dest->media_path) }}" 
                                      alt="{{ $dest->name }}"
                                      class="w-full h-56 object-cover group-hover:scale-105 transition">
                             @endif
@@ -76,7 +76,7 @@
                         <a href="{{ route('culture.show', $culture->id) }}" 
                            class="group bg-indigo-night bg-opacity-30 border border-dust-mite hover:border-sunflare rounded-3xl overflow-hidden transition-all">
                             @if($culture->media_path)
-                                <img src="{{ Storage::url($culture->media_path) }}" 
+                                <img src="{{ asset($culture->media_path) }}" 
                                      alt="{{ $culture->title ?? $culture->name }}"
                                      class="w-full h-56 object-cover group-hover:scale-105 transition">
                             @endif
