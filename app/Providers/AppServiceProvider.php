@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\User;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        RateLimiter::for('api', function ($request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
+
         // Only attempt to set up the gate bypass if the permissions table exists
         // This prevents errors during fresh migrations where the table doesn't exist yet.
         if ($this->permissionTableExists()) {
@@ -38,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
                 if ($user->hasRole('engineer')) {
                     return true; // Bypass all permissions & gates
                 }
+
                 return null; // Continue with normal permission checks
             });
         }
@@ -54,15 +60,14 @@ class AppServiceProvider extends ServiceProvider
     protected function setupRolesAndPermissions(): void
     {
 
-    // skip if the roles table doesn't exist yet (e.g. during initial migrations)
-    // if (!Schema::hasColumns('roles', 'guard_name')) {
-    //     return;
-    // }
+        // skip if the roles table doesn't exist yet (e.g. during initial migrations)
+        // if (!Schema::hasColumns('roles', 'guard_name')) {
+        //     return;
+        // }
         // Always clear Spatie cache before making changes
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // Create core roles (add more as needed)
-        
 
         // Assign special roles from config/env (idempotent)
         $this->assignSpecialRoles();

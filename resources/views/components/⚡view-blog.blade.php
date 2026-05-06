@@ -262,30 +262,31 @@ private function shouldInsertWidget($blockIndex): bool
         <link rel="canonical" href="{{ $seo['canonical'] }}">
     @endpush
 
-    {{-- @push('structured-data')
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": "{{ $blog->title }}",
-          "image": "{{ $seo['ogImage'] }}",
-          "author": {
-            "@type": "Person",
-            "name": "{{ $blog->author->name ?? 'Vumbi Ventures' }}"
+    @push('structured-data')
+       @php
+
+       $articleSchema = [
+          "@context" => "https://schema.org",
+          "@type" => "Article",
+          "headline" => "{{ $blog->title }}",
+          "image" => "{{ $seo['ogImage'] }}",
+          "author" => {
+            "@type" => "Person",
+            "name" => "{{ $blog->author->name ?? 'Vumbi Ventures' }}"
           },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Vumbi Ventures",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "{{ asset('images/vumbi-logo.png') }}"
+          "publisher" => {
+            "@type" => "Organization",
+            "name" => "Vumbi Ventures",
+            "logo" => {
+              "@type" => "ImageObject",
+              "url" => "{{ asset('images/logo1.png') }}"
             }
           },
           "datePublished": "{{ $blog->created_at->toIso8601String() }}",
           "description": "{{ $seo['description'] }}"
-        }
-        </script>
-    @endpush --}}
+       ]
+      @endphp
+    @endpush
 
     {{-- ===================== HERO HEADER ===================== --}}
     <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">

@@ -90,4 +90,20 @@ return [
             ],
         ],
     ],
+
+    'rapidapi' => [
+    'key' => env('RAPIDAPI_KEY'),
+],
+
+'openstreetmap' => [
+    'maps_key' => env('OPENSTREETMAP_MAPS_KEY'),
+],
+
+'unsplash' => [
+    'access_key' => env('UNSPLASH_ACCESS_KEY'),
+],
+
+'openai' => [
+    'key' => env('OPENAI_KEY'),
+],
 ];

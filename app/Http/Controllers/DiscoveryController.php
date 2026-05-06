@@ -2,37 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DiscoverySearchRequest;
-use App\Services\DiscoveryService;
-use Illuminate\Http\JsonResponse;
+use App\Jobs\BuildCityDiscoveryPage;
+use App\Models\City;
+use Illuminate\Http\Request;
 
 class DiscoveryController extends Controller
 {
-    public function __construct(
-        private DiscoveryService $discoveryService
-    ) {}
 
+    public function index()
+    {
+        $trendingCities = City::with('country')
+            // ->latest()
+            ->limit(6)
+            ->get();
 
-public function __invoke(DiscoverySearchRequest $request): JsonResponse
-{
-    $searchTerm = $request->searchTerm();
-    $interest   = $request->interest();
-    $results    = $this->discoveryService->search($searchTerm, $interest);
-
-    $health = [];
-    $data   = [];
-    foreach ($results as $key => $value) {
-        $health[$key] = $value['health'];
-        $data[$key]   = $value['items'];
+        return view('pages.discovery', compact('trendingCities'));
     }
 
-    return response()->json([
-        'data' => $data,
-        'meta' => [
-            'place_name'    => $searchTerm,
-            'source_health' => $health,
-            'total'         => array_sum(array_map(fn($s) => is_array($s) || $s instanceof \Countable ? count($s) : ($s ? 1 : 0), $data)),
-        ],
-    ]);
-}
 }

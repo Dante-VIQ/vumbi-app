@@ -1,4 +1,4 @@
-<x-gallery-card />
+{{-- <x-gallery-card /> --}}
     {{-- ================= TRUST BAR ================= --}}
     <section class="py-12 bg-white border-y border-black/5">
         <div class="container mx-auto px-6">
