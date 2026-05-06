@@ -15,68 +15,68 @@ use App\Models\Destination;
 use Illuminate\Support\Facades\Route;
 
 
-
-
-
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
+Route::view('/', 'home');
 
-
-
+// /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
-    $destination = Destination::where('legacy_doctor_id', $id)->first();
-    if ($destination) {
-        return redirect()->route('destination.show', $destination, 301);
-    }
-    abort(404);
-})->where('id', '[0-9]+');
+    $destination = Destination::where('legacy_doctor_id', $id)->firstOrFail();
 
-// Also handle plural /doctors/{id}
+    return redirect()->route('destination.show', [
+        'slug' => $destination->slug
+    ], 301);
+})->whereNumber('id');
+
+// /doctors/123 → /doctor/123
 Route::get('/doctors/{id}', function ($id) {
-    return redirect()->route('doctor.redirect', ['id' => $id], 301);
-})->where('id', '[0-9]+');
+    return redirect("/doctor/$id", 301);
+})->whereNumber('id');
 
-// Named route for convenience
-Route::get('/doctor/{id}')->name('doctor.redirect');
 
-Route::get('/', function () {
-    return view('home');
+/*
+|--------------------------------------------------------------------------
+| STATIC PAGES
+|--------------------------------------------------------------------------
+*/
+
+Route::view('/about', 'pages.about');
+Route::view('/services', 'pages.services');
+Route::view('/contact', 'pages.contact')->name('contact');
+Route::view('/ecosystem', 'pages.ecosystem');
+Route::view('/header', 'pages.header-media');
+
+Route::post('/contact', [ContactController::class, 'submit'])
+    ->name('contact.submit');
+
+
+/*
+|--------------------------------------------------------------------------
+| DISCOVERY
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('discover')->group(function () {
+    Route::get('/', [DiscoveryController::class, 'index']);
+    Route::post('/search', [DiscoveryController::class, 'search'])
+        ->name('discover.search');
+
+    // MUST BE LAST to avoid conflicts
+    Route::get('/{country}/{city}', [CityController::class, 'show'])
+        ->name('discover.city');
 });
 
-Route::get('about', function () {
-    return view('pages.about');
-});
-
-Route::get('services', function () {
-    return view('pages.services');
-});
-
-Route::get('contact', function () {
-    return view('pages.contact');
-})->name('contact');
-
-Route::get('ecosystem', function () {
-    return view('pages.ecosystem');
-});
-
-// routes/web.php
-// Route::get('/discover', function () {
-//     // Load initial data for the static browse mode — exactly what your mount() did
-//     $destinations = Destination::latest()->limit(6)->get();
-//     $cultureEntries = Culture::latest()->limit(6)->get();
-//     return view('pages.discovery', compact('destinations', 'cultureEntries'));
-// })->name('pages.discovery');
-
-Route::get('/discover', [DiscoveryController::class, 'index']);
-Route::post('/discover/search', [DiscoveryController::class, 'search'])->name('discover.search');
-
-Route::get('/discover/{country}/{city}', [CityController::class, 'show']);
+/*
+|--------------------------------------------------------------------------
+| DESTINATIONS & CULTURE
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/destinations/{slug}', function ($slug) {
-    return view('pages.destination', ['slug' => $slug]);
+    return view('pages.destination', compact('slug'));
 })->name('destination.show');
 
 Route::get('/cultures/{slug}', function ($slug) {
-    return view('pages.culture', ['slug' => $slug]);
+    return view('pages.culture', compact('slug'));
 })->name('culture.show');
 
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
@@ -85,31 +85,39 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 // BLOG ROUTES (Public)
 // ======================
 
-// Main blog index / list page (optional - you can expand this later)
+/*
+|--------------------------------------------------------------------------
+| BLOG PUBLIC
+|--------------------------------------------------------------------------
+*/
+
+// Blog index
 Route::get('/blog', function () {
     $blogs = Blog::latest()->paginate(12);
-    return view('partials.field-notes', compact('blogs')); // Create this view if needed
+    return view('partials.field-notes', compact('blogs'));
 })->name('blog.index');
 
-// Individual blog post - SEO-friendly with slug (RECOMMENDED)
-Route::get('blog/{id}', function ($id) {
-    $blog = Blog::with('author')->findOrFail($id); // or find($id) if you handle 404 manually
+// Blog post by slug
+Route::get('/blog/{slug}', function ($slug) {
+    $blog = Blog::where('slug', $slug)
+        ->with('author')
+        ->firstOrFail();
+
     return view('singleblog', compact('blog'));
 })->name('blog.show');
 
-// Category pages (example)
+// Category
 Route::get('/blog/category/{category}', function ($category) {
-    $blogs = Blog::where('category', $category)
-                ->latest()
-                ->paginate(12);
+    $blogs = Blog::where('category', $category)->latest()->paginate(12);
     return view('blog.category', compact('blogs', 'category'));
 })->name('blog.category');
 
-// Optional: Tag pages
+// Tag
 Route::get('/blog/tag/{tag}', function ($tag) {
     $blogs = Blog::where('tags', 'LIKE', "%{$tag}%")
-                ->latest()
-                ->paginate(12);
+        ->latest()
+        ->paginate(12);
+
     return view('blog.tag', compact('blogs', 'tag'));
 })->name('blog.tag');
 
@@ -119,40 +127,51 @@ Route::get('/blog/tag/{tag}', function ($tag) {
 
 // Fallback or home route
 // Route::resource('blogs', BlogController::class);
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-// Route::view('africa', 'admin.dashboard')->name('admin.dashboard');
-Route::middleware(['auth', 'role:master|engineer'])->prefix('admin')->group(function () {
-    // Dashboard
-    Route::get('africa', function () {
-        return view('admin.dashboard');
-    });
-    // Blog CRUD
-    Route::resource('blogs', BlogController::class);
-    Route::resource('cultures', CultureController::class);
-    Route::delete('blogs/bulk/delete', [BlogController::class, 'bulkDestroy'])->name('blogs.bulk-destroy');
-
-   Route::get('places', function () {
-    return view('pages.destination-manager');
-});
-
-   Route::get('people', function () {
-    return view('pages.culture-manager');
-});
-
-});
-
-Route::get('header', function () {
-    return view('pages.header-media');
-});
+/*
+|--------------------------------------------------------------------------
+| AUTHENTICATED USER
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::view('/dashboard', 'dashboard')
+        ->name('dashboard')
+        ->middleware('verified');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
+
+// Route::view('africa', 'admin.dashboard')->name('admin.dashboard');
+/*
+|--------------------------------------------------------------------------
+| ADMIN PANEL
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:master|engineer'])
+    ->prefix('admin')
+    ->group(function () {
+
+        Route::view('/africa', 'admin.dashboard');
+
+        // Blog CRUD
+        Route::resource('blogs', BlogController::class);
+        Route::delete('blogs/bulk/delete',
+            [BlogController::class, 'bulkDestroy']
+        )->name('blogs.bulk-destroy');
+
+        // Culture CRUD
+        Route::resource('cultures', CultureController::class);
+
+        // Livewire pages
+        Route::view('/places', 'pages.destination-manager');
+        Route::view('/people', 'pages.culture-manager');
+    });
 
 require __DIR__.'/api.php';
 require __DIR__.'/auth.php';

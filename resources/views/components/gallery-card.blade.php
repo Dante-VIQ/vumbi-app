@@ -64,7 +64,7 @@
                     <div class="flex transition-transform duration-700 ease-out" id="slider-track">
                         
                         @php
-                            $headerMedia = App\Models\HeaderMedia::latest()->take(6)->get();
+                            $headerMedia = App\Models\Blog::latest()->take(6)->get();
                         @endphp
                         
                         @if($headerMedia->isNotEmpty())

@@ -7,4 +7,4 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/search', SearchController::class);
-Route::get('/discover/{city}', [DiscoveryController::class, 'show']);
+// Route::get('/discover/{city}', [DiscoveryController::class, 'show']);

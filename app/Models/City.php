@@ -18,7 +18,7 @@ class City extends Model
         'longitude',
         'timezone',
         'population',
-        'is_published'
+        'is_published',
     ];
 
     protected $casts = [
