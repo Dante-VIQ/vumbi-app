@@ -7,6 +7,7 @@ use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DiscoveryController extends Controller
 {
@@ -20,41 +21,35 @@ class DiscoveryController extends Controller
         return view('pages.discovery', compact('trendingCities'));
     }
 
-    public function search(Request $request)
-    {
-        try {
-            $request->validate([
-                'query' => 'required|string|max:255'
-            ]);
+public function search(Request $request)
+{
+    $request->validate(['search' => 'required|string|max:255']);
 
-            $query = $request->input('query');
+    $searchTerm = $request->input('search');
 
-            // Check if city already exists
-            $city = City::where('name', $query)->first();
+    $city = City::where('name', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('slug', Str::slug($searchTerm))
+                ->first();
 
-            if ($city && $city->status === 'published') {
-                return response()->json([
-                    'status' => 'ready',
-                    'redirect' => route('discover.city', $city->slug)
-                ]);
-            }
-
-            // If not, dispatch job to build it
-            BuildCityDiscoveryPage::dispatch($query);
-
-            return response()->json([
-                'status' => 'building',
-                'message' => 'We are preparing your destination...'
-            ]);
-
-        } catch (\Throwable $e) {
-
-            Log::error($e);
-
-            return response()->json([
-                'error' => true,
-                'message' => 'Server error'
-            ], 500);
-        }
+    if ($city && $city->status === 'published') {
+        return response()->json([
+            'status' => 'ready',
+            'redirect' => route('discover.city', $city->slug),
+            'data' => [ /* ... */ ],
+            'meta' => ['total' => 1]
+        ]);
     }
+
+    // Dispatch job (even if city is building)
+    BuildCityDiscoveryPage::dispatch($searchTerm);
+
+    return response()->json([
+        'status' => 'building',
+        'message' => "We're gathering rich information about <strong>{$searchTerm}</strong>...",
+        'data' => [],
+        'meta' => ['total' => 0]
+    ]);
+}
+
+
 }

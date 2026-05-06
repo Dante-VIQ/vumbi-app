@@ -11,13 +11,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class BuildCityDiscoveryPage implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $timeout = 300; // 5 minutes
+
     public function __construct(
-        public string $citySlug
+        public string $searchTerm   // Changed name for clarity
     ) {}
 
     public function handle(
@@ -25,32 +29,53 @@ class BuildCityDiscoveryPage implements ShouldQueue
         HotelService $hotelService,
         AIContentService $aiService
     ): void {
+        $searchTerm = trim($this->searchTerm);
 
-        $city = City::where('slug', $this->citySlug)
-            ->firstOrFail();
-
-        // 1. Ensure city has coordinates
-        $this->ensureGeoData($city);
-
-        // 2. Build Places
-        $placeService->build($city);
-
-        // 3. Build Hotels
-        $hotelService->build($city);
-
-        // 4. Generate AI Guide
-        $guide = $aiService->buildGuide($city);
-
-        $city->guide()->updateOrCreate(
-            ['city_id' => $city->id],
-            ['intro_text' => $guide]
+        // Find existing city or create a new one
+        $city = City::firstOrCreate(
+            ['slug' => Str::slug($searchTerm)],
+            [
+                'name' => $searchTerm,
+                'status' => 'building',
+                'is_published' => false,
+                // Add other default fields as needed
+            ]
         );
 
-        // 5. Mark as published
-        $city->update([
-            'status' => 'published',
-            'last_refreshed_at' => now()
-        ]);
+        // If already published and recent, skip heavy work
+        if ($city->status === 'published' && $city->last_refreshed_at?->gt(now()->subHours(24))) {
+            return;
+        }
+
+        try {
+            // 1. Ensure Geo Data
+            $this->ensureGeoData($city);
+
+            // 2. Build Places / Attractions
+            $placeService->build($city);
+
+            // 3. Build Hotels
+            $hotelService->build($city);
+
+            // 4. Generate AI Content
+            $guide = $aiService->buildGuide($city);
+
+            $city->guide()->updateOrCreate(
+                ['city_id' => $city->id],
+                ['intro_text' => $guide]
+            );
+
+            // 5. Mark as complete
+            $city->update([
+                'status' => 'published',
+                'is_published' => true,
+                'last_refreshed_at' => now()
+            ]);
+
+        } catch (\Throwable $e) {
+            $city->update(['status' => 'failed']);
+            throw $e; // Let Laravel retry or log
+        }
     }
 
     private function ensureGeoData(City $city): void
@@ -59,7 +84,10 @@ class BuildCityDiscoveryPage implements ShouldQueue
             return;
         }
 
-        // fallback minimal logic (you can later inject GeoService here)
-        abort(500, "City missing coordinates: {$city->name}");
+        // TODO: Integrate proper geocoding service (e.g. Google Maps, OpenStreetMap, etc.)
+        // For now, you can set dummy coordinates or throw a proper exception
+        // Example:
+        // $geo = app(GeoService::class)->geocode($city->name);
+        // $city->update([...]);
     }
 }
