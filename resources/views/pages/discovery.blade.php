@@ -23,7 +23,7 @@
             </p>
 
             <!-- Search Bar -->
-  <form class="max-w-2xl mx-auto" @submit.prevent="searchPlace()">
+  <form class="max-w-2xl mx-auto" @submit.prevent="searchPlace()" >
     @csrf
 
     <div class="relative group">
@@ -265,40 +265,29 @@
                 this.searchPlace();
             },
 
-           async searchPlace() {
-    if (!this.search || this.search.length < 2) return;
-                
-                this.loading = true;
-                this.placeName = this.search.charAt(0).toUpperCase() + this.search.slice(1);
+  async searchPlace() {
+    try {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                try {
-                    const response = await fetch('/discover/search', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({ search: this.search })
-                    });
-
-                    if (!response.ok) throw new Error('Network error');
-                    
-                    const json = await response.json();
-                    
-                    this.results = json.data || {};
-                    this.sourceHealth = json.meta?.source_health || {};
-                    this.totalResults = json.meta?.total || 0;
-                    
-                } catch (error) {
-                    console.error('Search failed:', error);
-                    this.results = {};
-                    this.totalResults = 0;
-                } finally {
-                    this.loading = false;
-                }
+        const response = await fetch('/discover/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': token
             },
+            body: JSON.stringify({
+                query: this.query
+            })
+        });
 
+        const data = await response.json();
+        console.log(data);
+
+    } catch (error) {
+        console.error("Search failed:", error);
+    }
+},
             resetSearch() {
                 this.search = '';
                 this.placeName = '';
