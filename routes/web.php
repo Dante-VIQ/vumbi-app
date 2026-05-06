@@ -101,12 +101,9 @@ Route::get('/blog', function () {
     return view('partials.field-notes', compact('blogs'));
 })->name('blog.index');
 
-// Blog post by slug
-Route::get('/blog/{id}', function ($id) {
-    $blog = Blog::where('id', $id)
-        ->with('author')
-        ->firstOrFail();
-
+// Blog post by ID
+Route::get('/blog/{blog}', function (Blog $blog) {
+    $blog->load('author');
     return view('singleblog', compact('blog'));
 })->name('blog.show');
 

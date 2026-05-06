@@ -6,6 +6,7 @@ use App\Models\AffiliateProgram;
 use App\Services\TravelpayoutsService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use App\Services\AffiliateMatcher;
 use App\Services\AffiliateExecutionService;
 
@@ -268,24 +269,27 @@ private function shouldInsertWidget($blockIndex): bool
        $articleSchema = [
           "@context" => "https://schema.org",
           "@type" => "Article",
-          "headline" => "{{ $blog->title }}",
-          "image" => "{{ $seo['ogImage'] }}",
-          "author" => {
+          "headline" => $blog->title,
+          "image" => $seo['ogImage'],
+          "author" => [
             "@type" => "Person",
-            "name" => "{{ $blog->author->name ?? 'Vumbi Ventures' }}"
-          },
-          "publisher" => {
+            "name" => $blog->author->name ?? 'Vumbi Ventures'
+          ],
+          "publisher" => [
             "@type" => "Organization",
             "name" => "Vumbi Ventures",
-            "logo" => {
+            "logo" => [
               "@type" => "ImageObject",
-              "url" => "{{ asset('images/logo1.png') }}"
-            }
-          },
-          "datePublished": "{{ $blog->created_at->toIso8601String() }}",
-          "description": "{{ $seo['description'] }}"
-       ]
+              "url" => asset('images/logo1.png')
+            ]
+          ],
+          "datePublished" => $blog->created_at->toIso8601String(),
+          "description" => $seo['description']
+       ];
       @endphp
+      <script type="application/ld+json">
+        {!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}
+      </script>
     @endpush
 
     {{-- ===================== HERO HEADER ===================== --}}
