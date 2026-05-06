@@ -3,9 +3,10 @@
 namespace App\Jobs;
 
 use App\Models\City;
-use App\Services\PlaceService;
-use App\Services\HotelService;
 use App\Services\AIContentService;
+use App\Services\GeoService;
+use App\Services\HotelService;
+use App\Services\PlacesService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,7 +26,7 @@ class BuildCityDiscoveryPage implements ShouldQueue
     ) {}
 
     public function handle(
-        PlaceService $placeService,
+        PlacesService $placesService,
         HotelService $hotelService,
         AIContentService $aiService
     ): void {
@@ -52,7 +53,7 @@ class BuildCityDiscoveryPage implements ShouldQueue
             $this->ensureGeoData($city);
 
             // 2. Build Places / Attractions
-            $placeService->build($city);
+            $placesService->build($city);
 
             // 3. Build Hotels
             $hotelService->build($city);

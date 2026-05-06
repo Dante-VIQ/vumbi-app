@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\BuildCityDiscoveryPage;
 use App\Models\City;
+use App\Services\Search\SearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -16,63 +17,71 @@ class DiscoveryController extends Controller
             ->orderBy('is_published', 'desc')
             ->take(10)
             ->get();
-            
+
         return view('pages.discovery', compact('trendingCities'));
     }
 
-    public function search(Request $request)
+    public function search(Request $request, SearchService $searchService)
     {
         try {
+
+            // FIX: unify request key with frontend
             $request->validate([
-                'search' => 'required|string|min:2|max:255'
+                'q' => 'required|string|min:2|max:255'
             ]);
 
-            $searchTerm = trim($request->input('search'));
+            $searchTerm = trim($request->input('q'));
 
-            // Look for existing city
+            // 1️⃣ Check if city exists
             $city = City::where('name', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('slug', Str::slug($searchTerm))
-                        ->first();
+                ->orWhere('slug', Str::slug($searchTerm))
+                ->first();
 
+            // 2️⃣ If already published city → return full SEO page data
             if ($city && $city->status === 'published') {
+
                 return response()->json([
                     'status' => 'ready',
-                    'redirect' => route('discover.city', $city->slug),
-                    'data' => [
-                        'place_info' => [
-                            'name' => $city->name,
-                            'description' => $city->description ?? "Discover the beauty of {$city->name}",
-                            'avg_cost' => '$120 - $250'
-                        ],
-                        'stories' => [],
+                    'results' => [
+                        'city' => $city->name,
+                        'description' => $city->description ?? "Discover {$city->name}",
+                        'places' => [],
                         'hotels' => [],
-                        'attractions' => [],
-                    ],
-                    'meta' => [
-                        'total' => 1,
-                        'source_health' => []
+                        'flights' => []
                     ]
                 ]);
             }
 
-            // Dispatch job to build the page
-            BuildCityDiscoveryPage::dispatch($searchTerm);
+            // 3️⃣ Use FULL discovery engine (THIS IS THE KEY FIX)
+            $results = $searchService->search($searchTerm);
 
+            // 4️⃣ If needs build → queue job
+            if ($results['needs_build'] ?? false) {
+
+                BuildCityDiscoveryPage::dispatch($searchTerm);
+
+                return response()->json([
+                    'status' => 'building',
+                    'message' => "We're preparing a travel guide for {$searchTerm}",
+                    'results' => null
+                ]);
+            }
+
+            // 5️⃣ Return unified results
             return response()->json([
-                'status' => 'building',
-                'message' => "We're preparing detailed information about {$searchTerm}...",
-                'data' => [],
-                'meta' => ['total' => 0]
+                'status' => 'ready',
+                'results' => $results
             ]);
 
         } catch (\Throwable $e) {
+
             Log::error('Discovery Search Error: ' . $e->getMessage(), [
-                'search' => $request->input('search'),
+                'search' => $request->input('q'),
                 'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
-                'error' => true,
+                'status' => 'error',
                 'message' => 'Server error. Please try again later.'
             ], 500);
         }

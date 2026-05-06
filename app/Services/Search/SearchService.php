@@ -2,72 +2,86 @@
 
 namespace App\Services\Search;
 
-use App\Models\City;
-use App\Models\Place;
-use App\Models\CitySearch;
+use App\Services\AI\TravelAIService;
+use App\Services\ApiClients\OpenStreetMapClient;
+use App\Services\ApiClients\OpenTripMapClient;
+use App\Services\TravelPayouts\FlightService;
+use App\Services\TravelPayouts\HotelService;
+use Illuminate\Support\Facades\Log;
 
 class SearchService
 {
- public function search(string $query): array
-    {
-        $query = trim($query);
+    protected OpenStreetMapClient $osm;
+    protected OpenTripMapClient $trip;
+    protected HotelService $hotels;
+    protected FlightService $flights;
+    protected TravelAIService $ai;
 
-        $cities = City::where('name', 'LIKE', "%{$query}%")
-            ->limit(5)
-            ->get();
-
-        return [
-            'cities' => $cities,
-            'places' => [],
-            'suggestions' => $this->suggest($query),
-
-            // NEW FLAG
-            'needs_build' => $cities->isEmpty(),
-        ];
+    public function __construct(
+        OpenStreetMapClient $osm,
+        OpenTripMapClient $trip,
+        HotelService $hotels,
+        FlightService $flights,
+        TravelAIService $ai
+    ) {
+        $this->osm = $osm;
+        $this->trip = $trip;
+        $this->hotels = $hotels;
+        $this->flights = $flights;
+        $this->ai = $ai;
     }
 
-    private function suggest(string $query): array
+    public function search(string $query): array
     {
-        return [
-            "Things to do in {$query}",
-            "Hotels in {$query}",
-            "Travel guide to {$query}",
-        ];
-    }
+        try {
+            // 1️⃣ GEOCODE CITY
+            $location = $this->osm->geocode($query);
 
-    private function searchCities(string $query)
-    {
-        return City::where('name', 'LIKE', "%{$query}%")
-            ->limit(5)
-            ->get()
-            ->map(fn ($city) => [
-                'type' => 'city',
-                'name' => $city->name,
-                'country' => $city->country->name,
-                'slug' => $city->slug,
-            ]);
-    }
+            if (!$location) {
+                return [
+                    'needs_build' => false,
+                    'error' => 'City not found'
+                ];
+            }
 
-    private function searchPlaces(string $query)
-    {
-        return Place::where('name', 'LIKE', "%{$query}%")
-            ->limit(5)
-            ->get()
-            ->map(fn ($place) => [
-                'type' => 'place',
-                'name' => $place->name,
-                'city' => $place->city->name,
-                'category' => $place->category->name,
-            ]);
-    }
+            // 2️⃣ ATTRACTIONS
+            $places = $this->trip->getPlaces(
+                $location['lat'],
+                $location['lon']
+            );
 
-    private function suggestQueries(string $query): array
-    {
-        return [
-            "Things to do in {$query}",
-            "Best hotels in {$query}",
-            "Travel guide to {$query}",
-            "Budget in {$query}",
-        ];
+            // 3️⃣ HOTELS
+            $hotels = $this->hotels->searchHotels($query);
+
+            // 4️⃣ FLIGHTS
+            $flights = $this->flights->searchFlights($query);
+
+            // 5️⃣ AI CITY INTRO
+            $description = $this->ai->describeCity($query);
+
+            // 6️⃣ DECIDE IF PAGE SHOULD AUTO BUILD
+            $needsBuild = empty($places) || empty($hotels);
+
+            return [
+                'needs_build' => $needsBuild,
+
+                'city' => $query,
+                'description' => $description,
+
+                'location' => $location,
+                'places' => $places,
+                'hotels' => $hotels,
+                'flights' => $flights
+            ];
+
+        } catch (\Exception $e) {
+
+            Log::error('Global search failed: '.$e->getMessage());
+
+            return [
+                'needs_build' => false,
+                'error' => 'Search failed'
+            ];
+        }
     }
 }

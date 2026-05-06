@@ -7,7 +7,7 @@ use App\Models\Place;
 use App\Models\PlaceCategory;
 use App\Services\ApiClients\OpenTripMapClient;
 
-class PlaceService
+class PlacesService
 {
     public function __construct(
         private OpenTripMapClient $client

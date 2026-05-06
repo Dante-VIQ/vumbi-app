@@ -12,7 +12,10 @@ use App\Livewire\Admin\DestinationManager;
 use App\Models\Blog;
 use App\Models\Culture;
 use App\Models\Destination;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
 
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
@@ -59,6 +62,7 @@ Route::prefix('discover')->group(function () {
     Route::get('/', [DiscoveryController::class, 'index']);
     Route::post('/search', [DiscoveryController::class, 'search'])
         ->name('discover.search');
+
 
     // MUST BE LAST to avoid conflicts
     Route::get('/{country}/{city}', [CityController::class, 'show'])

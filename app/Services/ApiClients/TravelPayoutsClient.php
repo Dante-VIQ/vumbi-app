@@ -4,7 +4,7 @@ namespace App\Services\ApiClients;
 
 use Illuminate\Support\Facades\Http;
 
-class TravelpayoutsClient
+class TravelPayoutsClient
 {
     public function getHotels(string $location): array
     {
