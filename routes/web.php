@@ -102,8 +102,8 @@ Route::get('/blog', function () {
 })->name('blog.index');
 
 // Blog post by slug
-Route::get('/blog/{slug}', function ($slug) {
-    $blog = Blog::where('slug', $slug)
+Route::get('/blog/{id}', function ($id) {
+    $blog = Blog::where('id', $id)
         ->with('author')
         ->firstOrFail();
 
