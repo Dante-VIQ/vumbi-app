@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Jobs\BuildCityDiscoveryPage;
 use App\Models\City;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 
 class DiscoveryController extends Controller
@@ -24,36 +23,53 @@ class DiscoveryController extends Controller
     {
         try {
             $request->validate([
-                'query' => 'required|string|max:255'
+                'search' => 'required|string|max:255'   // Changed to match frontend
             ]);
 
-            $query = $request->input('query');
+            $searchTerm = $request->input('search');
 
-            // Check if city already exists
-            $city = City::where('name', $query)->first();
+            // Check if city exists and is ready
+            $city = City::where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('slug', $searchTerm)
+                        ->first();
 
             if ($city && $city->status === 'published') {
                 return response()->json([
                     'status' => 'ready',
-                    'redirect' => route('discover.city', $city->slug)
+                    'redirect' => route('discover.city', $city->slug),
+                    'data' => [
+                        'place_info' => [
+                            'name' => $city->name,
+                            'description' => $city->description ?? 'Beautiful destination in ' . ($city->country->name ?? 'Africa'),
+                            'avg_cost' => '$' . rand(80, 250)
+                        ],
+                        'stories' => [],
+                        'hotels' => [],
+                        'attractions' => [],
+                    ],
+                    'meta' => [
+                        'total' => 1,
+                        'source_health' => []
+                    ]
                 ]);
             }
 
-            // If not, dispatch job to build it
-            BuildCityDiscoveryPage::dispatch($query);
+            // Not ready → Dispatch job
+            BuildCityDiscoveryPage::dispatch($searchTerm);
 
             return response()->json([
                 'status' => 'building',
-                'message' => 'We are preparing your destination...'
+                'message' => 'We are preparing detailed information about ' . $searchTerm . '...',
+                'data' => [],
+                'meta' => ['total' => 0]
             ]);
 
         } catch (\Throwable $e) {
-
-            Log::error($e);
+            Log::error('Discovery Search Error: ' . $e->getMessage());
 
             return response()->json([
                 'error' => true,
-                'message' => 'Server error'
+                'message' => 'Something went wrong. Please try again.'
             ], 500);
         }
     }
