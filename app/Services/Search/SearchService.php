@@ -8,19 +8,30 @@ use App\Models\CitySearch;
 
 class SearchService
 {
-    public function search(string $query): array
+ public function search(string $query): array
     {
         $query = trim($query);
 
-        // Save search for analytics
-        CitySearch::create([
-            'search_query' => $query
-        ]);
+        $cities = City::where('name', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get();
 
         return [
-            'cities' => $this->searchCities($query),
-            'places' => $this->searchPlaces($query),
-            'suggestions' => $this->suggestQueries($query),
+            'cities' => $cities,
+            'places' => [],
+            'suggestions' => $this->suggest($query),
+
+            // NEW FLAG
+            'needs_build' => $cities->isEmpty(),
+        ];
+    }
+
+    private function suggest(string $query): array
+    {
+        return [
+            "Things to do in {$query}",
+            "Hotels in {$query}",
+            "Travel guide to {$query}",
         ];
     }
 

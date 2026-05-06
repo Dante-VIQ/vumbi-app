@@ -67,6 +67,7 @@ Route::get('ecosystem', function () {
 // })->name('pages.discovery');
 
 Route::get('/discover', [DiscoveryController::class, 'index']);
+Route::post('/discover/search', [DiscoveryController::class, 'search'])->name('discover.search');
 
 Route::get('/discover/{country}/{city}', [CityController::class, 'show']);
 
@@ -153,4 +154,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+require __DIR__.'/api.php';
 require __DIR__.'/auth.php';

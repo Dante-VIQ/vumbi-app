@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-zinc-950 text-white overflow-x-hidden">
+<div class="min-h-screen bg-zinc-950 text-white overflow-x-hidden" x-data="discovery()">
     <!-- HERO SECTION - Luxurious & Immersive -->
     <section class="relative h-screen flex items-center justify-center">
         <!-- Background -->
@@ -23,33 +23,38 @@
             </p>
 
             <!-- Search Bar -->
-            <form class="max-w-2xl mx-auto">
-                @csrf
-                <div class="relative group">
-                    <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 01-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        id="heroSearch"
-                        x-model="search"
-                        @keyup.enter="searchPlace()"
-                        placeholder="Where are you dreaming of? e.g. Nakuru, Santorini, Kyoto..."
-                        class="w-full bg-white/10 backdrop-blur-xl border border-white/20 focus:border-amber-400 rounded-3xl py-7 pl-16 pr-8 text-xl placeholder-zinc-400 focus:outline-none transition-all"
-                    >
-                    <button 
-                        @click="searchPlace()"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-zinc-900 hover:bg-amber-400 transition-colors px-10 py-4 rounded-3xl font-semibold flex items-center gap-2"
-                    >
-                        <span>Explore</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </form>
+  <form class="max-w-2xl mx-auto" @submit.prevent="searchPlace()">
+    @csrf
+
+    <div class="relative group">
+
+        <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 01-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+
+        <input
+            type="text"
+            id="heroSearch"
+            x-model="search"
+            placeholder="Where are you dreaming of? e.g. Nakuru, Santorini, Kyoto..."
+            class="w-full bg-white/10 backdrop-blur-xl border border-white/20 focus:border-amber-400 rounded-3xl py-7 pl-16 pr-8 text-xl placeholder-zinc-400 focus:outline-none transition-all"
+        >
+
+        <button
+            type="submit"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-zinc-900 hover:bg-amber-400 transition-colors px-10 py-4 rounded-3xl font-semibold flex items-center gap-2"
+        >
+            <span>Explore</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7-7 7" />
+            </svg>
+        </button>
+
+    </div>
+</form>
 
             <div class="mt-8 text-sm text-zinc-400 flex items-center justify-center gap-8">
                 <div class="flex items-center gap-2">
@@ -125,7 +130,7 @@
                     <input 
                         type="text"
                         x-model="search"
-                        @input.debounce.300ms="searchPlace()"
+                        @input.debounce.500ms="searchPlace()"
                         placeholder="Try: Nairobi, Maasai Mara, Diani Beach..."
                         class="w-full bg-zinc-900 border border-zinc-700 focus:border-amber-400 rounded-3xl px-8 py-6 text-lg placeholder-zinc-500 focus:outline-none"
                     >
@@ -144,7 +149,7 @@
             </div>
 
             <!-- Results -->
-            <div x-show="!loading && totalResults > 0" class="space-y-20">
+            <div x-show="!loading && search.length > 2 && totalResults === 0" class="space-y-20">
 
                 <!-- Place Info -->
                 <div x-show="results.place_info" class="bg-gradient-to-br from-zinc-900 to-black border border-amber-400/20 rounded-3xl p-12">
@@ -260,8 +265,8 @@
                 this.searchPlace();
             },
 
-            async searchPlace() {
-                if (this.search.length < 2) return;
+           async searchPlace() {
+    if (!this.search || this.search.length < 2) return;
                 
                 this.loading = true;
                 this.placeName = this.search.charAt(0).toUpperCase() + this.search.slice(1);
