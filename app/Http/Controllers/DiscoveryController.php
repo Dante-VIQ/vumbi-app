@@ -24,14 +24,14 @@ class DiscoveryController extends Controller
     {
         try {
             $request->validate([
-                'search' => 'required|string|max:255'   // Changed to match frontend
+                'search' => 'required|string|min:2|max:255'
             ]);
 
-            $searchTerm = $request->input('search');
+            $searchTerm = trim($request->input('search'));
 
-            // Check if city exists and is ready
+            // Look for existing city
             $city = City::where('name', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('slug', $searchTerm)
+                        ->orWhere('slug', Str::slug($searchTerm))
                         ->first();
 
             if ($city && $city->status === 'published') {
@@ -41,8 +41,8 @@ class DiscoveryController extends Controller
                     'data' => [
                         'place_info' => [
                             'name' => $city->name,
-                            'description' => $city->description ?? 'Beautiful destination in ' . ($city->country->name ?? 'Africa'),
-                            'avg_cost' => '$' . rand(80, 250)
+                            'description' => $city->description ?? "Discover the beauty of {$city->name}",
+                            'avg_cost' => '$120 - $250'
                         ],
                         'stories' => [],
                         'hotels' => [],
@@ -55,22 +55,25 @@ class DiscoveryController extends Controller
                 ]);
             }
 
-            // Not ready → Dispatch job
+            // Dispatch job to build the page
             BuildCityDiscoveryPage::dispatch($searchTerm);
 
             return response()->json([
                 'status' => 'building',
-                'message' => 'We are preparing detailed information about ' . $searchTerm . '...',
+                'message' => "We're preparing detailed information about {$searchTerm}...",
                 'data' => [],
                 'meta' => ['total' => 0]
             ]);
 
         } catch (\Throwable $e) {
-            Log::error('Discovery Search Error: ' . $e->getMessage());
+            Log::error('Discovery Search Error: ' . $e->getMessage(), [
+                'search' => $request->input('search'),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
                 'error' => true,
-                'message' => 'Something went wrong. Please try again.'
+                'message' => 'Server error. Please try again later.'
             ], 500);
         }
     }
