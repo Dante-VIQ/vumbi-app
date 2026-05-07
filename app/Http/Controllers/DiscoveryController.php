@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTransferObjects\SearchResult;
 use App\Jobs\BuildCityDiscoveryPage;
 use App\Models\City;
-use App\Services\Search\SearchService;
+use App\Services\Search\SearchOrchestratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -14,93 +15,66 @@ class DiscoveryController extends Controller
     public function index()
     {
         $trendingCities = City::where('is_published', true)
-            ->orderBy('is_published', 'desc')
+            ->orderBy('last_refreshed_at', 'desc')
             ->take(10)
             ->get();
 
         return view('pages.discovery', compact('trendingCities'));
     }
 
-    public function search(Request $request, SearchService $searchService)
+    public function search(Request $request, SearchOrchestratorService $orchestrator)
     {
         try {
-
-            $request->validate([
-                'q' => 'required|string|min:2|max:255'
+            $validated = $request->validate([
+                'q' => 'required|string|min:2|max:255',
             ]);
 
-            $searchTerm = trim($request->input('q'));
+            $searchTerm = trim($validated['q']);
 
-            /*
-            |------------------------------------------------------
-            | 1. CHECK EXISTING CITY
-            |------------------------------------------------------
-            */
-
+            // 1. Check already published city
             $city = City::where('name', 'LIKE', "%{$searchTerm}%")
                 ->orWhere('slug', Str::slug($searchTerm))
                 ->first();
 
             if ($city && $city->status === 'published') {
-
                 return response()->json([
                     'status' => 'ready',
-                    'results' => [
-                        'city' => $city->name,
-                        'description' => $city->description ?? "Discover {$city->name}",
-                        'places' => [],
-                        'hotels' => [],
-                        'flights' => []
-                    ]
+                    'result' => [
+                        'city'         => $city->name,
+                        'description'  => $city->description ?? "Discover {$city->name}",
+                        'places'       => [],
+                        'hotels'       => [],
+                        'flights'      => [],
+                        'data_quality' => [],
+                        'meta'         => [],
+                        'error'        => null,
+                    ],
                 ]);
             }
 
-            /*
-            |------------------------------------------------------
-            | 2. MAIN DISCOVERY ENGINE (ONLY SOURCE OF TRUTH)
-            |------------------------------------------------------
-            */
+            // 2. New search via orchestrator
+            $searchResult = $orchestrator->search($searchTerm);
 
-            $results = $searchService->search($searchTerm);
-
-            /*
-            |------------------------------------------------------
-            | 3. BUILD JOB IF REQUIRED
-            |------------------------------------------------------
-            */
-
-            if ($results['needs_build'] ?? false) {
-
-                BuildCityDiscoveryPage::dispatch($searchTerm);
-
-                return response()->json([
-                    'status' => 'building',
-                    'message' => "We're preparing a travel guide for {$searchTerm}",
-                    'results' => null
-                ]);
+            // 3. Dispatch build job if needed – but still return the partial result
+            if ($searchResult->needsBuild()) {
+                BuildCityDiscoveryPage::dispatch($searchTerm)->onQueue('city-build');
             }
-
-            /*
-            |------------------------------------------------------
-            | 4. RETURN FINAL RESULTS
-            |------------------------------------------------------
-            */
 
             return response()->json([
-                'status' => 'ready',
-                'results' => $results
+                'status' => $searchResult->needsBuild() ? 'building' : 'ready',
+                'result' => $searchResult->toArray(),   // <-- always an object, never null
             ]);
 
         } catch (\Throwable $e) {
-
             Log::error('Discovery Search Error', [
-                'message' => $e->getMessage(),
                 'search' => $request->input('q'),
+                'error'  => $e->getMessage(),
             ]);
 
             return response()->json([
-                'status' => 'error',
-                'message' => 'Server error. Please try again later.'
+                'status'  => 'error',
+                'message' => 'Server error. Please try again later.',
+                'result'  => [],    // still an array, not null
             ], 500);
         }
     }

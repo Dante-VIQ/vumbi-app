@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\Search\SearchOrchestratorService;
+use App\Jobs\BuildCityDiscoveryPage;
+use App\Services\BonusArriveService;
 use App\Services\Search\QueryClassifierService;
 use App\Services\Search\RouteDecisionService;
-use App\Jobs\BuildCityDiscoveryPage;
-use Illuminate\Http\Request;
+use App\Services\Search\SearchOrchestratorService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpFoundation\Response;

@@ -14,6 +14,39 @@ class GeoService
 {
     private const ENDPOINT = "https://wft-geo-db.p.rapidapi.com/v1/geo/cities";
 
+    // inside GeoService.php
+
+// app/Services/GeoService.php
+
+public function geocode(string $cityName): ?array
+{
+    try {
+        $response = Http::timeout(10)
+            ->withHeaders([
+                'X-RapidAPI-Key'  => config('services.rapidapi.key'),
+                'X-RapidAPI-Host' => 'wft-geo-db.p.rapidapi.com',
+            ])
+            ->get(self::ENDPOINT, [
+                'namePrefix' => $cityName,
+                'limit'      => 1,
+            ]);
+
+        if ($response->successful() && !empty($response['data'])) {
+            $data = $response['data'][0];
+            return [
+                'lat'          => $data['latitude'],
+                'lon'          => $data['longitude'],
+                'country'      => $data['country'],
+                'country_code' => $data['countryCode'] ?? null,
+            ];
+        }
+    } catch (Exception $e) {
+        Log::warning("GeoService geocode failed", ['city' => $cityName]);
+    }
+
+    return null;
+}
+
     public function createCityIfNotExists(string $cityName): City
     {
         $cityName = trim($cityName);

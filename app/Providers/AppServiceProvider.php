@@ -2,6 +2,19 @@
 
 namespace App\Providers;
 
+use App\Services\AI\AIContentService;
+use App\Services\ApiClients\OpenStreetMapClient;
+use App\Services\ApiClients\OpenTripMapClient;
+use App\Services\BonusArriveService;
+use App\Services\Builders\CityPageBuilder;
+use App\Services\FlightAggregatorService;
+use App\Services\GeoService;
+use App\Services\PlacesService;
+use App\Services\Search\QueryClassifierService;
+use App\Services\Search\RouteDecisionService;
+use App\Services\Search\SearchOrchestratorService;
+use App\Services\TravelPayouts\FlightService;
+use App\Services\TravelPayouts\HotelService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -18,7 +31,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+                // --- Core orchestration (singleton – one per request/worker) ---
+        $this->app->singleton(SearchOrchestratorService::class);
+
+        // --- Flight aggregation ---
+        $this->app->singleton(FlightAggregatorService::class);
+
+        // --- City building ---
+        $this->app->singleton(CityPageBuilder::class);
+
+        // --- AI (consolidated) ---
+        $this->app->singleton(AIContentService::class);
+
+        // --- Classifier & Router (stateless, but singleton for consistency) ---
+        $this->app->singleton(QueryClassifierService::class);
+        $this->app->singleton(RouteDecisionService::class);
+
+        // --- Data providers (singleton – they hold no state) ---
+        $this->app->singleton(OpenStreetMapClient::class);
+        $this->app->singleton(OpenTripMapClient::class);
+        $this->app->singleton(HotelService::class);
+        $this->app->singleton(FlightService::class);            // still used by aggregator
+        $this->app->singleton(BonusArriveService::class);      // still used by aggregator
+        $this->app->singleton(PlacesService::class);
+        $this->app->singleton(GeoService::class);
     }
 
     /**

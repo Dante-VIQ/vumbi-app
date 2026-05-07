@@ -2,9 +2,10 @@
 
 namespace App\Services\ApiClients;
 
+use Exception;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class OpenTripMapClient
 {
@@ -72,5 +73,5 @@ class OpenTripMapClient
             ]);
             return [];
         }
-    }
+    }    
 }

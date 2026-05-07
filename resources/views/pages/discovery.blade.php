@@ -58,21 +58,26 @@
             <div x-show="error" class="text-center py-10 text-red-400" x-text="error"></div>
 
             <!-- RESULTS WRAPPER -->
-            <div x-show="results && !loading" class="space-y-12">
+            <div x-show="result && !loading" class="space-y-12">
 
                 <!-- CITY HEADER -->
                 <div class="text-center">
-                    <h1 class="text-5xl font-bold" x-text="results?.city ?? ''"></h1>
+                    <h1 class="text-5xl font-bold" x-text="result.city ?? ''"></h1>
                     <p class="mt-4 text-gray-300 max-w-3xl mx-auto"
-                       x-text="results?.description ?? ''"></p>
+                       x-text="result.description ?? ''"></p>
+                </div>
+
+                <!-- BUILDING STATUS -->
+                <div x-show="building" class="text-center py-6 bg-amber-400/10 border border-amber-400/30 rounded-2xl">
+                    <p class="text-amber-400 font-semibold" x-text="buildingMessage"></p>
                 </div>
 
                 <!-- PLACES -->
-                <div>
+                <div x-show="result.places?.length">
                     <h2 class="text-2xl font-semibold mb-4">Things to Do</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <template x-for="place in (results?.places ?? [])" :key="place.xid || place.id">
+                        <template x-for="place in result.places" :key="place.id ?? place.xid">
                             <div class="border border-zinc-800 rounded-xl p-4 bg-zinc-900">
                                 <h3 class="font-semibold" x-text="place.name"></h3>
                                 <p class="text-sm text-zinc-400" x-text="place.kinds"></p>
@@ -82,13 +87,13 @@
                 </div>
 
                 <!-- HOTELS -->
-                <div>
+                <div x-show="result.hotels?.length">
                     <h2 class="text-2xl font-semibold mb-4">Hotels</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <template x-for="hotel in (results?.hotels ?? [])" :key="hotel.hotelId">
+                        <template x-for="hotel in result.hotels" :key="hotel.hotelId ?? hotel.id">
                             <div class="border border-zinc-800 rounded-xl p-4 bg-zinc-900">
-                                <h3 class="font-semibold" x-text="hotel.hotelName"></h3>
+                                <h3 class="font-semibold" x-text="hotel.hotelName || 'Hotel'"></h3>
                                 <p class="text-amber-400" x-text="'KES ' + (hotel.priceAvg ?? 'N/A')"></p>
                             </div>
                         </template>
@@ -96,17 +101,18 @@
                 </div>
 
                 <!-- FLIGHTS -->
-                <div>
+                <div x-show="result.flights?.length">
                     <h2 class="text-2xl font-semibold mb-4">Flights</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <template x-for="flight in (results?.flights?.data ?? [])" :key="flight.id">
+                        <template x-for="flight in result.flights" :key="flight.id">
                             <div class="border border-zinc-800 rounded-xl p-4 bg-zinc-900">
                                 <h3 class="font-semibold">
-                                    <span x-text="flight.origin"></span> →
-                                    <span x-text="flight.destination"></span>
+                                    <span x-text="flight.from"></span> →
+                                    <span x-text="flight.to"></span>
                                 </h3>
-                                <p class="text-amber-400" x-text="'KES ' + flight.price"></p>
+                                <p class="text-amber-400" x-text="flight.price"></p>
+                                <p class="text-xs text-zinc-500" x-text="flight.airline || flight.source"></p>
                             </div>
                         </template>
                     </div>
@@ -115,7 +121,7 @@
             </div>
 
             <!-- EMPTY STATE -->
-            <div x-show="!loading && !results && !error"
+            <div x-show="!loading && !result && !error"
                  class="text-center py-20 text-zinc-500">
                 Search a destination to begin exploring.
             </div>
@@ -123,26 +129,37 @@
         </div>
     </section>
 </div>
-@endsection
 
-@push('scripts')
 <script>
-function discoveryPage() {
-    return {
+// Define the Alpine component directly in the page to avoid loading order issues
+document.addEventListener('alpine:init', () => {
+    Alpine.data('discoveryPage', () => ({
         query: '',
         loading: false,
         error: null,
 
-        // IMPORTANT: initialize as empty object (NOT null)
-        results: null,
+        // SAFE DEFAULT — not null!
+        result: {
+            city: '',
+            description: '',
+            places: [],
+            hotels: [],
+            flights: [],
+            data_quality: {},
+            meta: {}
+        },
+
+        building: false,
+        buildingMessage: '',
 
         async searchPlace() {
-
             if (!this.query) return;
 
             this.loading = true;
             this.error = null;
-            this.results = null;
+            // Keep the previous result while loading
+            this.building = false;
+            this.buildingMessage = '';
 
             try {
                 const res = await fetch('/discover/search', {
@@ -151,9 +168,7 @@ function discoveryPage() {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({
-                        q: this.query
-                    })
+                    body: JSON.stringify({ q: this.query })
                 });
 
                 const data = await res.json();
@@ -162,22 +177,32 @@ function discoveryPage() {
                     throw new Error(data.message || 'Search failed');
                 }
 
-                if (data.status === 'building') {
-                    this.error = data.message;
-                    this.results = null;
-                    return;
-                }
+                // Merge with safe defaults
+                this.result = {
+                    city: data.result?.city ?? '',
+                    description: data.result?.description ?? '',
+                    places: data.result?.places ?? [],
+                    hotels: data.result?.hotels ?? [],
+                    flights: data.result?.flights ?? [],
+                    data_quality: data.result?.data_quality ?? {},
+                    meta: data.result?.meta ?? {},
+                };
 
-                this.results = data.results ?? null;
+                if (data.status === 'building') {
+                    this.building = true;
+                    this.buildingMessage = data.message || 'We are preparing your travel guide...';
+                }
 
             } catch (e) {
                 console.error(e);
-                this.error = "Search failed. Please try again.";
+                this.error = e.message || "Search failed. Please try again.";
+                // Keep default result (no city)
+                this.result.city = '';
             }
 
             this.loading = false;
         }
-    }
-}
+    }));
+});
 </script>
-@endpush
+@endsection
