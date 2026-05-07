@@ -25,19 +25,22 @@ class DiscoveryController extends Controller
     {
         try {
 
-            // FIX: unify request key with frontend
             $request->validate([
                 'q' => 'required|string|min:2|max:255'
             ]);
 
             $searchTerm = trim($request->input('q'));
 
-            // 1️⃣ Check if city exists
+            /*
+            |------------------------------------------------------
+            | 1. CHECK EXISTING CITY
+            |------------------------------------------------------
+            */
+
             $city = City::where('name', 'LIKE', "%{$searchTerm}%")
                 ->orWhere('slug', Str::slug($searchTerm))
                 ->first();
 
-            // 2️⃣ If already published city → return full SEO page data
             if ($city && $city->status === 'published') {
 
                 return response()->json([
@@ -52,10 +55,20 @@ class DiscoveryController extends Controller
                 ]);
             }
 
-            // 3️⃣ Use FULL discovery engine (THIS IS THE KEY FIX)
+            /*
+            |------------------------------------------------------
+            | 2. MAIN DISCOVERY ENGINE (ONLY SOURCE OF TRUTH)
+            |------------------------------------------------------
+            */
+
             $results = $searchService->search($searchTerm);
 
-            // 4️⃣ If needs build → queue job
+            /*
+            |------------------------------------------------------
+            | 3. BUILD JOB IF REQUIRED
+            |------------------------------------------------------
+            */
+
             if ($results['needs_build'] ?? false) {
 
                 BuildCityDiscoveryPage::dispatch($searchTerm);
@@ -67,7 +80,12 @@ class DiscoveryController extends Controller
                 ]);
             }
 
-            // 5️⃣ Return unified results
+            /*
+            |------------------------------------------------------
+            | 4. RETURN FINAL RESULTS
+            |------------------------------------------------------
+            */
+
             return response()->json([
                 'status' => 'ready',
                 'results' => $results
@@ -75,9 +93,9 @@ class DiscoveryController extends Controller
 
         } catch (\Throwable $e) {
 
-            Log::error('Discovery Search Error: ' . $e->getMessage(), [
+            Log::error('Discovery Search Error', [
+                'message' => $e->getMessage(),
                 'search' => $request->input('q'),
-                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
