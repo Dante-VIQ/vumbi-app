@@ -64,7 +64,7 @@
                     <div class="flex transition-transform duration-700 ease-out" id="slider-track">
                         
                         @php
-                            $headerMedia = App\Models\Blog::latest()->take(6)->get();
+                            $headerMedia = App\Models\HeaderMedia::latest()->take(6)->get();
                         @endphp
                         
                         @if($headerMedia->isNotEmpty())
@@ -76,7 +76,7 @@
                                          class="w-full aspect-[4/3] lg:aspect-[5/4] object-cover"
                                          loading="eager">
                                     
-                                    <div class="p-8">
+                                    {{-- <div class="p-8">
                                         <h3 class="font-semibold text-2xl text-[#1A1A1A] leading-tight">
                                             {{ $media->title }}
                                         </h3>
@@ -88,7 +88,7 @@
                                             Discover this place 
                                             <span class="text-xl leading-none">→</span>
                                         </a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             @endforeach
