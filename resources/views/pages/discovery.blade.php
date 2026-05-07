@@ -33,21 +33,21 @@
     </section>
 
     <!-- ENGINE -->
-    <section class="py-20 bg-black">
+    <section class="py-10 bg-black">
         <div class="max-w-7xl mx-auto px-6">
 
-            <div class="text-center mb-10">
+            <div class="text-center mb-6">
                 <h2 class="text-4xl font-bold">Discovery Engine</h2>
             </div>
 
             <!-- SEARCH INPUT -->
-            <div class="max-w-xl mx-auto mb-10">
+            {{-- <div class="max-w-xl mx-auto mb-10">
                 <input type="text"
                        x-model="query"
                        @keydown.enter.prevent="searchPlace"
                        placeholder="Search any city..."
                        class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-5 text-lg">
-            </div>
+            </div> --}}
 
             <!-- LOADING -->
             <div x-show="loading" class="text-center py-20 text-amber-400">
