@@ -3,9 +3,9 @@
 namespace App\Services\AI;
 
 use App\Models\City;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
-use Exception;
 
 class AIContentService
 {
@@ -16,24 +16,42 @@ class AIContentService
     {
         $city = trim($city);
         if (empty($city)) {
-            return "A beautiful destination waiting to be explored.";
+            return 'A beautiful destination waiting to be explored.';
         }
 
         try {
+            Log::info('OpenAI describeCity attempt', ['city' => $city]);
+
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.75,
-                'max_tokens'  => 300,
-                'messages'    => [
-                    ['role' => 'system', 'content' => 'You are a professional, engaging travel writer.'],
-                    ['role' => 'user', 'content' => "Write a short, exciting 2-4 sentence travel introduction for {$city}."]
-                ]
+                'max_tokens' => 280,
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are a professional travel writer.',
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => "Write a short, exciting 2-4 sentence travel introduction for {$city}.",
+                    ],
+                ],
             ]);
 
-            return trim($response->choices[0]->message->content ?? '');
+            $content = $response->choices[0]->message->content ?? '';
+            Log::info('OpenAI describeCity success', ['city' => $city]);
+
+            return trim($content);
+
         } catch (Exception $e) {
-            Log::warning("AI describeCity failed", ['city' => $city]);
-            return "Discover the charm and beauty of " . ucwords($city) . ".";
+            Log::error('OpenAI describeCity FAILED', [
+                'city' => $city,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return 'Discover the beauty and culture of '.ucwords($city).'.';
         }
     }
 
@@ -44,13 +62,13 @@ class AIContentService
     {
         try {
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.7,
-                'max_tokens'  => 420,
-                'messages'    => [
+                'max_tokens' => 420,
+                'messages' => [
                     ['role' => 'system', 'content' => 'You are a cultural anthropologist and travel expert.'],
-                    ['role' => 'user', 'content' => "Provide key cultural insights, traditions, local etiquette, and people for {$city}, Kenya."]
-                ]
+                    ['role' => 'user', 'content' => "Provide key cultural insights, traditions, local etiquette, and people for {$city}, Kenya."],
+                ],
             ]);
 
             return ['content' => trim($response->choices[0]->message->content ?? '')];
@@ -66,13 +84,13 @@ class AIContentService
     {
         try {
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.65,
-                'max_tokens'  => 380,
-                'messages'    => [
+                'max_tokens' => 380,
+                'messages' => [
                     ['role' => 'system', 'content' => 'You are a historian and travel educator.'],
-                    ['role' => 'user', 'content' => "Give a concise educational overview: history, significance, and interesting facts about {$city}, Kenya."]
-                ]
+                    ['role' => 'user', 'content' => "Give a concise educational overview: history, significance, and interesting facts about {$city}, Kenya."],
+                ],
             ]);
 
             return ['content' => trim($response->choices[0]->message->content ?? '')];
@@ -88,13 +106,13 @@ class AIContentService
     {
         try {
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.6,
-                'max_tokens'  => 250,
-                'messages'    => [
+                'max_tokens' => 250,
+                'messages' => [
                     ['role' => 'system', 'content' => 'You are a travel planning expert.'],
-                    ['role' => 'user', 'content' => "What is the best time to visit {$city}, Kenya? Include seasons, weather, events, and travel tips."]
-                ]
+                    ['role' => 'user', 'content' => "What is the best time to visit {$city}, Kenya? Include seasons, weather, events, and travel tips."],
+                ],
             ]);
 
             return ['content' => trim($response->choices[0]->message->content ?? '')];
@@ -110,13 +128,13 @@ class AIContentService
     {
         try {
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.5,
-                'max_tokens'  => 300,
-                'messages'    => [
+                'max_tokens' => 300,
+                'messages' => [
                     ['role' => 'system', 'content' => 'You are a travel documentation expert. Provide accurate, up-to-date information.'],
-                    ['role' => 'user', 'content' => "Summarize visa requirements, entry rules, and travel documents needed for international tourists visiting {$city}, Kenya."]
-                ]
+                    ['role' => 'user', 'content' => "Summarize visa requirements, entry rules, and travel documents needed for international tourists visiting {$city}, Kenya."],
+                ],
             ]);
 
             return ['content' => trim($response->choices[0]->message->content ?? '')];
@@ -144,18 +162,19 @@ Tone: Exciting yet informative. Maximum 450 words.
 PROMPT;
 
             $response = OpenAI::chat()->create([
-                'model'       => 'gpt-4o-mini',
+                'model' => 'gpt-4o-mini',
                 'temperature' => 0.7,
-                'max_tokens'  => 800,
-                'messages'    => [
+                'max_tokens' => 800,
+                'messages' => [
                     ['role' => 'system', 'content' => 'You are an expert travel content writer.'],
-                    ['role' => 'user', 'content' => $prompt]
-                ]
+                    ['role' => 'user', 'content' => $prompt],
+                ],
             ]);
 
             return trim($response->choices[0]->message->content ?? '');
         } catch (Exception $e) {
-            Log::error("AI buildGuide failed", ['city' => $city->name]);
+            Log::error('AI buildGuide failed', ['city' => $city->name]);
+
             return "Welcome to {$city->name}. A destination full of culture, adventure, and natural beauty.";
         }
     }
