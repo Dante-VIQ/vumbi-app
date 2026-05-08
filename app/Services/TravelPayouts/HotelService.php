@@ -2,9 +2,10 @@
 
 namespace App\Services\TravelPayouts;
 
+use App\Models\City;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class HotelService
 {
@@ -12,34 +13,33 @@ class HotelService
 
     public function searchHotels(string $city, int $limit = 8, string $currency = 'KES'): array
     {
-        if (empty(trim($city))) {
+        $city = trim($city);
+        if (empty($city)) {
             return [];
         }
 
         try {
-            $response = Http::timeout(15)
+            $response = Http::timeout(10)
                 ->get(self::BASE_URL, [
-                    'location' => trim($city),
+                    'location' => $city,
                     'currency' => strtoupper($currency),
-                    'limit'    => min($limit, 20),   // reasonable cap
+                    'limit'    => min($limit, 15),
                     'lang'     => 'en',
                 ]);
 
             if (!$response->successful()) {
                 Log::warning("Hotel API request failed", [
-                    'city' => $city,
-                    'status' => $response->status()
+                    'city'   => $city,
+                    'status' => $response->status(),
+                    'body'   => $response->body()
                 ]);
                 return [];
             }
 
-            $data = $response->json();
-
-            // Optional: Normalize structure here if needed
-            return is_array($data) ? $data : [];
+            return $response->json() ?? [];
 
         } catch (Exception $e) {
-            Log::error("HotelService search failed", [
+            Log::error("HotelService failed", [
                 'city' => $city,
                 'error' => $e->getMessage()
             ]);

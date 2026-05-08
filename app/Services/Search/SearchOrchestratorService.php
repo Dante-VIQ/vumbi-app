@@ -90,74 +90,100 @@ class SearchOrchestratorService
         }
     }
 
+    // private function fetchAllData(array $location, string $query): array
+    // {
+    //     $data = [
+    //         'location' => $location,
+    //         'places' => [],
+    //         'hotels' => [],
+    //         'flights' => [],
+    //         'affiliate_deals' => [],
+    //         'cultural_info' => ['content' => ''],
+    //         'educational_info' => ['content' => ''],
+    //         'best_time_to_visit' => ['content' => ''],
+    //         'visa_info' => ['content' => ''],
+    //         'nearby_destinations' => [],
+    //         'weather' => [],
+    //     ];
+
+    //     try {
+    //         // Places (OpenTripMap)
+    //         $data['places'] = $this->trip->getPlaces(
+    //             $location['lat'] ?? 0,
+    //             $location['lon'] ?? 0,
+    //             limit: 15
+    //         );
+    //     } catch (Exception $e) {
+    //         Log::warning('Places API failed', ['error' => $e->getMessage()]);
+    //     }
+
+    //     try {
+    //         // Hotels
+    //         $data['hotels'] = $this->hotels->searchHotels($query, limit: 8);
+    //     } catch (Exception $e) {
+    //         Log::warning('Hotel API failed', ['query' => $query, 'error' => $e->getMessage()]);
+    //     }
+
+    //     try {
+    //         // Flights
+    //         $data['flights'] = $this->flights->searchFlights($query, limit: 8);
+    //     } catch (Exception $e) {
+    //         Log::warning('Flight Aggregator failed', ['error' => $e->getMessage()]);
+    //     }
+
+    //     try {
+    //         // Affiliate Deals
+    //         $data['affiliate_deals'] = $this->bonusArrive->searchFlights($query, limit: 5);
+    //     } catch (Exception $e) {
+    //         Log::warning('BonusArrive API failed', ['error' => $e->getMessage()]);
+    //     }
+
+    //     // AI Content (most critical for user experience)
+    //     try {
+    //         $data['cultural_info'] = $this->ai->generateCulturalInfo($query);
+    //         $data['educational_info'] = $this->ai->generateEducationalInfo($query);
+    //         $data['best_time_to_visit'] = $this->ai->generateBestTimeToVisit($query);
+    //         $data['visa_info'] = $this->ai->generateVisaInfo($query);
+    //     } catch (Exception $e) {
+    //         Log::warning('AI Content generation failed', ['error' => $e->getMessage()]);
+    //     }
+
+    //     try {
+    //         $data['nearby_destinations'] = $this->getNearbyDestinations($location, $query);
+    //         $data['weather'] = $this->getWeatherData($location);
+    //     } catch (Exception $e) {
+    //         Log::warning('Secondary data failed', ['error' => $e->getMessage()]);
+    //     }
+
+    //     return $data;
+    // }
+
     private function fetchAllData(array $location, string $query): array
-    {
-        $data = [
-            'location' => $location,
-            'places' => [],
-            'hotels' => [],
-            'flights' => [],
-            'affiliate_deals' => [],
-            'cultural_info' => ['content' => ''],
-            'educational_info' => ['content' => ''],
-            'best_time_to_visit' => ['content' => ''],
-            'visa_info' => ['content' => ''],
-            'nearby_destinations' => [],
-            'weather' => [],
-        ];
+{
+    return [
+        'location'            => $location,
+        'places'              => $this->safeCall(fn() => $this->trip->getPlaces($location['lat'] ?? 0, $location['lon'] ?? 0, limit: 12)),
+        'hotels'              => $this->safeCall(fn() => $this->hotels->searchHotels($query, 8)),
+        'flights'             => $this->safeCall(fn() => $this->flights->searchFlights($query, 8)),
+        'affiliate_deals'     => $this->safeCall(fn() => $this->bonusArrive->searchFlights($query, 5)),
+        'cultural_info'       => $this->safeCall(fn() => $this->ai->generateCulturalInfo($query)),
+        'educational_info'    => $this->safeCall(fn() => $this->ai->generateEducationalInfo($query)),
+        'best_time_to_visit'  => $this->safeCall(fn() => $this->ai->generateBestTimeToVisit($query)),
+        'visa_info'           => $this->safeCall(fn() => $this->ai->generateVisaInfo($query)),
+        'nearby_destinations' => [],
+        'weather'             => [],
+    ];
+}
 
-        try {
-            // Places (OpenTripMap)
-            $data['places'] = $this->trip->getPlaces(
-                $location['lat'] ?? 0,
-                $location['lon'] ?? 0,
-                limit: 15
-            );
-        } catch (Exception $e) {
-            Log::warning('Places API failed', ['error' => $e->getMessage()]);
-        }
-
-        try {
-            // Hotels
-            $data['hotels'] = $this->hotels->searchHotels($query, limit: 8);
-        } catch (Exception $e) {
-            Log::warning('Hotel API failed', ['query' => $query, 'error' => $e->getMessage()]);
-        }
-
-        try {
-            // Flights
-            $data['flights'] = $this->flights->searchFlights($query, limit: 8);
-        } catch (Exception $e) {
-            Log::warning('Flight Aggregator failed', ['error' => $e->getMessage()]);
-        }
-
-        try {
-            // Affiliate Deals
-            $data['affiliate_deals'] = $this->bonusArrive->searchFlights($query, limit: 5);
-        } catch (Exception $e) {
-            Log::warning('BonusArrive API failed', ['error' => $e->getMessage()]);
-        }
-
-        // AI Content (most critical for user experience)
-        try {
-            $data['cultural_info'] = $this->ai->generateCulturalInfo($query);
-            $data['educational_info'] = $this->ai->generateEducationalInfo($query);
-            $data['best_time_to_visit'] = $this->ai->generateBestTimeToVisit($query);
-            $data['visa_info'] = $this->ai->generateVisaInfo($query);
-        } catch (Exception $e) {
-            Log::warning('AI Content generation failed', ['error' => $e->getMessage()]);
-        }
-
-        try {
-            $data['nearby_destinations'] = $this->getNearbyDestinations($location, $query);
-            $data['weather'] = $this->getWeatherData($location);
-        } catch (Exception $e) {
-            Log::warning('Secondary data failed', ['error' => $e->getMessage()]);
-        }
-
-        return $data;
+private function safeCall(callable $callable, $default = [])
+{
+    try {
+        $result = $callable();
+        return $result ?? $default;
+    } catch (Exception $e) {
+        return $default;
     }
-
+}
     private function getNearbyDestinations(array $location, string $query): array
     {
         try {

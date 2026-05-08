@@ -4,7 +4,6 @@ namespace App\Services\TravelPayouts;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class FlightService
 {
@@ -18,26 +17,28 @@ class FlightService
         }
 
         try {
-            $response = Http::timeout(12)
+            $response = Http::timeout(10)
                 ->get(self::BASE_URL, [
                     'origin'      => strtoupper($origin),
-                    'destination' => $this->extractAirportCode($destination),
+                    'destination' => $this->getAirportCode($destination),
                     'currency'    => 'KES',
-                    'limit'       => min($limit, 15),
+                    'limit'       => min($limit, 12),
                 ]);
 
             if (!$response->successful()) {
                 Log::warning("TravelPayouts Flight API failed", [
                     'destination' => $destination,
-                    'status' => $response->status()
+                    'status'      => $response->status(),
+                    'body'        => $response->body()
                 ]);
                 return [];
             }
 
-            return $response->json() ?? [];
+            $data = $response->json();
+            return $data['data'] ?? $data ?? [];
 
-        } catch (Exception $e) {
-            Log::error("FlightService::searchFlights failed", [
+        } catch (\Exception $e) {
+            Log::error("FlightService failed", [
                 'destination' => $destination,
                 'error' => $e->getMessage()
             ]);
@@ -45,13 +46,12 @@ class FlightService
         }
     }
 
-    private function extractAirportCode(string $destination): string
+    private function getAirportCode(string $destination): string
     {
-        // If user passed IATA code, use it. Otherwise take first 3 letters (basic fallback)
+        // Simple fallback: take first 3 letters if not already a code
         if (strlen($destination) === 3 && ctype_upper($destination)) {
             return $destination;
         }
-
         return strtoupper(substr($destination, 0, 3));
     }
 }
