@@ -36,50 +36,63 @@ class BonusArriveService
         });
     }
 
-    private function fetchFlightsFromApi(string $destination, int $limit): array
-    {
-        try {
-            $response = Http::timeout(15)
-                ->withHeaders([
-                    'Content-Type'  => 'application/json;charset=utf-8',
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                ])
-                ->post('https://www.bonusarrive.com/slapi/service/advertisers', [
-                    'per_page' => min($limit, 20),
-                    'page'     => 1,
-                    'keyword'  => $destination,
-                    'm_id'     => config('services.bonusarrive.m_id', 11167),
-                ]);
+private function fetchFlightsFromApi(string $destination, int $limit): array
+{
+    try {
+        $response = Http::timeout(15)
+            ->withHeaders([
+                'Content-Type'  => 'application/json;charset=utf-8',
+                'Authorization' => 'Bearer ' . $this->apiKey,
+            ])
+            ->post('https://www.bonusarrive.com/slapi/service/advertisers', [
+                'per_page' => min($limit, 20),
+                'page'     => 1,
+                'keyword'  => $destination,
+                'm_id'     => config('services.bonusarrive.m_id', 11167),
+            ]);
 
-            if (!$response->successful()) {
-                Log::warning('Bonus Arrive API returned error', [
-                    'destination' => $destination,
-                    'status'      => $response->status(),
-                    'body'        => $response->body()
-                ]);
-                return [];
-            }
-
-            $data = $response->json();
-            
-            $flights = $data['data'] 
-                ?? $data['results'] 
-                ?? $data 
-                ?? [];
-
-            return collect($flights)
-                ->take($limit)
-                ->map(fn ($item) => $this->normalizeFlightData($item))
-                ->all();
-
-        } catch (Exception $e) {
-            Log::error('BonusArriveService::fetchFlightsFromApi failed', [
+        if (!$response->successful()) {
+            Log::warning('Bonus Arrive API returned error', [
                 'destination' => $destination,
-                'error'       => $e->getMessage()
+                'status'      => $response->status(),
+                'body'        => $response->body()
             ]);
             return [];
         }
+
+        $data = $response->json();
+        
+        $items = $data['data']
+            ?? $data['results']
+            ?? $data
+            ?? [];
+
+        // $items may be an array, but individual entries could be scalars
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        // Normalize only valid entries, ignore integers/strings
+        $flights = [];
+        foreach ($items as $item) {
+            if (is_array($item)) {
+                $flights[] = $this->normalizeFlightData($item);
+            }
+        }
+
+        return collect($flights)
+            ->take($limit)
+            ->values()
+            ->all();
+
+    } catch (Exception $e) {
+        Log::error('BonusArriveService::fetchFlightsFromApi failed', [
+            'destination' => $destination,
+            'error'       => $e->getMessage()
+        ]);
+        return [];
     }
+}
 
     private function normalizeFlightData(array $item): array
     {
