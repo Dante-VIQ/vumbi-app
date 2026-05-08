@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTransferObjects\SearchResult;
+use App\Services\Search\SearchOrchestratorService;
 use App\Jobs\BuildCityDiscoveryPage;
 use App\Models\City;
-use App\Services\Search\SearchOrchestratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -16,66 +15,105 @@ class DiscoveryController extends Controller
     {
         $trendingCities = City::where('is_published', true)
             ->orderBy('last_refreshed_at', 'desc')
-            ->take(10)
+            ->take(12)
             ->get();
 
         return view('pages.discovery', compact('trendingCities'));
     }
 
+    /**
+     * Main search endpoint (called by Alpine.js)
+     */
     public function search(Request $request, SearchOrchestratorService $orchestrator)
     {
         try {
             $validated = $request->validate([
-                'q' => 'required|string|min:2|max:255',
+                'q' => 'required|string|min:2|max:100',
             ]);
 
             $searchTerm = trim($validated['q']);
 
-            // 1. Check already published city
-            $city = City::where('name', 'LIKE', "%{$searchTerm}%")
-                ->orWhere('slug', Str::slug($searchTerm))
-                ->first();
+            // 1. Check if we already have a fully built city page
+            $existingCity = $this->findExistingCity($searchTerm);
 
-            if ($city && $city->status === 'published') {
-                return response()->json([
-                    'status' => 'ready',
-                    'result' => [
-                        'city'         => $city->name,
-                        'description'  => $city->description ?? "Discover {$city->name}",
-                        'places'       => [],
-                        'hotels'       => [],
-                        'flights'      => [],
-                        'data_quality' => [],
-                        'meta'         => [],
-                        'error'        => null,
-                    ],
-                ]);
+            if ($existingCity && $existingCity->status === 'published') {
+                return $this->readyResponse($existingCity);
             }
 
-            // 2. New search via orchestrator
+            // 2. Perform fresh search via orchestrator
             $searchResult = $orchestrator->search($searchTerm);
 
-            // 3. Dispatch build job if needed – but still return the partial result
+            // 3. Dispatch background build job if quality is insufficient
             if ($searchResult->needsBuild()) {
-                BuildCityDiscoveryPage::dispatch($searchTerm)->onQueue('city-build');
+                BuildCityDiscoveryPage::dispatch($searchTerm)
+                    ->onQueue('city-build')
+                    ->delay(now()->addSeconds(3)); // small delay to avoid race conditions
             }
 
             return response()->json([
                 'status' => $searchResult->needsBuild() ? 'building' : 'ready',
-                'result' => $searchResult->toArray(),   // <-- always an object, never null
+                'result' => $searchResult->toArray(),
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Please enter a valid destination name.',
+            ], 422);
+
         } catch (\Throwable $e) {
-            Log::error('Discovery Search Error', [
-                'search' => $request->input('q'),
-                'error'  => $e->getMessage(),
+            Log::error('Discovery Search Failed', [
+                'query' => $request->input('q'),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Server error. Please try again later.',
-                'result'  => [],    // still an array, not null
+                'message' => 'Unable to process your search at the moment. Please try again.',
+                'result'  => null
             ], 500);
         }
+    }
+
+    /**
+     * Find existing published city
+     */
+    private function findExistingCity(string $searchTerm): ?City
+    {
+        $slug = Str::slug($searchTerm);
+
+        return City::where('slug', $slug)
+            ->orWhere('name', 'LIKE', "%{$searchTerm}%")
+            ->first();
+    }
+
+    /**
+     * Standardized response when we have a ready city page
+     */
+    private function readyResponse(City $city): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'status' => 'ready',
+            'result' => [
+                'city'                => $city->name,
+                'description'         => $city->guide?->intro_text ?? "Discover the beauty of {$city->name}",
+                'places'              => [],
+                'hotels'              => [],
+                'flights'             => [],
+                'affiliate_deals'     => [],
+                'cultural_info'       => ['content' => $city->cultural_info ?? ''],
+                'educational_info'    => ['content' => $city->educational_info ?? ''],
+                'best_time_to_visit'  => ['content' => ''],
+                'visa_info'           => ['content' => ''],
+                'nearby_destinations' => [],
+                'weather'             => [],
+                'data_quality'        => ['can_build' => true, 'quality_score' => 85],
+                'meta'                => [
+                    'source' => 'existing_city',
+                    'cached_at' => now()->toIso8601String()
+                ]
+            ]
+        ]);
     }
 }

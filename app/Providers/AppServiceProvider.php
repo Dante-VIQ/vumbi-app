@@ -31,30 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-                // --- Core orchestration (singleton – one per request/worker) ---
-        $this->app->singleton(SearchOrchestratorService::class);
-
-        // --- Flight aggregation ---
-        $this->app->singleton(FlightAggregatorService::class);
-
-        // --- City building ---
+$this->app->singleton(SearchOrchestratorService::class);
         $this->app->singleton(CityPageBuilder::class);
-
-        // --- AI (consolidated) ---
+        $this->app->singleton(FlightAggregatorService::class);
         $this->app->singleton(AIContentService::class);
-
-        // --- Classifier & Router (stateless, but singleton for consistency) ---
-        $this->app->singleton(QueryClassifierService::class);
-        $this->app->singleton(RouteDecisionService::class);
-
-        // --- Data providers (singleton – they hold no state) ---
-        $this->app->singleton(OpenStreetMapClient::class);
-        $this->app->singleton(OpenTripMapClient::class);
-        $this->app->singleton(HotelService::class);
-        $this->app->singleton(FlightService::class);            // still used by aggregator
-        $this->app->singleton(BonusArriveService::class);      // still used by aggregator
-        $this->app->singleton(PlacesService::class);
-        $this->app->singleton(GeoService::class);
     }
 
     /**

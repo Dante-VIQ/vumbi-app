@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BuildCityDiscoveryPage implements ShouldQueue
@@ -17,8 +16,8 @@ class BuildCityDiscoveryPage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
-    public int $timeout = 420;
-    public int $backoff = 60;
+    public int $timeout = 600;   // 10 minutes
+    public int $backoff = 90;
 
     public function __construct(
         public readonly string $searchTerm
@@ -26,22 +25,18 @@ class BuildCityDiscoveryPage implements ShouldQueue
 
     public function handle(CityPageBuilder $builder): void
     {
-        $searchTerm = trim($this->searchTerm);
-        $slug = Str::slug($searchTerm);
-
-        Log::info('City build job started', ['city' => $searchTerm]);
+        $slug = Str::slug($this->searchTerm);
 
         $city = City::firstOrCreate(
             ['slug' => $slug],
-            [
-                'name'   => $searchTerm,
-                'status' => 'building',
-            ]
+            ['name' => $this->searchTerm, 'status' => 'building']
         );
 
-        // All heavy lifting is delegated to the builder
-        $builder->build($city);
+        // Skip if recently built
+        if ($city->status === 'published' && $city->last_refreshed_at?->gt(now()->subHours(24))) {
+            return;
+        }
 
-        Log::info('City build job finished', ['city' => $searchTerm]);
+        $builder->build($city);
     }
 }

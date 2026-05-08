@@ -5,9 +5,12 @@ namespace App\Services\Search;
 use App\DataTransferObjects\SearchResult;
 use App\Services\AI\AIContentService;
 use App\Services\ApiClients\OpenStreetMapClient;
-use Illuminate\Http\Client\Pool;
-use Illuminate\Support\Facades\Cache;
+use App\Services\ApiClients\OpenTripMapClient;
+use App\Services\FlightAggregatorService;
+use App\Services\TravelPayouts\HotelService;
+use App\Services\BonusArriveService;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -15,6 +18,10 @@ class SearchOrchestratorService
 {
     public function __construct(
         private readonly OpenStreetMapClient $osm,
+        private readonly OpenTripMapClient $trip,
+        private readonly HotelService $hotels,
+        private readonly FlightAggregatorService $flights,
+        private readonly BonusArriveService $bonusArrive,
         private readonly AIContentService $ai,
         private readonly QueryClassifierService $classifier,
         private readonly RouteDecisionService $router
@@ -38,38 +45,38 @@ class SearchOrchestratorService
     private function performSearch(string $query): SearchResult
     {
         try {
-            // 1. Geocode (still sequential – but fast & necessary for places call)
             $location = $this->osm->geocode($query);
             if (!$location) {
-                return $this->errorResult('City not found');
+                return $this->errorResult('City not found. Please check the spelling.');
             }
 
-            // 2. Parallel data fetching – the real power is here
-            $results = $this->fetchDataInParallel($location, $query);
+            $data = $this->fetchAllData($location, $query);
 
-            // 3. AI description (cheap & fast – can be parallel, but keeping simple)
             $description = $this->ai->describeCity($query);
 
-            // 4. Classification & routing
             $classification = $this->classifier->classify($query);
             $routing = $this->router->decide($classification);
 
-            // 5. Quality assessment
-            $dataQuality = $this->assessDataQuality($results, $description);
+            $dataQuality = $this->assessDataQuality($data, $description);
 
             return new SearchResult(
                 success: true,
                 city: ucwords($query),
                 location: $location,
                 description: $description,
-                places: $results['places'],
-                hotels: $results['hotels'],
-                flights: $results['flights'],
+                places: $data['places'],
+                hotels: $data['hotels'],
+                flights: $data['flights'],
+                affiliate_deals: $data['affiliate_deals'],
+                cultural_info: $data['cultural_info'],
+                educational_info: $data['educational_info'],
+                nearby_destinations: $data['nearby_destinations'],
+                weather: $data['weather'],
                 dataQuality: $dataQuality,
                 meta: [
                     'classification' => $classification,
-                    'routing' => $routing,
-                    'cached_at' => now()->toIso8601String(),
+                    'routing'        => $routing,
+                    'cached_at'      => now()->toIso8601String(),
                 ]
             );
 
@@ -78,146 +85,150 @@ class SearchOrchestratorService
                 'query' => $query,
                 'error' => $e->getMessage()
             ]);
-            return $this->errorResult('Search failed. Please try again.');
+            return $this->errorResult('Search failed. Please try again later.');
         }
     }
 
-    /**
-     * Fire all external HTTP calls at the same time.
-     */
-    private function fetchDataInParallel(array $location, string $query): array
+    private function fetchAllData(array $location, string $query): array
     {
-        // All calls are dispatched simultaneously via Http::pool
-        $responses = Http::pool(fn (Pool $pool) => [
-            // 1. Places (OpenTripMap)
-            $pool->as('places')->get('https://api.opentripmap.com/0.1/en/places/radius', [
+        // Parallel API calls where possible
+        $responses = Http::pool(fn ($pool) => [
+            $pool->as('places')->timeout(12)->get(config('services.opentripmap.base_url') . '/radius', [
                 'lat'    => $location['lat'],
                 'lon'    => $location['lon'],
-                'radius' => 5000,
-                'limit'  => 15,
-                'rate'   => 2,
+                'radius' => 15000,
+                'limit'  => 20,
                 'apikey' => config('services.opentripmap.key'),
             ]),
-
-            // 2. Hotels (HotelLook)
-            $pool->as('hotels')->get('https://engine.hotellook.com/api/v2/cache.json', [
-                'location' => $query,
-                'currency' => 'KES',
-                'limit'    => 10,
-                'lang'     => 'en',
-            ]),
-
-            // 3. Flights – TravelPayouts
-            $pool->as('flights_tp')->get('https://api.travelpayouts.com/aviasales/v3/prices_for_dates', [
-                'origin'      => 'NBO',
-                'destination' => strtoupper(substr($query, 0, 3)),
-                'currency'    => 'KES',
-                'limit'       => 10,
-            ]),
-
-            // 4. Flights – BonusArrive
-            $pool->as('flights_ba')
-                ->withHeaders([
-                    'Content-Type'  => 'application/json;charset=utf-8',
-                    'Authorization' => 'Bearer ' . config('services.bonusarrive.api_key'),
-                ])
-                ->post('https://www.bonusarrive.com/slapi/service/advertisers', [
-                    'per_page' => 10,
-                    'page'     => 1,
-                    'keyword'  => $query,
-                    'm_id'     => config('services.bonusarrive.m_id', 11167),
-                ]),
         ]);
 
-        // --- Process results with graceful fallbacks ---
-
-        // Places
-        $places = [];
-        if ($responses['places']->ok()) {
-            $places = $responses['places']->json()['features'] ?? [];
-        }
-
-        // Hotels
-        $hotels = [];
-        if ($responses['hotels']->ok()) {
-            $hotels = $responses['hotels']->json() ?? [];
-        }
-
-        // Flights – combined from both sources
-        $flights = [];
-        if ($responses['flights_tp']->ok()) {
-            $flights = array_merge($flights, $this->normalizeFlightsTravelPayouts(
-                $responses['flights_tp']->json() ?? []
-            ));
-        }
-        if ($responses['flights_ba']->ok()) {
-            $flights = array_merge($flights, $this->normalizeFlightsBonusArrive(
-                $responses['flights_ba']->json() ?? []
-            ));
-        }
-
-        // Sort flights by price (cheapest first)
-        usort($flights, function ($a, $b) {
-            return ($a['price_raw'] ?? 999999) <=> ($b['price_raw'] ?? 999999);
-        });
-
         return [
-            'places'  => $places,
-            'hotels'  => $hotels,
-            'flights' => $flights,
+            'location'            => $location,
+            
+            'places'              => $responses['places']->json()['features'] ?? [],
+            
+            'hotels'              => $this->hotels->searchHotels($query, limit: 10),
+            
+            'flights'             => $this->flights->searchFlights($query, limit: 10),
+            
+            'affiliate_deals'     => $this->bonusArrive->searchFlights($query, limit: 6),
+            
+            // AI Powered Content
+            'cultural_info'       => $this->ai->generateCulturalInfo($query),
+            'educational_info'    => $this->ai->generateEducationalInfo($query),
+            'best_time_to_visit'  => $this->ai->generateBestTimeToVisit($query),
+            'visa_info'           => $this->ai->generateVisaInfo($query),
+            
+            // Other data
+            'nearby_destinations' => $this->getNearbyDestinations($location, $query),
+            'weather'             => $this->getWeatherData($location),
         ];
     }
 
-    // --- Lightweight flight normalisers (moved here for performance) ---
-
-    private function normalizeFlightsTravelPayouts(array $flights): array
+    private function getNearbyDestinations(array $location, string $query): array
     {
-        return array_map(function ($f) {
-            return [
-                'airline'   => $f['airline'] ?? 'Unknown',
-                'from'      => $f['origin'] ?? 'NBO',
-                'to'        => $f['destination'] ?? 'Destination',
-                'price'     => isset($f['price']) ? 'KES ' . number_format($f['price']) : 'Best Price',
-                'price_raw' => (float) ($f['price'] ?? 0),
-                'link'      => $f['booking_url'] ?? '#',
-                'source'    => 'TravelPayouts',
-            ];
-        }, $flights);
+        try {
+            // Use OpenTripMap or OSM to find nearby cities
+            $response = Http::timeout(10)->get(config('services.opentripmap.base_url') . '/radius', [
+                'lat'    => $location['lat'],
+                'lon'    => $location['lon'],
+                'radius' => 80000,           // 80km radius
+                'limit'  => 8,
+                'apikey' => config('services.opentripmap.key'),
+            ]);
+
+            if ($response->successful()) {
+                return collect($response->json()['features'] ?? [])
+                    ->filter(fn($item) => ($item['properties']['name'] ?? '') !== $query)
+                    ->take(6)
+                    ->map(fn($item) => [
+                        'name' => $item['properties']['name'] ?? 'Nearby City',
+                        'distance_km' => round(($item['properties']['dist'] ?? 0) / 1000, 1),
+                    ])
+                    ->all();
+            }
+        } catch (Exception $e) {
+            Log::warning("Failed to fetch nearby destinations", ['error' => $e->getMessage()]);
+        }
+
+        return [];
     }
 
-    private function normalizeFlightsBonusArrive(array $flights): array
+    private function getWeatherData(array $location): array
     {
-        return array_map(function ($f) {
-            $price = (float) ($f['price'] ?? 0);
-            return [
-                'airline'   => $f['airline'] ?? $f['title'] ?? 'Bonus Arrive Deal',
-                'from'      => $f['departure'] ?? 'NBO',
-                'to'        => $f['arrival'] ?? 'Destination',
-                'price'     => $price > 0 ? 'USD ' . number_format($price, 2) : 'Best Price',
-                'price_raw' => $price,
-                'link'      => $f['url'] ?? $f['booking_url'] ?? '#',
-                'source'    => 'Bonus Arrive',
-            ];
-        }, $flights);
+        // TODO: Replace with real weather API (OpenWeatherMap, WeatherAPI, etc.)
+        try {
+            // Placeholder using a free/public API or your configured service
+            $response = Http::timeout(8)->get('https://api.open-meteo.com/v1/forecast', [
+                'latitude'  => $location['lat'],
+                'longitude' => $location['lon'],
+                'current_weather' => true,
+                'timezone' => 'auto',
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'temperature' => $data['current_weather']['temperature'] ?? null,
+                    'windspeed'   => $data['current_weather']['windspeed'] ?? null,
+                    'weathercode' => $data['current_weather']['weathercode'] ?? null,
+                    'unit'        => '°C',
+                ];
+            }
+        } catch (Exception $e) {
+            Log::warning("Weather fetch failed", ['error' => $e->getMessage()]);
+        }
+
+        return [];
     }
 
-    // Quality assessment remains the same
-    private function assessDataQuality(array $results, string $description): array
-    {
-        $hasPlaces = count($results['places'] ?? []) >= 6;
-        $hasHotels = count($results['hotels'] ?? []) >= 4;
-        $hasFlights = count($results['flights'] ?? []) >= 3;
-        $hasDescription = strlen($description) > 80;
+private function assessDataQuality(array $data, string $description): array
+{
+    $hasPlaces          = count($data['places'] ?? []) >= 8;
+    $hasHotels          = count($data['hotels'] ?? []) >= 5;
+    $hasFlights         = count($data['flights'] ?? []) >= 4;
+    $hasDeals           = count($data['affiliate_deals'] ?? []) >= 3;
+    
+    $hasCultural        = !empty($data['cultural_info']['content'] ?? '');
+    $hasEducational     = !empty($data['educational_info']['content'] ?? '');
+    $hasBestTime        = !empty($data['best_time_to_visit']['content'] ?? '');
+    $hasVisaInfo        = !empty($data['visa_info']['content'] ?? '');
+    $hasDescription     = strlen(trim($description)) > 100;
 
-        return [
-            'can_build'     => $hasPlaces && $hasHotels && $hasDescription,
-            'places_count'  => count($results['places'] ?? []),
-            'hotels_count'  => count($results['hotels'] ?? []),
-            'flights_count' => count($results['flights'] ?? []),
-            'has_description' => $hasDescription,
-            'quality_score' => ($hasPlaces ? 40 : 0) + ($hasHotels ? 35 : 0) + ($hasDescription ? 25 : 0),
-        ];
-    }
+    // Calculate quality score
+    $score = 0;
+    if ($hasPlaces)      $score += 22;
+    if ($hasHotels)      $score += 18;
+    if ($hasFlights)     $score += 15;
+    if ($hasDeals)       $score += 12;
+    if ($hasCultural)    $score += 10;
+    if ($hasEducational) $score += 8;
+    if ($hasBestTime)    $score += 8;
+    if ($hasVisaInfo)    $score += 7;
+    if ($hasDescription) $score += 5;
+
+    $canBuild = $hasPlaces && $hasHotels && $hasDescription;
+
+    return [
+        'can_build'             => $canBuild,
+        'quality_score'         => min(100, $score),
+        'places_count'          => count($data['places'] ?? []),
+        'hotels_count'          => count($data['hotels'] ?? []),
+        'flights_count'         => count($data['flights'] ?? []),
+        'deals_count'           => count($data['affiliate_deals'] ?? []),
+        
+        'has_cultural'          => $hasCultural,
+        'has_educational'       => $hasEducational,
+        'has_best_time'         => $hasBestTime,
+        'has_visa_info'         => $hasVisaInfo,
+        'has_description'       => $hasDescription,
+        
+        'overall_readiness'     => $score >= 78 ? 'high' 
+                                    : ($score >= 55 ? 'medium' : 'low'),
+        
+        'recommended_for_build' => $canBuild && $score >= 65,
+    ];
+}
 
     private function sanitizeQuery(string $query): string
     {
