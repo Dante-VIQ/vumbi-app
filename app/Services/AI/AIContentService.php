@@ -12,14 +12,6 @@ use GrokPHP\Client\Exceptions\GrokException;
 class AIContentService
 {
 
-public function __construct()
-{
-    $apiKey = env('GROK_API_KEY');
-    if (!$apiKey) {
-        Log::warning("Grok API key is not set. AI content generation will be disabled.");
-    }
-}
-
     public function describeCity(string $city): string
     {
         return $this->generate('short_intro', $city);
@@ -61,7 +53,7 @@ public function __construct()
                     ['role' => 'user', 'content' => $prompt]
                 ],
                 options: new ChatOptions(
-                    model: Model::GROK_2_LATEST   // ← Changed to GROK_2_LATEST
+                    model: Model::GROK_2   // ← Changed to GROK_2_LATEST
                 )
             );
 
