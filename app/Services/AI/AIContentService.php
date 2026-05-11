@@ -166,21 +166,13 @@ class AIContentService
             'best_time'   => "What is the best time to visit {$city}, Kenya? Include seasons and tips.",
             'visa'        => "Summarize visa and entry requirements for tourists visiting {$city}, Kenya.",
             'full_guide'  => "Write a compelling travel guide for {$city}, Kenya.",
-            default       => "Write about {$city}, Kenya.",
+            default       => "Write about {$city}, Kenya."
         };
     }
 
     private function getSystemPrompt(string $type): string
     {
-        return match ($type) {
-            'visa'        => 'You are an immigration expert specialising in Kenya visa requirements.',
-            'best_time'   => 'You are a Kenyan travel advisor focusing on best seasons, weather, and travel tips.',
-            'educational' => 'You are a historian covering Kenya in an engaging and accurate way.',
-            'cultural'    => 'You are a cultural expert on Kenya, explaining traditions and etiquette clearly.',
-            'short_intro' => 'You are a captivating travel writer who creates enticing, short introductions to Kenyan cities.',
-            'full_guide'  => 'You are a seasoned travel writer producing detailed, practical guides for Kenya.',
-            default       => 'You are a professional travel writer and expert on Kenya.',
-        };
+        return 'You are a professional, friendly travel writer and Kenya expert.';
     }
 
     private function getFallback(string $type, string $city): string
