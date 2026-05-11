@@ -157,23 +157,41 @@ class AIContentService
     //  Prompt Builders (unchanged logic, just refined)
     // -----------------------------------------------------------------
 
-    private function buildPrompt(string $type, string $city): string
-    {
-        return match ($type) {
-            'short_intro' => "Write a short, exciting 2-4 sentence travel introduction for {$city}.",
-            'cultural'    => "Provide key cultural insights, traditions, and local etiquette for {$city}, Kenya.",
-            'educational' => "Give a concise educational overview: history and interesting facts about {$city}, Kenya.",
-            'best_time'   => "What is the best time to visit {$city}, Kenya? Include seasons and tips.",
-            'visa'        => "Summarize visa and entry requirements for tourists visiting {$city}, Kenya.",
-            'full_guide'  => "Write a compelling travel guide for {$city}, Kenya.",
-            default       => "Write about {$city}, Kenya."
-        };
-    }
+private function buildPrompt(string $type, string $city): string
+{
+    $base = match ($type) {
+        'short_intro' => "Write a short, exciting 2-4 sentence travel introduction for {$city}.",
+        'cultural'    => "Provide key cultural insights, traditions, and local etiquette for {$city}, Kenya.",
+        'educational' => "Give a concise educational overview: history and interesting facts about {$city}, Kenya.",
+        'best_time'   => "What is the best time to visit {$city}, Kenya? Include seasons and tips.",
+        'visa'        => "Summarize visa and entry requirements for tourists visiting {$city}, Kenya.",
+        'full_guide'  => "Write a compelling travel guide for {$city}, Kenya.",
+        default       => "Write about {$city}, Kenya.",
+    };
 
-    private function getSystemPrompt(string $type): string
-    {
-        return 'You are a professional, friendly travel writer and Kenya expert.';
-    }
+    // Add universal formatting instructions
+    $formatting = "Use proper markdown formatting: headings (###), bullet points (-), and line breaks between sections. Do NOT write everything in a single paragraph.";
+    
+    return "{$base}\n\n{$formatting}";
+}
+
+private function getSystemPrompt(string $type): string
+{
+    $rolePrompt = match ($type) {
+        'visa'        => 'You are an immigration expert specialising in Kenya visa requirements.',
+        'best_time'   => 'You are a Kenyan travel advisor focusing on best seasons, weather, and travel tips.',
+        'educational' => 'You are a historian covering Kenya in an engaging and accurate way.',
+        'cultural'    => 'You are a cultural expert on Kenya, explaining traditions and etiquette clearly.',
+        'short_intro' => 'You are a captivating travel writer who creates enticing, short introductions to Kenyan cities.',
+        'full_guide'  => 'You are a seasoned travel writer producing detailed, practical guides for Kenya.',
+        default       => 'You are a professional travel writer and expert on Kenya.',
+    };
+
+    // Universal formatting instruction appended to every system prompt
+    $formattingRule = ' Always format your response using proper Markdown. Use headings (###), bullet points (-), and separate sections with line breaks. Never output a single continuous paragraph.';
+
+    return $rolePrompt . $formattingRule;
+}
 
     private function getFallback(string $type, string $city): string
     {

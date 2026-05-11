@@ -11,6 +11,7 @@ use App\Services\FlightAggregatorService;
 use App\Services\TravelPayouts\HotelService;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -36,6 +37,12 @@ class SearchOrchestratorService
 
         if (empty($query)) {
             return $this->errorResult('Invalid search query');
+        }
+
+                // 1. Check database cache first (most persistent)
+        $cached = $this->getFromDatabaseCache($query);
+        if ($cached) {
+            return $cached;
         }
 
         $cacheKey = 'travel_search_' . md5(strtolower($query));
@@ -71,7 +78,7 @@ class SearchOrchestratorService
             $dataQuality = $this->assessDataQuality($data, $description);
 
             // 6. Compose and return the final DTO
-            return new SearchResult(
+             $searchResult = new SearchResult(
                 success: true,
                 city: ucwords($query),
                 location: $location,
@@ -93,6 +100,11 @@ class SearchOrchestratorService
                     'cached_at' => now()->toIso8601String(),
                 ]
             );
+
+            return $searchResult;
+
+             $this->saveToDatabaseCache($query, $searchResult);
+
         } catch (Exception $e) {
             Log::error('SearchOrchestrator failed', [
                 'query' => $query,
@@ -101,8 +113,71 @@ class SearchOrchestratorService
 
             return $this->errorResult('Search failed. Please try again later.');
         }
+
+
     }
 
+         private function getFromDatabaseCache(string $query): ?SearchResult
+    {
+        $hash = $this->queryHash($query);
+        $row = DB::table('cached_searches')
+            ->where('query_hash', $hash)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                  ->orWhere('expires_at', '>', now());
+            })
+            ->first();
+
+        if (!$row) {
+            return null;
+        }
+
+        try {
+            return $this->decompressResult($row->compressed_result);
+        } catch (Exception $e) {
+            // If decompression fails, remove the broken entry
+            DB::table('cached_searches')->where('id', $row->id)->delete();
+            return null;
+        }
+    }
+
+        private function saveToDatabaseCache(string $query, SearchResult $result): void
+    {
+        $hash = $this->queryHash($query);
+        $compressed = $this->compressResult($result);
+
+        DB::table('cached_searches')->updateOrInsert(
+            ['query_hash' => $hash],
+            [
+                'query' => $query,
+                'compressed_result' => $compressed,
+                'expires_at' => now()->addDays(30), // Keep for 30 days; adjust as needed
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+    }
+
+    /**
+ * Compress and serialize a SearchResult into a binary string.
+ */
+private function compressResult(SearchResult $result): string
+{
+    // serialize the DTO to a string, then compress with maximum level (9)
+    return gzcompress(serialize($result), 9);
+}
+
+/**
+ * Decompress and unserialize a binary string back into a SearchResult.
+ */
+private function decompressResult(string $compressed): SearchResult
+{
+    return unserialize(gzuncompress($compressed));
+}
+    private function queryHash(string $query): string
+    {
+        return hash('sha256', strtolower(trim($query)));
+    }
     /**
      * Fetch all data sources in parallel-style calls, safely falling back on failure.
      */

@@ -57,4 +57,16 @@ class SearchResult implements Arrayable
             'meta'                 => $this->meta,
         ];
     }
+
+    
+
+private function compressResult(SearchResult $result): string
+{
+    return gzcompress(serialize($result), 9); // 9 = maximum compression
+}
+
+private function decompressResult(string $compressed): SearchResult
+{
+    return unserialize(gzuncompress($compressed));
+}
 }
