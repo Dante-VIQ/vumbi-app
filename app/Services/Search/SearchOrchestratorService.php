@@ -183,37 +183,39 @@ private function decompressResult(string $compressed): SearchResult
      */
     private function fetchAllData(array $location, string $query): array
     {
+        $airportCode = $this->getDestinationAirport($query, $location);
         return [
-            'location'            => $location,
+            'location' => $location,
 
             // External APIs (use safeCall to return [])
-            'places'              => $this->safeCall(
+            'places'=> $this->safeCall(
                 fn() => $this->trip->getPlaces($location['lat'] ?? 0, $location['lon'] ?? 0, limit: 12)
             ),
-            'hotels'              => $this->safeCall(
-                fn() => $this->hotels->searchHotels($query, 8)
-            ),
-            'flights'             => $this->safeCall(
-                fn() => $this->flights->searchFlights($query, 8)
-            ),
-            'affiliate_deals'     => $this->safeCall(
-                fn() => $this->bonusArrive->searchFlights($query, 5)
-            ),
-
+'hotels' => $this->safeCall(
+    fn() => $this->hotels->searchByCoordinates(
+        $location['lat'], $location['lon'], 8
+    )
+),
+'flights' => $this->safeCall(
+    fn() => $this->flights->searchFlights($airportCode, 8)
+),
+'affiliate_deals' => $this->safeCall(
+    fn() => $this->bonusArrive->searchDeals($query, 5)  // BonusArriveService
+),
             // AI content – provide fallback shape ['content' => ''] to preserve structure
-            'cultural_info'       => $this->safeCall(
+            'cultural_info' => $this->safeCall(
                 fn() => $this->ai->generateCulturalInfo($query),
                 ['content' => '']
             ),
-            'educational_info'    => $this->safeCall(
+            'educational_info' => $this->safeCall(
                 fn() => $this->ai->generateEducationalInfo($query),
                 ['content' => '']
             ),
-            'best_time_to_visit'  => $this->safeCall(
+            'best_time_to_visit' => $this->safeCall(
                 fn() => $this->ai->generateBestTimeToVisit($query),
                 ['content' => '']
             ),
-            'visa_info'           => $this->safeCall(
+            'visa_info' => $this->safeCall(
                 fn() => $this->ai->generateVisaInfo($query),
                 ['content' => '']
             ),
@@ -222,12 +224,21 @@ private function decompressResult(string $compressed): SearchResult
             'nearby_destinations' => $this->safeCall(
                 fn() => $this->getNearbyDestinations($location, $query)
             ),
-            'weather'             => $this->safeCall(
+            'weather' => $this->safeCall(
                 fn() => $this->getWeatherData($location)
             ),
         ];
     }
 
+    private function getDestinationAirport(string $city, array $location): string
+{
+    // Fallback: coordinate search
+    $code = $this->flights->findNearestAirport($location['lat'], $location['lon']);
+    if ($code) return $code;
+
+    // Last resort – just return the city name (will likely fail, but we tried)
+    return $city;
+}
     /**
      * Execute a callable and return its result, or a default value on failure.
      */

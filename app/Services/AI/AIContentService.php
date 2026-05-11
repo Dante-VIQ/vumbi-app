@@ -71,6 +71,9 @@ class AIContentService
                 if ($content !== null && $content !== '') {
                     return trim($content);
                 }
+
+                // Trim if content exceeds a certain length per type
+$content = $this->enforceLength($type, $content);
             } catch (\Exception $e) {
                 Log::warning("AI model [{$config['name']}] failed for type [{$type}]", [
                     'error' => $e->getMessage(),
@@ -83,6 +86,23 @@ class AIContentService
         return $this->getFallback($type, $city);
     }
 
+    private function enforceLength(string $type, string $content): string
+{
+    $maxChars = [
+        'short_intro' => 500,
+        'cultural'    => 600,
+        'educational' => 600,
+        'best_time'   => 400,
+        'visa'        => 400,
+        'full_guide'  => 1500,
+    ];
+
+    $limit = $maxChars[$type] ?? 1000;
+    if (mb_strlen($content) > $limit) {
+        $content = mb_substr($content, 0, $limit) . '...';
+    }
+    return $content;
+}
     /**
      * Call a single AI provider and return the generated text (or null).
      */
@@ -138,7 +158,7 @@ class AIContentService
                     ['role' => 'system', 'content' => $system],
                     ['role' => 'user', 'content' => $userPrompt],
                 ],
-                'temperature' => 0.7,
+                'temperature' => 0.4,
             ]);
 
         if ($response->successful()) {
@@ -160,21 +180,58 @@ class AIContentService
 private function buildPrompt(string $type, string $city): string
 {
     $base = match ($type) {
-        'short_intro' => "Write a short, exciting 2-4 sentence travel introduction for {$city}.",
-        'cultural'    => "Provide key cultural insights, traditions, and local etiquette for {$city}, Kenya.",
-        'educational' => "Give a concise educational overview: history and interesting facts about {$city}, Kenya.",
-        'best_time'   => "What is the best time to visit {$city}, Kenya? Include seasons and tips.",
-        'visa'        => "Summarize visa and entry requirements for tourists visiting {$city}, Kenya.",
-        'full_guide'  => "Write a compelling travel guide for {$city}, Kenya.",
-        default       => "Write about {$city}, Kenya.",
+        'short_intro' => 
+            "Write a short 2‑3 sentence travel introduction for {$city}, Kenya. 
+            Be exciting but extremely brief. No extra details.",
+
+        'cultural' => 
+            "List the key cultural insights, traditions and local etiquette for {$city}, Kenya. 
+            Use bullet points (‑). Each bullet must be one short sentence. 
+            Maximum 5 bullets. Do not write a paragraph.",
+
+        'educational' => 
+            "Give a concise educational overview of {$city}, Kenya. 
+            Use exactly 3‑4 bullet points (‑) covering history and interesting facts. 
+            Each bullet one sentence. No narrative.",
+
+        'best_time' => 
+            "What is the best time to visit {$city}, Kenya? 
+            Answer in a single short paragraph of max 3 sentences. 
+            Include the best months and a practical tip. No bullet points.",
+
+        'visa' => 
+            "Summarize visa and entry requirements for tourists to {$city}, Kenya. 
+            Reply with exactly 2 short sentences. No more.",
+
+        'full_guide' => 
+            "Write a mini travel guide for {$city}, Kenya using this structure:
+
+            ### Intro
+            (2‑3 sentences max)
+
+            ### Top Attractions
+            - Bullet list of 3‑4 items, each one line
+
+            ### Culture & Etiquette
+            - Bullet list, 3 items max
+
+            ### Best Time to Visit
+            (1‑2 sentences)
+
+            ### Visa Info
+            (1‑2 sentences)
+
+            Keep every section very short. No long paragraphs.",
+
+        default => 
+            "Write a one‑paragraph overview of {$city}, Kenya. Maximum 4 sentences.",
     };
 
-    // Add universal formatting instructions
-    $formatting = "Use proper markdown formatting: headings (###), bullet points (-), and line breaks between sections. Do NOT write everything in a single paragraph.";
-    
+    // Universal formatting rule – already in base prompts, but we can repeat
+    $formatting = "Never write long paragraphs. Use bullet points where instructed. Keep language simple and scannable.";
+
     return "{$base}\n\n{$formatting}";
 }
-
 private function getSystemPrompt(string $type): string
 {
     $rolePrompt = match ($type) {
@@ -187,10 +244,14 @@ private function getSystemPrompt(string $type): string
         default       => 'You are a professional travel writer and expert on Kenya.',
     };
 
-    // Universal formatting instruction appended to every system prompt
-    $formattingRule = ' Always format your response using proper Markdown. Use headings (###), bullet points (-), and separate sections with line breaks. Never output a single continuous paragraph.';
+    $formattingRule = 
+        "Your responses must be scannable and concise. 
+        Use bullet points whenever appropriate. 
+        Keep paragraphs under 3 sentences. 
+        Never produce a wall of text. 
+        When asked for a list, use `-` bullets, one sentence each.";
 
-    return $rolePrompt . $formattingRule;
+    return $rolePrompt . ' ' . $formattingRule;
 }
 
     private function getFallback(string $type, string $city): string

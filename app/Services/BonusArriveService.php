@@ -15,109 +15,120 @@ class BonusArriveService
     public function __construct()
     {
         $this->apiKey   = config('services.bonusarrive.api_key', '');
-        $this->cacheTtl = config('services.bonusarrive.cache_ttl', 14400); // 4 hours
+        $this->cacheTtl = config('services.bonusarrive.cache_ttl', 14400);
     }
 
     /**
-     * Search flights / travel deals using Bonus Arrive API
+     * Fetch travel deals (flights, hotels, packages) from Bonus Arrive.
      */
-    public function searchFlights(string $destination, int $limit = 8): array
+    public function searchDeals(string $destination, int $limit = 8): array
     {
         $destination = trim($destination);
-        
         if (empty($destination) || empty($this->apiKey)) {
             return [];
         }
 
-        $cacheKey = 'bonusarrive_flights_' . md5(strtolower($destination));
+        $cacheKey = 'bonusarrive_deals_' . md5(strtolower($destination));
 
         return Cache::remember($cacheKey, $this->cacheTtl, function () use ($destination, $limit) {
-            return $this->fetchFlightsFromApi($destination, $limit);
+            return $this->fetchDealsFromApi($destination, $limit);
         });
     }
 
-private function fetchFlightsFromApi(string $destination, int $limit): array
-{
-    try {
-        $response = Http::timeout(15)
-            ->withHeaders([
-                'Content-Type'  => 'application/json;charset=utf-8',
-                'Authorization' => 'Bearer ' . $this->apiKey,
-            ])
-            ->post('https://www.bonusarrive.com/slapi/service/advertisers', [
-                'per_page' => min($limit, 20),
-                'page'     => 1,
-                'keyword'  => $destination,
-                'm_id'     => config('services.bonusarrive.m_id', 11167),
-            ]);
+    /**
+     * Legacy alias for backward compatibility.
+     */
+    public function searchFlights(string $destination, int $limit = 8): array
+    {
+        return $this->searchDeals($destination, $limit);
+    }
 
-        if (!$response->successful()) {
-            Log::warning('Bonus Arrive API returned error', [
+    private function fetchDealsFromApi(string $destination, int $limit): array
+    {
+        try {
+            $response = Http::timeout(15)
+                ->withHeaders([
+                    'Content-Type'  => 'application/json;charset=utf-8',
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                ])
+                ->post('https://www.bonusarrive.com/slapi/service/advertisers', [
+                    'per_page' => min($limit, 20),
+                    'page'     => 1,
+                    'keyword'  => $destination,
+                    'm_id'     => config('services.bonusarrive.m_id', 11167),
+                ]);
+
+            if (!$response->successful()) {
+                Log::warning('Bonus Arrive API returned error', [
+                    'destination' => $destination,
+                    'status'      => $response->status(),
+                    'body'        => $response->body(),
+                ]);
+                return [];
+            }
+
+            $data = $response->json();
+
+            // Extract list – adjust path based on your actual response
+            $items = $data['data'] ?? $data['results'] ?? $data ?? [];
+
+            if (!is_array($items)) {
+                return [];
+            }
+
+            $deals = [];
+            foreach ($items as $item) {
+                if (is_array($item)) {
+                    $deals[] = $this->normalizeDeal($item);
+                }
+            }
+
+            return collect($deals)
+                ->take($limit)
+                ->values()
+                ->all();
+
+        } catch (Exception $e) {
+            Log::error('BonusArriveService::fetchDealsFromApi failed', [
                 'destination' => $destination,
-                'status'      => $response->status(),
-                'body'        => $response->body()
+                'error'       => $e->getMessage(),
             ]);
             return [];
         }
-
-        $data = $response->json();
-        
-        $items = $data['data']
-            ?? $data['results']
-            ?? $data
-            ?? [];
-
-        // $items may be an array, but individual entries could be scalars
-        if (!is_array($items)) {
-            $items = [];
-        }
-
-        // Normalize only valid entries, ignore integers/strings
-        $flights = [];
-        foreach ($items as $item) {
-            if (is_array($item)) {
-                $flights[] = $this->normalizeFlightData($item);
-            }
-        }
-
-        return collect($flights)
-            ->take($limit)
-            ->values()
-            ->all();
-
-    } catch (Exception $e) {
-        Log::error('BonusArriveService::fetchFlightsFromApi failed', [
-            'destination' => $destination,
-            'error'       => $e->getMessage()
-        ]);
-        return [];
     }
-}
 
-    private function normalizeFlightData(array $item): array
+    /**
+     * Normalize a deal/advert into a standard structure.
+     */
+    private function normalizeDeal(array $item): array
     {
         return [
-            'airline'      => $item['airline'] ?? $item['title'] ?? 'Bonus Arrive Deal',
-            'from'         => $item['departure'] ?? 'NBO',
-            'to'           => $item['arrival'] ?? $item['destination'] ?? 'Destination',
-            'price'        => $this->formatPrice($item['price'] ?? null),
-            'link'         => $item['url'] ?? $item['booking_url'] ?? '#',
-            'description'  => $item['description'] ?? $item['short_desc'] ?? '',
-            'image'        => $item['image'] ?? $item['thumbnail'] ?? null,
-            'network'      => 'Bonus Arrive',
-            'type'         => 'flight',
-            'raw'          => $item, // Keep original data for debugging
+            'title'       => $item['title'] ?? 'Travel Deal',
+            'description' => $item['short_desc'] ?? $item['description'] ?? '',
+            'price'       => $this->formatPrice($item['price'] ?? null, $item['currency'] ?? 'USD'),
+            'currency'    => $item['currency'] ?? 'USD',
+            'image'       => $item['image'] ?? $item['thumbnail'] ?? null,
+            'link'        => $item['url'] ?? $item['booking_url'] ?? '#',
+            'advertiser'  => $item['advertiser_name'] ?? 'Bonus Arrive',
+            'type'        => $item['type'] ?? 'deal',   // 'flight', 'hotel', 'package'
+            'raw'         => $item,                     // for debugging
         ];
     }
 
-    private function formatPrice($price): string
+    /**
+     * Format price into a human-readable string.
+     */
+    private function formatPrice($price, string $currency = 'USD'): string
     {
-        if (empty($price)) {
+        if (empty($price) || !is_numeric($price)) {
             return 'Best Price';
         }
 
-        return is_numeric($price) 
-            ? '$' . number_format((float)$price, 2) 
-            : (string) $price;
+        // If currency is KES, format differently
+        if (strtoupper($currency) === 'KES') {
+            return 'KSh ' . number_format((float)$price);
+        }
+
+        return '$' . number_format((float)$price, 2);
     }
 }
