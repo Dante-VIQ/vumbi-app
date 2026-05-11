@@ -50,6 +50,9 @@ class AIContentService
 
     private function generate(string $type, string $city): string
     {
+          $models = [Model::GROK_2_LATEST, Model::GROK_2]; // try latest, then stable
+
+    foreach ($models as $model) {
         try {
             $prompt = $this->buildPrompt($type, $city);
 
@@ -59,7 +62,7 @@ class AIContentService
                     ['role' => 'user', 'content' => $prompt]
                 ],
                 options: new ChatOptions(
-                    model: Model::GROK_2_1212     // ← This is the correct one
+                    model: $model     // ← This is the correct one
                 )
             );
 
@@ -74,6 +77,8 @@ class AIContentService
         } catch (\Exception $e) {
             Log::error("Grok Error", ['error' => $e->getMessage()]);
         }
+
+    }
 
         return $this->getFallback($type, $city);
     }
