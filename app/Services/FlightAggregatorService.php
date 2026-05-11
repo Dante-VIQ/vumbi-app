@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\TravelPayouts\FlightService;
 use App\Services\BonusArriveService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class FlightAggregatorService
 {
