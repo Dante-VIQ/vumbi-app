@@ -59,35 +59,34 @@ class AIContentService
     /**
      * Generate content by trying multiple free AI models in order.
      */
-    private function generate(string $type, string $city): string
-    {
-        $system = $this->getSystemPrompt($type);
-        $prompt = $this->buildPrompt($type, $city);
+private function generate(string $type, string $city): string
+{
+    $system = $this->getSystemPrompt($type);
+    $prompt = $this->buildPrompt($type, $city);
 
-        // Iterate through all configured models until one succeeds
-        foreach ($this->providers as $modelKey => $config) {
-            try {
-                $content = $this->callModel($config, $system, $prompt);
-                if ($content !== null && $content !== '') {
-                    return trim($content);
+    foreach ($this->providers as $modelKey => $config) {
+        try {
+            $content = $this->callModel($config, $system, $prompt);
+            if ($content !== null && $content !== '') {
+                $content = trim($content);
+                // Only enforce length if we have content
+                if (is_string($content)) {
+                    $content = $this->enforceLength($type, $content);
                 }
-
-                // Trim if content exceeds a certain length per type
-$content = $this->enforceLength($type, $content);
-            } catch (\Exception $e) {
-                Log::warning("AI model [{$config['name']}] failed for type [{$type}]", [
-                    'error' => $e->getMessage(),
-                ]);
+                return $content;
             }
+        } catch (\Exception $e) {
+            Log::warning("AI model [{$config['name']}] failed", ['error' => $e->getMessage()]);
         }
-
-        // If every model failed, use hardcoded fallback
-        Log::error("All AI models failed for type [{$type}], city [{$city}]");
-        return $this->getFallback($type, $city);
     }
+
+    Log::error("All AI models failed for type [{$type}], city [{$city}]");
+    return $this->getFallback($type, $city);
+}
 
     private function enforceLength(string $type, string $content): string
 {
+
     $maxChars = [
         'short_intro' => 500,
         'cultural'    => 600,
