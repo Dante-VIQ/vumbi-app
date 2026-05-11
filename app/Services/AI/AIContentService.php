@@ -180,30 +180,30 @@ private function buildPrompt(string $type, string $city): string
 {
     $base = match ($type) {
         'short_intro' => 
-            "Write a short 2‑3 sentence travel introduction for {$city}, Kenya. 
+            "Write a short 2‑3 sentence travel introduction for {$city}. 
             Be exciting but extremely brief. No extra details.",
 
         'cultural' => 
-            "List the key cultural insights, traditions and local etiquette for {$city}, Kenya. 
+            "List the key cultural insights, traditions and local etiquette for {$city} 
             Use bullet points (‑). Each bullet must be one short sentence. 
             Maximum 5 bullets. Do not write a paragraph.",
 
         'educational' => 
-            "Give a concise educational overview of {$city}, Kenya. 
+            "Give a concise educational overview of {$city}. 
             Use exactly 3‑4 bullet points (‑) covering history and interesting facts. 
             Each bullet one sentence. No narrative.",
 
         'best_time' => 
-            "What is the best time to visit {$city}, Kenya? 
+            "What is the best time to visit {$city}? 
             Answer in a single short paragraph of max 3 sentences. 
             Include the best months and a practical tip. No bullet points.",
 
         'visa' => 
-            "Summarize visa and entry requirements for tourists to {$city}, Kenya. 
+            "Summarize visa and entry requirements for tourists to {$city}. 
             Reply with exactly 2 short sentences. No more.",
 
         'full_guide' => 
-            "Write a mini travel guide for {$city}, Kenya using this structure:
+            "Write a mini travel guide for {$city}, using this structure:
 
             ### Intro
             (2‑3 sentences max)
@@ -223,7 +223,7 @@ private function buildPrompt(string $type, string $city): string
             Keep every section very short. No long paragraphs.",
 
         default => 
-            "Write a one‑paragraph overview of {$city}, Kenya. Maximum 4 sentences.",
+            "Write a one‑paragraph overview of {$city}. Maximum 4 sentences.",
     };
 
     // Universal formatting rule – already in base prompts, but we can repeat
@@ -234,13 +234,13 @@ private function buildPrompt(string $type, string $city): string
 private function getSystemPrompt(string $type): string
 {
     $rolePrompt = match ($type) {
-        'visa'        => 'You are an immigration expert specialising in Kenya visa requirements.',
-        'best_time'   => 'You are a Kenyan travel advisor focusing on best seasons, weather, and travel tips.',
-        'educational' => 'You are a historian covering Kenya in an engaging and accurate way.',
-        'cultural'    => 'You are a cultural expert on Kenya, explaining traditions and etiquette clearly.',
-        'short_intro' => 'You are a captivating travel writer who creates enticing, short introductions to Kenyan cities.',
+        'visa'        => 'You are an immigration expert specialising in  visa requirements.',
+        'best_time'   => 'You are a travel advisor focusing on best seasons, weather, and travel tips.',
+        'educational' => 'You are a historian covering in an engaging and accurate way.',
+        'cultural'    => 'You are a cultural expert on Africa, explaining traditions and etiquette clearly.',
+        'short_intro' => 'You are a captivating travel writer who creates enticing, short introductions to cities.',
         'full_guide'  => 'You are a seasoned travel writer producing detailed, practical guides for Kenya.',
-        default       => 'You are a professional travel writer and expert on Kenya.',
+        default       => 'You are a professional travel writer and expert.',
     };
 
     $formattingRule = 
@@ -257,10 +257,10 @@ private function getSystemPrompt(string $type): string
     {
         $cityName = ucwords($city);
         return match ($type) {
-            'visa'        => "Visa information for {$cityName} is currently unavailable. Please check the official Kenyan e‑visa website.",
-            'best_time'   => "We couldn't retrieve the best time to visit {$cityName} right now. Kenya generally has great weather year‑round!",
+            'visa'        => "Visa information for {$cityName} is currently unavailable. Please check the official e‑visa website.",
+            'best_time'   => "We couldn't retrieve the best time to visit {$cityName} right now. Africa generally has great weather year‑round!",
             'cultural'    => "Cultural insights for {$cityName} are not available at this moment. Kenyans are known for their warmth and hospitality.",
-            'educational' => "Historical information for {$cityName} is temporarily unavailable. Kenya has a rich and diverse history.",
+            'educational' => "Historical information for {$cityName} is temporarily unavailable. Africa  has a rich and diverse history.",
             'full_guide'  => "We're unable to generate a full guide for {$cityName} right now. Explore its beautiful landscapes and vibrant culture.",
             default       => "Discover the beauty and rich culture of {$cityName}.",
         };
