@@ -88,4 +88,34 @@ class FlightAggregatorService
         $flights = $this->searchFlights($destination, 5);
         return $flights[0] ?? null;
     }
+
+    /**
+ * Find the nearest IATA airport code for given coordinates.
+ * Uses TravelPayouts' nearest airport endpoint if a token is available.
+ */
+public function findNearestAirport(float $lat, float $lon): ?string
+{
+    $token = config('services.travelpayouts.token') ?? env('TRAVELPAYOUTS_TOKEN');
+    if (!$token) {
+        return null; // fallback later
+    }
+
+    try {
+        $response = Http::timeout(10)->get('https://api.travelpayouts.com/aviasales_direct/api/search/nearest', [
+            'lat'   => $lat,
+            'lng'   => $lon,
+            'token' => $token,
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            // Return the code of the first airport
+            return $data['data'][0]['code'] ?? null;
+        }
+    } catch (\Exception $e) {
+        Log::warning("findNearestAirport failed: " . $e->getMessage());
+    }
+
+    return null;
+}
 }
