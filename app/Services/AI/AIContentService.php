@@ -3,14 +3,25 @@
 namespace App\Services\AI;
 
 use App\Models\City;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use GrokPHP\Laravel\Facades\GrokAI;
-use GrokPHP\Client\Config\ChatOptions;
-use GrokPHP\Client\Enums\Model;
-use GrokPHP\Client\Exceptions\GrokException;
 
 class AIContentService
 {
+    /**
+     * All configured AI model providers.
+     */
+    private array $providers;
+
+    public function __construct()
+    {
+        $this->providers = config('ai_models.models', []);
+    }
+
+    // -----------------------------------------------------------------
+    //  Public API (unchanged signatures)
+    // -----------------------------------------------------------------
+
     public function describeCity(string $city): string
     {
         return $this->generate('short_intro', $city);
@@ -38,68 +49,114 @@ class AIContentService
 
     public function buildGuide(City $city): string
     {
-        // If more city details are needed, you can expand the prompt here
         return $this->generate('full_guide', $city->name);
     }
 
+    // -----------------------------------------------------------------
+    //  Core Generation Engine
+    // -----------------------------------------------------------------
+
     /**
-     * Core generation method.
-     *
-     * @param  string $type The type of content to generate
-     * @param  string $city The city name
-     * @return string The generated content or fallback
+     * Generate content by trying multiple free AI models in order.
      */
     private function generate(string $type, string $city): string
     {
-        try {
-            $system = $this->getSystemPrompt($type);
-            $prompt = $this->buildPrompt($type, $city);
+        $system = $this->getSystemPrompt($type);
+        $prompt = $this->buildPrompt($type, $city);
 
-            $response = GrokAI::chat(
-                messages: [
-                    ['role' => 'system', 'content' => $system],
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-                options: new ChatOptions(
-                    // Ensure you use the latest available model constant.
-                    // Check your GrokPHP version – it might be Model::GROK_2_LATEST or similar.
-                    model: Model::GROK_2_LATEST
-                )
-            );
-
-            // Normalise the response to a string.
-            // Assuming chat() returns an object with a content() method.
-            $content = method_exists($response, 'content')
-                ? $response->content()
-                : (string) $response;
-
-            return trim($content);
-
-        } catch (GrokException $e) {
-            Log::error("Grok AI Error", [
-                'type'    => $type,
-                'city'    => $city,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ]);
-        } catch (\Throwable $e) {
-            // Catch any other unexpected errors
-            Log::error("Unexpected Grok Error", [
-                'type'    => $type,
-                'city'    => $city,
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ]);
+        // Iterate through all configured models until one succeeds
+        foreach ($this->providers as $modelKey => $config) {
+            try {
+                $content = $this->callModel($config, $system, $prompt);
+                if ($content !== null && $content !== '') {
+                    return trim($content);
+                }
+            } catch (\Exception $e) {
+                Log::warning("AI model [{$config['name']}] failed for type [{$type}]", [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
-        // If we reach here, an exception occurred
-        Log::warning("Returning fallback content for type [{$type}], city [{$city}]");
+        // If every model failed, use hardcoded fallback
+        Log::error("All AI models failed for type [{$type}], city [{$city}]");
         return $this->getFallback($type, $city);
     }
 
     /**
-     * Build the user prompt based on content type.
+     * Call a single AI provider and return the generated text (or null).
      */
+    private function callModel(array $config, string $system, string $userPrompt): ?string
+    {
+        return match ($config['type'] ?? '') {
+            'gemini' => $this->callGemini($config, $system, $userPrompt),
+            'groq'   => $this->callGroq($config, $system, $userPrompt),
+            // add more providers here
+            default  => throw new \Exception("Unsupported provider type: {$config['type']}"),
+        };
+    }
+
+    // -----------------------------------------------------------------
+    //  Provider Implementations
+    // -----------------------------------------------------------------
+
+    private function callGemini(array $config, string $system, string $userPrompt): ?string
+    {
+        $response = Http::timeout(30)
+            ->post($config['endpoint'] . '?key=' . $config['key'], [
+                'system_instruction' => [
+                    'parts' => ['text' => $system],
+                ],
+                'contents' => [
+                    'parts' => ['text' => $userPrompt],
+                ],
+            ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            return $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        }
+
+        // Log the error for debugging
+        Log::warning('Gemini API error', [
+            'status' => $response->status(),
+            'body'   => $response->body(),
+        ]);
+        return null;
+    }
+
+    private function callGroq(array $config, string $system, string $userPrompt): ?string
+    {
+        $response = Http::timeout(30)
+            ->withHeaders([
+                'Authorization' => 'Bearer ' . $config['key'],
+                'Content-Type'  => 'application/json',
+            ])
+            ->post($config['endpoint'], [
+                'model'       => $config['name'],
+                'messages'    => [
+                    ['role' => 'system', 'content' => $system],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                'temperature' => 0.7,
+            ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            return $data['choices'][0]['message']['content'] ?? null;
+        }
+
+        Log::warning('Groq API error', [
+            'status' => $response->status(),
+            'body'   => $response->body(),
+        ]);
+        return null;
+    }
+
+    // -----------------------------------------------------------------
+    //  Prompt Builders (unchanged logic, just refined)
+    // -----------------------------------------------------------------
+
     private function buildPrompt(string $type, string $city): string
     {
         return match ($type) {
@@ -113,9 +170,6 @@ class AIContentService
         };
     }
 
-    /**
-     * Tailored system prompts for better AI behaviour.
-     */
     private function getSystemPrompt(string $type): string
     {
         return match ($type) {
@@ -129,14 +183,9 @@ class AIContentService
         };
     }
 
-    /**
-     * Type-specific fallback messages so the user gets relevant information
-     * even when the AI is unavailable.
-     */
     private function getFallback(string $type, string $city): string
     {
         $cityName = ucwords($city);
-
         return match ($type) {
             'visa'        => "Visa information for {$cityName} is currently unavailable. Please check the official Kenyan e‑visa website.",
             'best_time'   => "We couldn't retrieve the best time to visit {$cityName} right now. Kenya generally has great weather year‑round!",
