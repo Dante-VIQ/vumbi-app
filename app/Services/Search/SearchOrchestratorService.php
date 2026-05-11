@@ -27,6 +27,9 @@ class SearchOrchestratorService
         private readonly RouteDecisionService $router
     ) {}
 
+    /**
+     * Main entry point – sanitizes, caches, and orchestrates the search.
+     */
     public function search(string $query): SearchResult
     {
         $query = $this->sanitizeQuery($query);
@@ -35,30 +38,39 @@ class SearchOrchestratorService
             return $this->errorResult('Invalid search query');
         }
 
-        $cacheKey = 'travel_search_'.md5(strtolower($query));
+        $cacheKey = 'travel_search_' . md5(strtolower($query));
 
         return Cache::remember($cacheKey, now()->addHours(12), function () use ($query) {
             return $this->performSearch($query);
         });
     }
 
+    /**
+     * Execute the full search pipeline.
+     */
     private function performSearch(string $query): SearchResult
     {
         try {
+            // 1. Geocode
             $location = $this->osm->geocode($query);
             if (! $location) {
                 return $this->errorResult('City not found. Please check the spelling.');
             }
 
+            // 2. Fetch all external data (APIs + AI)
             $data = $this->fetchAllData($location, $query);
 
+            // 3. Generate a short description (separate from the guided data)
             $description = $this->ai->describeCity($query);
 
+            // 4. Classify / route the query (for analytics or future routing)
             $classification = $this->classifier->classify($query);
             $routing = $this->router->decide($classification);
 
+            // 5. Assess overall data quality
             $dataQuality = $this->assessDataQuality($data, $description);
 
+            // 6. Compose and return the final DTO
             return new SearchResult(
                 success: true,
                 city: ucwords($query),
@@ -70,6 +82,8 @@ class SearchOrchestratorService
                 affiliate_deals: $data['affiliate_deals'],
                 cultural_info: $data['cultural_info'],
                 educational_info: $data['educational_info'],
+                best_time_to_visit: $data['best_time_to_visit'],
+                visa_info: $data['visa_info'],
                 nearby_destinations: $data['nearby_destinations'],
                 weather: $data['weather'],
                 dataQuality: $dataQuality,
@@ -79,7 +93,6 @@ class SearchOrchestratorService
                     'cached_at' => now()->toIso8601String(),
                 ]
             );
-
         } catch (Exception $e) {
             Log::error('SearchOrchestrator failed', [
                 'query' => $query,
@@ -90,127 +103,101 @@ class SearchOrchestratorService
         }
     }
 
-    // private function fetchAllData(array $location, string $query): array
-    // {
-    //     $data = [
-    //         'location' => $location,
-    //         'places' => [],
-    //         'hotels' => [],
-    //         'flights' => [],
-    //         'affiliate_deals' => [],
-    //         'cultural_info' => ['content' => ''],
-    //         'educational_info' => ['content' => ''],
-    //         'best_time_to_visit' => ['content' => ''],
-    //         'visa_info' => ['content' => ''],
-    //         'nearby_destinations' => [],
-    //         'weather' => [],
-    //     ];
-
-    //     try {
-    //         // Places (OpenTripMap)
-    //         $data['places'] = $this->trip->getPlaces(
-    //             $location['lat'] ?? 0,
-    //             $location['lon'] ?? 0,
-    //             limit: 15
-    //         );
-    //     } catch (Exception $e) {
-    //         Log::warning('Places API failed', ['error' => $e->getMessage()]);
-    //     }
-
-    //     try {
-    //         // Hotels
-    //         $data['hotels'] = $this->hotels->searchHotels($query, limit: 8);
-    //     } catch (Exception $e) {
-    //         Log::warning('Hotel API failed', ['query' => $query, 'error' => $e->getMessage()]);
-    //     }
-
-    //     try {
-    //         // Flights
-    //         $data['flights'] = $this->flights->searchFlights($query, limit: 8);
-    //     } catch (Exception $e) {
-    //         Log::warning('Flight Aggregator failed', ['error' => $e->getMessage()]);
-    //     }
-
-    //     try {
-    //         // Affiliate Deals
-    //         $data['affiliate_deals'] = $this->bonusArrive->searchFlights($query, limit: 5);
-    //     } catch (Exception $e) {
-    //         Log::warning('BonusArrive API failed', ['error' => $e->getMessage()]);
-    //     }
-
-    //     // AI Content (most critical for user experience)
-    //     try {
-    //         $data['cultural_info'] = $this->ai->generateCulturalInfo($query);
-    //         $data['educational_info'] = $this->ai->generateEducationalInfo($query);
-    //         $data['best_time_to_visit'] = $this->ai->generateBestTimeToVisit($query);
-    //         $data['visa_info'] = $this->ai->generateVisaInfo($query);
-    //     } catch (Exception $e) {
-    //         Log::warning('AI Content generation failed', ['error' => $e->getMessage()]);
-    //     }
-
-    //     try {
-    //         $data['nearby_destinations'] = $this->getNearbyDestinations($location, $query);
-    //         $data['weather'] = $this->getWeatherData($location);
-    //     } catch (Exception $e) {
-    //         Log::warning('Secondary data failed', ['error' => $e->getMessage()]);
-    //     }
-
-    //     return $data;
-    // }
-
+    /**
+     * Fetch all data sources in parallel-style calls, safely falling back on failure.
+     */
     private function fetchAllData(array $location, string $query): array
-{
-    return [
-        'location'            => $location,
-        'places'              => $this->safeCall(fn() => $this->trip->getPlaces($location['lat'] ?? 0, $location['lon'] ?? 0, limit: 12)),
-        'hotels'              => $this->safeCall(fn() => $this->hotels->searchHotels($query, 8)),
-        'flights'             => $this->safeCall(fn() => $this->flights->searchFlights($query, 8)),
-        'affiliate_deals'     => $this->safeCall(fn() => $this->bonusArrive->searchFlights($query, 5)),
-        'cultural_info'       => $this->safeCall(fn() => $this->ai->generateCulturalInfo($query)),
-        'educational_info'    => $this->safeCall(fn() => $this->ai->generateEducationalInfo($query)),
-        'best_time_to_visit'  => $this->safeCall(fn() => $this->ai->generateBestTimeToVisit($query)),
-        'visa_info'           => $this->safeCall(fn() => $this->ai->generateVisaInfo($query)),
-        'nearby_destinations' => [],
-        'weather'             => [],
-    ];
-}
+    {
+        return [
+            'location'            => $location,
 
-private function safeCall(callable $callable, $default = [])
-{
-    try {
-        $result = $callable();
-        return $result ?? $default;
-    } catch (Exception $e) {
-        return $default;
+            // External APIs (use safeCall to return [])
+            'places'              => $this->safeCall(
+                fn() => $this->trip->getPlaces($location['lat'] ?? 0, $location['lon'] ?? 0, limit: 12)
+            ),
+            'hotels'              => $this->safeCall(
+                fn() => $this->hotels->searchHotels($query, 8)
+            ),
+            'flights'             => $this->safeCall(
+                fn() => $this->flights->searchFlights($query, 8)
+            ),
+            'affiliate_deals'     => $this->safeCall(
+                fn() => $this->bonusArrive->searchFlights($query, 5)
+            ),
+
+            // AI content – provide fallback shape ['content' => ''] to preserve structure
+            'cultural_info'       => $this->safeCall(
+                fn() => $this->ai->generateCulturalInfo($query),
+                ['content' => '']
+            ),
+            'educational_info'    => $this->safeCall(
+                fn() => $this->ai->generateEducationalInfo($query),
+                ['content' => '']
+            ),
+            'best_time_to_visit'  => $this->safeCall(
+                fn() => $this->ai->generateBestTimeToVisit($query),
+                ['content' => '']
+            ),
+            'visa_info'           => $this->safeCall(
+                fn() => $this->ai->generateVisaInfo($query),
+                ['content' => '']
+            ),
+
+            // Nearby destinations and weather (now actually fetched)
+            'nearby_destinations' => $this->safeCall(
+                fn() => $this->getNearbyDestinations($location, $query)
+            ),
+            'weather'             => $this->safeCall(
+                fn() => $this->getWeatherData($location)
+            ),
+        ];
     }
-}
+
+    /**
+     * Execute a callable and return its result, or a default value on failure.
+     */
+    private function safeCall(callable $callable, mixed $default = []): mixed
+    {
+        try {
+            $result = $callable();
+            return $result ?? $default;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    /**
+     * Fetch nearby destinations using OpenTripMap radius search.
+     */
     private function getNearbyDestinations(array $location, string $query): array
     {
         try {
-            // Use OpenTripMap or OSM to find nearby cities
-            $baseUrl = 'https://api.opentripmap.com/0.1/en/places';
-            $apiKey = config('services.opentripmap.key', env('OPENTRIPMAP_API_KEY', ''));
-
+            $apiKey = config('services.opentripmap.key') ?: env('OPENTRIPMAP_API_KEY', '');
             if (empty($apiKey)) {
                 return [];
             }
 
-            $response = Http::timeout(10)->get($baseUrl.'/radius', [
+            $response = Http::timeout(10)->get('https://api.opentripmap.com/0.1/en/places/radius', [
                 'lat' => $location['lat'],
                 'lon' => $location['lon'],
-                'radius' => 80000,           // 80km radius
+                'radius' => 80000,
                 'limit' => 8,
                 'apikey' => $apiKey,
             ]);
 
             if ($response->successful()) {
+                $queryLower = trim(strtolower($query));
                 return collect($response->json()['features'] ?? [])
-                    ->filter(fn ($item) => ($item['properties']['name'] ?? '') !== $query)
+                    ->filter(function ($item) use ($queryLower) {
+                        $name = $item['properties']['name'] ?? '';
+                        return strtolower(trim($name)) !== $queryLower;
+                    })
                     ->take(6)
-                    ->map(fn ($item) => [
+                    ->map(fn($item) => [
                         'name' => $item['properties']['name'] ?? 'Nearby City',
                         'distance_km' => round(($item['properties']['dist'] ?? 0) / 1000, 1),
                     ])
+                    ->values()
                     ->all();
             }
         } catch (Exception $e) {
@@ -220,11 +207,12 @@ private function safeCall(callable $callable, $default = [])
         return [];
     }
 
+    /**
+     * Fetch current weather from Open‑Meteo (free, no key required).
+     */
     private function getWeatherData(array $location): array
     {
-        // TODO: Replace with real weather API (OpenWeatherMap, WeatherAPI, etc.)
         try {
-            // Placeholder using a free/public API or your configured service
             $response = Http::timeout(8)->get('https://api.open-meteo.com/v1/forecast', [
                 'latitude' => $location['lat'],
                 'longitude' => $location['lon'],
@@ -234,7 +222,6 @@ private function safeCall(callable $callable, $default = [])
 
             if ($response->successful()) {
                 $data = $response->json();
-
                 return [
                     'temperature' => $data['current_weather']['temperature'] ?? null,
                     'windspeed' => $data['current_weather']['windspeed'] ?? null,
@@ -249,82 +236,85 @@ private function safeCall(callable $callable, $default = [])
         return [];
     }
 
+    /**
+     * Compute a quality score and readiness indicators.
+     */
     private function assessDataQuality(array $data, string $description): array
     {
-        $hasPlaces = count($data['places'] ?? []) >= 8;
-        $hasHotels = count($data['hotels'] ?? []) >= 5;
-        $hasFlights = count($data['flights'] ?? []) >= 4;
-        $hasDeals = count($data['affiliate_deals'] ?? []) >= 3;
+        $hasPlaces      = count($data['places'] ?? []) >= 8;
+        $hasHotels      = count($data['hotels'] ?? []) >= 5;
+        $hasFlights     = count($data['flights'] ?? []) >= 4;
+        $hasDeals       = count($data['affiliate_deals'] ?? []) >= 3;
 
-        $hasCultural = ! empty($data['cultural_info']['content'] ?? '');
-        $hasEducational = ! empty($data['educational_info']['content'] ?? '');
-        $hasBestTime = ! empty($data['best_time_to_visit']['content'] ?? '');
-        $hasVisaInfo = ! empty($data['visa_info']['content'] ?? '');
+        $hasCultural    = !empty($data['cultural_info']['content'] ?? '');
+        $hasEducational = !empty($data['educational_info']['content'] ?? '');
+        $hasBestTime    = !empty($data['best_time_to_visit']['content'] ?? '');
+        $hasVisa        = !empty($data['visa_info']['content'] ?? '');
         $hasDescription = strlen(trim($description)) > 100;
 
-        // Calculate quality score
         $score = 0;
-        if ($hasPlaces) {
-            $score += 22;
-        }
-        if ($hasHotels) {
-            $score += 18;
-        }
-        if ($hasFlights) {
-            $score += 15;
-        }
-        if ($hasDeals) {
-            $score += 12;
-        }
-        if ($hasCultural) {
-            $score += 10;
-        }
-        if ($hasEducational) {
-            $score += 8;
-        }
-        if ($hasBestTime) {
-            $score += 8;
-        }
-        if ($hasVisaInfo) {
-            $score += 7;
-        }
-        if ($hasDescription) {
-            $score += 5;
-        }
+        if ($hasPlaces)      $score += 22;
+        if ($hasHotels)      $score += 18;
+        if ($hasFlights)     $score += 15;
+        if ($hasDeals)       $score += 12;
+        if ($hasCultural)    $score += 10;
+        if ($hasEducational) $score += 8;
+        if ($hasBestTime)    $score += 8;
+        if ($hasVisa)        $score += 7;
+        if ($hasDescription) $score += 5;
 
         $canBuild = $hasPlaces && $hasHotels && $hasDescription;
 
         return [
-            'can_build' => $canBuild,
-            'quality_score' => min(100, $score),
-            'places_count' => count($data['places'] ?? []),
-            'hotels_count' => count($data['hotels'] ?? []),
-            'flights_count' => count($data['flights'] ?? []),
-            'deals_count' => count($data['affiliate_deals'] ?? []),
-
-            'has_cultural' => $hasCultural,
-            'has_educational' => $hasEducational,
-            'has_best_time' => $hasBestTime,
-            'has_visa_info' => $hasVisaInfo,
-            'has_description' => $hasDescription,
-
-            'overall_readiness' => $score >= 78 ? 'high'
-                                        : ($score >= 55 ? 'medium' : 'low'),
-
-            'recommended_for_build' => $canBuild && $score >= 65,
+            'can_build'               => $canBuild,
+            'quality_score'           => min(100, $score),
+            'places_count'            => count($data['places'] ?? []),
+            'hotels_count'            => count($data['hotels'] ?? []),
+            'flights_count'           => count($data['flights'] ?? []),
+            'deals_count'             => count($data['affiliate_deals'] ?? []),
+            'has_cultural'            => $hasCultural,
+            'has_educational'         => $hasEducational,
+            'has_best_time'           => $hasBestTime,
+            'has_visa_info'           => $hasVisa,
+            'has_description'         => $hasDescription,
+            'overall_readiness'       => $score >= 78 ? 'high' : ($score >= 55 ? 'medium' : 'low'),
+            'recommended_for_build'   => $canBuild && $score >= 65,
         ];
     }
 
+    /**
+     * Clean the search query.
+     */
     private function sanitizeQuery(string $query): string
     {
         return trim(strip_tags($query));
     }
 
+    /**
+     * Build a consistent error SearchResult DTO.
+     */
     private function errorResult(string $message): SearchResult
     {
         return new SearchResult(
             success: false,
             city: '',
+            location: [],
+            description: '',
+            places: [],
+            hotels: [],
+            flights: [],
+            affiliate_deals: [],
+            cultural_info: ['content' => ''],
+            educational_info: ['content' => ''],
+            best_time_to_visit: ['content' => ''],
+            visa_info: ['content' => ''],
+            nearby_destinations: [],
+            weather: [],
+            dataQuality: [
+                'overall_readiness' => 'low',
+                'recommended_for_build' => false,
+            ],
+            meta: [],
             error: $message
         );
     }
