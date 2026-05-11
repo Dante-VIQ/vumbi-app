@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56d7fecd3dddc3c81134c53c0cf24a97",
+    "content-hash": "a18df74fbbe92d29744d8f9a1585548c",
     "packages": [
         {
             "name": "brick/math",
@@ -701,6 +701,190 @@
                 }
             ],
             "time": "2025-12-27T19:43:20+00:00"
+        },
+        {
+            "name": "grok-php/client",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grok-php/client.git",
+                "reference": "466af7b3ccc2bfcf00c4ab38a1dc9b1b4e444ca6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grok-php/client/zipball/466af7b3ccc2bfcf00c4ab38a1dc9b1b4e444ca6",
+                "reference": "466af7b3ccc2bfcf00c4ab38a1dc9b1b4e444ca6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.9",
+                "php": "^8.2 || ^8.3 || ^8.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.20",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0",
+                "phpstan/phpstan": "^1.12",
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GrokPHP\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grok PHP",
+                    "email": "thefeqy@gmail.com",
+                    "role": "organization"
+                },
+                {
+                    "name": "Muhammed Elfeqy",
+                    "email": "thefeqy@gmail.com",
+                    "homepage": "https://github.com/thefeqy",
+                    "role": "creator"
+                }
+            ],
+            "description": "Grok PHP Client is a robust and community-driven PHP client library for seamless integration with Grok AI API, offering efficient access to advanced AI and data processing capabilities.",
+            "homepage": "https://github.com/grok-php/client",
+            "keywords": [
+                "AI Developer Tools",
+                "AI Integration",
+                "AI Research",
+                "AI SDK",
+                "AI Text Generation",
+                "AI-powered Applications",
+                "Api Wrapper",
+                "Deep learning",
+                "Generative AI",
+                "Grok AI",
+                "Language Model",
+                "Large Language Model",
+                "PHP AI SDK",
+                "REST API",
+                "ai api",
+                "ai chatbot",
+                "ai client",
+                "artificial intelligence",
+                "machine learning",
+                "natural language processing",
+                "nlp",
+                "text processing"
+            ],
+            "support": {
+                "issues": "https://github.com/grok-php/client/issues",
+                "source": "https://github.com/grok-php/client"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/thefeqy",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-24T20:49:32+00:00"
+        },
+        {
+            "name": "grok-php/laravel",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grok-php/laravel.git",
+                "reference": "119f91ce0d762938d16fb2263cb67bab06778f82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grok-php/laravel/zipball/119f91ce0d762938d16fb2263cb67bab06778f82",
+                "reference": "119f91ce0d762938d16fb2263cb67bab06778f82",
+                "shasum": ""
+            },
+            "require": {
+                "grok-php/client": "^1.3",
+                "laravel/framework": "^10.0|^11.0|^12.0",
+                "php": "^8.2 || ^8.3 || ^8.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.20",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0",
+                "phpstan/phpstan": "^1.12",
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "GrokAI": "GrokPHP\\Laravel\\Facades\\GrokAI"
+                    },
+                    "providers": [
+                        "GrokPHP\\Laravel\\Providers\\GrokServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tests\\": "tests/",
+                    "GrokPHP\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grok PHP",
+                    "email": "thefeqy@gmail.com",
+                    "role": "organization"
+                },
+                {
+                    "name": "Muhammed Elfeqy",
+                    "email": "thefeqy@gmail.com",
+                    "homepage": "https://github.com/thefeqy",
+                    "role": "creator"
+                }
+            ],
+            "description": "Seamlessly integrate Grok AI into Laravel applications with an elegant, developer-friendly package. Leverage powerful AI models for chat, automation, and NLP while maintaining Laravel's expressive simplicity.",
+            "homepage": "https://github.com/grok-php/laravel",
+            "keywords": [
+                "AI Developer Tools",
+                "AI Integration",
+                "AI Research",
+                "AI SDK",
+                "AI Text Generation",
+                "AI-powered Applications",
+                "Api Wrapper",
+                "Deep learning",
+                "Generative AI",
+                "Grok AI",
+                "Language Model",
+                "Large Language Model",
+                "PHP AI SDK",
+                "REST API",
+                "ai api",
+                "ai chatbot",
+                "ai client",
+                "artificial intelligence",
+                "machine learning",
+                "natural language processing",
+                "nlp",
+                "text processing"
+            ],
+            "support": {
+                "issues": "https://github.com/grok-php/laravel/issues",
+                "source": "https://github.com/grok-php/laravel"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/thefeqy",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-25T00:58:07+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

@@ -3,166 +3,128 @@
 namespace App\Services\AI;
 
 use App\Models\City;
-use Exception;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use OpenAI\Laravel\Facades\OpenAI;
+use GrokPHP\Laravel\Facades\GrokAI;
+use GrokPHP\Client\Config\ChatOptions;
+use GrokPHP\Client\Enums\Model;
+use GrokPHP\Client\Exceptions\GrokException;
+use Exception;
 
 class AIContentService
 {
     /**
-     * CENTRAL AI GENERATOR (core of the service)
-     */
-    private function generate(
-        string $system,
-        string $prompt,
-        int $maxTokens = 400,
-        float $temperature = 0.7
-    ): string {
-
-        $cacheKey = 'ai_'.md5($system.$prompt.$maxTokens.$temperature);
-
-        return Cache::remember($cacheKey, now()->addDays(30), function () use (
-            $system,
-            $prompt,
-            $maxTokens,
-            $temperature
-        ) {
-            try {
-                Log::info('OpenAI generation started');
-
-                $response = OpenAI::chat()->create([
-                    'model' => 'gpt-4.1-mini',
-                    'temperature' => $temperature,
-                    'max_tokens' => $maxTokens,
-                    'messages' => [
-                        ['role' => 'system', 'content' => $system],
-                        ['role' => 'user', 'content' => $prompt],
-                    ],
-                ]);
-
-                $content = trim($response->choices[0]->message->content ?? '');
-
-                Log::info('OpenAI generation success');
-
-                return $content;
-
-            } catch (\OpenAI\Exceptions\RateLimitException $e) {
-                Log::warning('OpenAI rate limited — retrying in 2s');
-                sleep(2);
-
-                // retry once
-                return $this->generate($system, $prompt, $maxTokens, $temperature);
-
-            } catch (Exception $e) {
-                Log::error('OpenAI generation FAILED', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                ]);
-
-                return '';
-            }
-        });
-    }
-
-    /**
-     * Short exciting city introduction
+     * Short city introduction
      */
     public function describeCity(string $city): string
     {
-        $city = trim($city);
-
-        if (empty($city)) {
-            return 'A beautiful destination waiting to be explored.';
-        }
-
-        $result = $this->generate(
-            'You are a professional travel writer.',
-            "Write a short exciting 2–3 sentence travel introduction for {$city}, Kenya. Avoid generic phrases.",
-            200,
-            0.75
-        );
-
-        return $result ?: 'Discover the beauty and culture of '.ucwords($city).'.';
+        return $this->generate('short_intro', $city);
     }
 
-    /**
-     * Cultural insights
-     */
     public function generateCulturalInfo(string $city): array
     {
-        return [
-            'content' => $this->generate(
-                'You are a cultural anthropologist.',
-                "Provide cultural insights, traditions, etiquette, food and people of {$city}, Kenya in bullet points.",
-                420,
-                0.7
-            )
-        ];
+        return ['content' => $this->generate('cultural', $city)];
     }
 
-    /**
-     * Educational / Historical Information
-     */
     public function generateEducationalInfo(string $city): array
     {
-        return [
-            'content' => $this->generate(
-                'You are a historian.',
-                "Give a concise history and significance of {$city}, Kenya.",
-                380,
-                0.65
-            )
-        ];
+        return ['content' => $this->generate('educational', $city)];
     }
 
-    /**
-     * Best Time to Visit
-     */
     public function generateBestTimeToVisit(string $city): array
     {
-        return [
-            'content' => $this->generate(
-                'You are a travel planner.',
-                "Best time to visit {$city}, Kenya. Include seasons, weather and major events.",
-                250,
-                0.6
-            )
-        ];
+        return ['content' => $this->generate('best_time', $city)];
     }
 
-    /**
-     * Visa & Entry Requirements (with disclaimer)
-     */
     public function generateVisaInfo(string $city): array
     {
-        return [
-            'content' => $this->generate(
-                'You are a travel documentation expert.',
-                "Explain visa requirements for visiting {$city}, Kenya. Add a disclaimer that travelers must verify with official embassy websites before traveling.",
-                300,
-                0.5
-            )
-        ];
+        return ['content' => $this->generate('visa', $city)];
+    }
+
+    public function buildGuide(City $city): string
+    {
+        return $this->generate('full_guide', $city->name);
     }
 
     /**
-     * Full travel guide (SEO optimized)
+     * Core generation method
      */
-    public function buildGuide(City $city): string
+    private function generate(string $type, string $city): string
     {
-        $result = $this->generate(
-            'You are an expert SEO travel writer.',
-            "Write a travel guide for {$city->name}, Kenya with headings:
-            Introduction
-            Best Time to Visit
-            Top Attractions
-            Travel Tips
-            Keep under 450 words.",
-            800,
-            0.7
-        );
+        try {
+            $prompt = $this->buildPrompt($type, $city);
 
-        return $result ?: "Welcome to {$city->name}. A destination full of culture and adventure.";
+            $options = new ChatOptions(
+                model: Model::GROK_2   // You can change to GROK_2_MINI for cheaper/faster
+            );
+
+            $response = GrokAI::chat(
+                messages: [
+                    ['role' => 'system', 'content' => $this->getSystemPrompt($type)],
+                    ['role' => 'user',   'content' => $prompt]
+                ],
+                options: $options
+            );
+
+            // Handle both array and object responses
+            if (is_array($response)) {
+                $result = $response['content'] ?? json_encode($response, JSON_UNESCAPED_UNICODE);
+            } else {
+                $result = $response->content();
+            }
+            if (is_array($result)) {
+                $result = $result['content'] ?? json_encode($result, JSON_UNESCAPED_UNICODE);
+            } elseif (is_object($result)) {
+                $result = method_exists($result, '__toString') ? (string) $result : json_encode($result, JSON_UNESCAPED_UNICODE);
+            }
+
+            return trim((string) $result);
+
+        } catch (GrokException $e) {
+            Log::error("Grok AI Error", [
+                'type'    => $type,
+                'city'    => $city,
+                'message' => $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            Log::error("Unexpected AI Error", [
+                'type' => $type,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        return $this->getFallback($type, $city);
+    }
+
+    private function buildPrompt(string $type, string $city): string
+    {
+        return match ($type) {
+            'short_intro' => "Write a short, exciting 2-4 sentence travel introduction for {$city}.",
+            'cultural'    => "Provide key cultural insights, traditions, local etiquette for {$city}, Kenya.",
+            'educational' => "Give a concise educational overview: history and interesting facts about {$city}, Kenya.",
+            'best_time'   => "What is the best time to visit {$city}, Kenya? Include seasons, weather, and tips.",
+            'visa'        => "Summarize visa and entry requirements for tourists visiting {$city}, Kenya.",
+            'full_guide'  => "Write a compelling travel guide for {$city}, Kenya. Include introduction, best time to visit, top attractions, and practical tips.",
+            default       => "Write about {$city}, Kenya."
+        };
+    }
+
+    private function getSystemPrompt(string $type): string
+    {
+        return match ($type) {
+            'short_intro' => 'You are a professional, engaging travel writer.',
+            'cultural'    => 'You are a cultural expert.',
+            'educational' => 'You are a historian and travel educator.',
+            'best_time'   => 'You are a travel planning expert.',
+            'visa'        => 'You are a travel documentation expert.',
+            default       => 'You are a helpful travel assistant.'
+        };
+    }
+
+    private function getFallback(string $type, string $city): string
+    {
+        return match ($type) {
+            'short_intro' => "Discover the beauty and vibrant culture of " . ucwords($city) . ".",
+            default       => "This is an amazing destination full of culture and adventure."
+        };
     }
 }

@@ -188,12 +188,19 @@ private function safeCall(callable $callable, $default = [])
     {
         try {
             // Use OpenTripMap or OSM to find nearby cities
-            $response = Http::timeout(10)->get(config('services.opentripmap.base_url').'/radius', [
+            $baseUrl = 'https://api.opentripmap.com/0.1/en/places';
+            $apiKey = config('services.opentripmap.key', env('OPENTRIPMAP_API_KEY', ''));
+
+            if (empty($apiKey)) {
+                return [];
+            }
+
+            $response = Http::timeout(10)->get($baseUrl.'/radius', [
                 'lat' => $location['lat'],
                 'lon' => $location['lon'],
                 'radius' => 80000,           // 80km radius
                 'limit' => 8,
-                'apikey' => config('services.opentripmap.key'),
+                'apikey' => $apiKey,
             ]);
 
             if ($response->successful()) {
