@@ -12,6 +12,14 @@ use Exception;
 
 class AIContentService
 {
+
+public function __construct()
+{
+    $apiKey = env('GROK_API_KEY');
+    if (!$apiKey) {
+        Log::warning("Grok API key is not set. AI content generation will be disabled.");
+    }
+}
     /**
      * Short city introduction
      */
