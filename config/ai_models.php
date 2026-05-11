@@ -24,7 +24,7 @@ return [
         'groq-llama' => [
             'name'     => 'llama-3.3-70b-versatile',
             'endpoint' => 'https://api.groq.com/openai/v1/chat/completions',
-            'key'      => env('GROQ_API_KEY'),
+            'key'      => env('GROK_API_KEY'),
             'type'     => 'groq',
         ],
 
