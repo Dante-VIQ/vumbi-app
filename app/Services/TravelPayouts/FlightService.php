@@ -16,13 +16,21 @@ class FlightService
             return [];
         }
 
+        $token = config('services.travelpayouts.token') ?? env('TRAVELPAYOUTS_TOKEN');
+
+        if (empty($token)) {
+            Log::error("TravelPayouts API Token is missing");
+            return [];
+        }
+
         try {
-            $response = Http::timeout(10)
+            $response = Http::timeout(12)
                 ->get(self::BASE_URL, [
                     'origin'      => strtoupper($origin),
                     'destination' => $this->getAirportCode($destination),
                     'currency'    => 'KES',
-                    'limit'       => min($limit, 12),
+                    'limit'       => min($limit, 15),
+                    'token'       => $token,                    // ← Required
                 ]);
 
             if (!$response->successful()) {
@@ -38,9 +46,9 @@ class FlightService
             return $data['data'] ?? $data ?? [];
 
         } catch (\Exception $e) {
-            Log::error("FlightService failed", [
+            Log::error("FlightService exception", [
                 'destination' => $destination,
-                'error' => $e->getMessage()
+                'error'       => $e->getMessage()
             ]);
             return [];
         }
@@ -48,7 +56,6 @@ class FlightService
 
     private function getAirportCode(string $destination): string
     {
-        // Simple fallback: take first 3 letters if not already a code
         if (strlen($destination) === 3 && ctype_upper($destination)) {
             return $destination;
         }
