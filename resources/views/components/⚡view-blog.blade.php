@@ -524,7 +524,7 @@ private function shouldInsertWidget($blockIndex): bool
                             @foreach($relatedPosts as $post)
                                 <a href="{{ route('blog.show', $post->id) }}" class="flex gap-3 group">
                                     @if($post->media_path)
-                                        <img src="{{ Storage::url($post->media_path) }}" class="w-16 h-16 rounded-lg object-cover">
+                                        <img src="{{ asset($post->media_path) }}" class="w-16 h-16 rounded-lg object-cover">
                                     @endif
                                     <div>
                                         <h4 class="font-medium text-[#1A1A1A] group-hover:text-[#8B5A2B] text-sm line-clamp-2">{{ $post->title }}</h4>
@@ -552,7 +552,7 @@ private function shouldInsertWidget($blockIndex): bool
                         <a href="{{ route('blog.show', $post->id) }}" class="group block bg-[#FCFAF7] rounded-2xl overflow-hidden border border-black/5 hover:shadow-lg transition">
                             @if($post->media_path)
                                 <div class="aspect-[16/9] overflow-hidden">
-                                    <img src="{{ Storage::url($post->media_path) }}" alt="{{ $post->title }}"
+                                    <img src="{{ asset($post->media_path) }}" alt="{{ $post->title }}"
                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 </div>
                             @endif
