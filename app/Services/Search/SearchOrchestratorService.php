@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\LocalPartnerService;
 
 class SearchOrchestratorService
 {
@@ -25,7 +26,8 @@ class SearchOrchestratorService
         private readonly BonusArriveService $bonusArrive,
         private readonly AIContentService $ai,
         private readonly QueryClassifierService $classifier,
-        private readonly RouteDecisionService $router
+        private readonly RouteDecisionService $router,
+        private readonly LocalPartnerService $partnerPackages,
     ) {}
 
     /**
@@ -73,7 +75,7 @@ class SearchOrchestratorService
             // 4. Classify / route the query (for analytics or future routing)
             $classification = $this->classifier->classify($query);
             $routing = $this->router->decide($classification);
-
+            
             // 5. Assess overall data quality
             $dataQuality = $this->assessDataQuality($data, $description);
 
@@ -91,6 +93,7 @@ class SearchOrchestratorService
                 educational_info: $data['educational_info'],
                 best_time_to_visit: $data['best_time_to_visit'],
                 visa_info: $data['visa_info'],
+                partner_packages: $data['partner_packages'] ?? [],
                 nearby_destinations: $data['nearby_destinations'],
                 weather: $data['weather'],
                 dataQuality: $dataQuality,
@@ -219,7 +222,9 @@ private function decompressResult(string $compressed): SearchResult
                 fn() => $this->ai->generateVisaInfo($query),
                 ['content' => '']
             ),
-
+'partner_packages' => $this->safeCall(
+    fn() => $this->partnerPackages->getPackages($query, 6)
+),
             // Nearby destinations and weather (now actually fetched)
             'nearby_destinations' => $this->safeCall(
                 fn() => $this->getNearbyDestinations($location, $query)

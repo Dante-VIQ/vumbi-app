@@ -27,7 +27,8 @@ class SearchResult implements Arrayable
 
         public readonly array $dataQuality = [],
         public readonly ?string $error = null,
-        public readonly array $meta = []
+        public readonly array $meta = [],
+        public readonly array $partner_packages = []
     ) {}
 
     public function needsBuild(): bool

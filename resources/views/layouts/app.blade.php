@@ -133,11 +133,46 @@
     {{-- Footer --}}
     <x-footer />
 
+<x-booking-modal />
+
+    <button @click="openGeneralBooking = true"
+        class="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg z-40">
+    Book a Trip
+</button>
+
+<div x-data="{ openGeneralBooking: false, search: '', packages: [] }"
+     x-show="openGeneralBooking" x-cloak
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4" @click.away="openGeneralBooking = false">
+        <h3 class="font-bold mb-4">Where do you want to go?</h3>
+        <input type="text" x-model="search" @input.debounce.300ms="fetch(`/api/packages/search?q=${search}`).then(r=>r.json()).then(d=>packages=d)"
+               placeholder="e.g. Maasai Mara, Diani, Nairobi" class="w-full border p-2 rounded mb-4">
+        <div class="space-y-3">
+            <template x-for="pkg in packages" :key="pkg.id">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <div>
+                        <span class="font-medium" x-text="pkg.title"></span>
+                        <span class="text-sm text-gray-500" x-text="pkg.location"></span>
+                    </div>
+                    <button @click="openGeneralBooking = false; $dispatch('open-booking', { packageId: pkg.id })"
+                            class="text-blue-600 text-sm">Select</button>
+                </div>
+            </template>
+        </div>
+        <button @click="openGeneralBooking = false" class="mt-4 px-4 py-2 border rounded">Close</button>
+    </div>
+</div>
     {{-- Scripts --}}
     @livewireScripts
     @stack('scripts')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+    window.addEventListener('open-booking', e => {
+        document.querySelector('[x-data]').__x.$data.openForPackage(e.detail.packageId);
+    });
+</script>
     {{-- Google Analytics --}}
     @production
         <!-- Google tag (gtag.js) -->
@@ -152,6 +187,7 @@
 
 
     @endproduction
+
 </body>
 
 </html>
