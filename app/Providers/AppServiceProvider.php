@@ -92,6 +92,26 @@ $this->app->singleton(SearchOrchestratorService::class);
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
+        /**
+        * Assign special roles like 'master' from config or environment variables
+        */
+    protected function assignSpecialRoles(): void
+    {        $masterEmail = env('MASTER_EMAIL');
+        if ($masterEmail) {
+            $masterUser = \App\Models\User::where('email', $masterEmail)->first();
+            if ($masterUser && !$masterUser->hasRole('master')) {
+                $masterUser->assignRole('master');
+            }
+        }
+
+        $engineerEmail = env('ENGINEER_EMAIL');
+        if ($engineerEmail) {
+            $engineerUser = \App\Models\User::where('email', $engineerEmail)->first();
+            if ($engineerUser && !$engineerUser->hasRole('engineer')) {
+                $engineerUser->assignRole('engineer');
+            }
+        }
+    }
     /**
      * Assign engineer (full access) and master emails if any remain
      */

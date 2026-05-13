@@ -18,7 +18,12 @@ class DiscoveryController extends Controller
             ->take(12)
             ->get();
 
-        return view('pages.discovery', compact('trendingCities'));
+                // Get featured packages (latest active packages, limit 6)
+    $featuredPackages = \App\Models\PartnerPackage::active()
+                            ->latest()
+                            ->take(6)
+                            ->get();
+        return view('pages.discovery', compact('trendingCities', 'featuredPackages'));
     }
 
     /**

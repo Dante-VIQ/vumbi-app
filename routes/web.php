@@ -1,20 +1,19 @@
 <?php
 
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\PartnerPackageController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CultureController;
 use App\Http\Controllers\DiscoveryController;
+use App\Http\Controllers\Admin\PartnerLeadController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
-use App\Livewire\Admin\CultureManager;
-use App\Livewire\Admin\DestinationManager;
 use App\Models\Blog;
 use App\Models\Culture;
 use App\Models\Destination;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\TourController;
 
 
 
@@ -26,7 +25,7 @@ Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->firstOrFail();
 
     return redirect()->route('destination.show', [
-        'slug' => $destination->slug
+        'slug' => $destination->slug,
     ], 301);
 })->whereNumber('id');
 
@@ -34,7 +33,6 @@ Route::get('/doctor/{id}', function ($id) {
 Route::get('/doctors/{id}', function ($id) {
     return redirect("/doctor/$id", 301);
 })->whereNumber('id');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +49,6 @@ Route::view('/header', 'pages.header-media');
 Route::post('/contact', [ContactController::class, 'submit'])
     ->name('contact.submit');
 
-
 /*
 |--------------------------------------------------------------------------
 | DISCOVERY
@@ -63,12 +60,21 @@ Route::prefix('discover')->group(function () {
     Route::post('/search', [DiscoveryController::class, 'search'])
         ->name('discover.search');
 
-
     // MUST BE LAST to avoid conflicts
     Route::get('/{country}/{city}', [CityController::class, 'show'])
         ->name('discover.city');
 });
 
+/*
+|--------------------------------------------------------------------------
+| TOURS AND SAFARI
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('tours')->name('tours.')->group(function () {
+    Route::get('/', [TourController::class, 'index'])->name('index');
+    Route::get('/{package:slug}', [TourController::class, 'show'])->name('show');
+});
 /*
 |--------------------------------------------------------------------------
 | DESTINATIONS & CULTURE
@@ -98,18 +104,21 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 // Blog index
 Route::get('/blog', function () {
     $blogs = Blog::latest()->paginate(12);
+
     return view('partials.field-notes', compact('blogs'));
 })->name('blog.index');
 
 // Blog post by ID
 Route::get('/blog/{blog}', function (Blog $blog) {
     $blog->load('author');
+
     return view('singleblog', compact('blog'));
 })->name('blog.show');
 
 // Category
 Route::get('/blog/category/{category}', function ($category) {
     $blogs = Blog::where('category', $category)->latest()->paginate(12);
+
     return view('blog.category', compact('blogs', 'category'));
 })->name('blog.category');
 
@@ -172,6 +181,15 @@ Route::middleware(['auth', 'role:master|engineer'])
         // Livewire pages
         Route::view('/places', 'pages.destination-manager');
         Route::view('/people', 'pages.culture-manager');
+
+        Route::resource('packages', PartnerPackageController::class);
+
+        // Leads management (read-only + status update)
+        Route::get('leads', [PartnerLeadController::class, 'index'])->name('leads.index');
+        Route::get('leads/{lead}', [PartnerLeadController::class, 'show'])->name('leads.show');
+        Route::patch('leads/{lead}/status', [PartnerLeadController::class, 'updateStatus'])->name('leads.update-status');
+
+        Route::get('leads/export', [PartnerLeadController::class, 'export'])->name('leads.export');
     });
 
 require __DIR__.'/api.php';

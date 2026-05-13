@@ -80,7 +80,32 @@
             <p class="text-2xl">Search a destination above to get started</p>
         </div>
     </div>
-
+@if(isset($featuredPackages) && count($featuredPackages) > 0)
+<section class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20">
+    <h2 class="text-3xl font-bold mb-8 text-center">🌍 Featured Trips</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($featuredPackages as $pkg)
+        <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
+            <div class="h-48 bg-cover bg-center" 
+                 style="background-image: url('{{ $pkg->image ?: 'https://picsum.photos/400/250' }}')">
+            </div>
+            <div class="p-5">
+                <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}</div>
+                <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
+                <p class="text-sm text-zinc-400 mt-1 line-clamp-2">{{ $pkg->description }}</p>
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-2xl font-bold text-green-400">KSh {{ number_format($pkg->price) }}</span>
+                    <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
     <!-- ============================================= -->
     <!-- 3. AFTER SEARCH: Results & Tabs               -->
     <!-- ============================================= -->
