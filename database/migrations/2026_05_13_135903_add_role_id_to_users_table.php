@@ -11,15 +11,16 @@ return new class extends Migration
      */
 public function up()
 {
-    Schema::table('roles', function (Blueprint $table) {
-        $table->string('slug')->nullable()->unique()->after('guard_name');
+    Schema::table('users', function (Blueprint $table) {
+        $table->foreignId('role_id')->nullable()->constrained('roles')->nullOnDelete();
     });
 }
 
 public function down()
 {
-    Schema::table('roles', function (Blueprint $table) {
-        $table->dropColumn('slug');
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropForeign(['role_id']);
+        $table->dropColumn('role_id');
     });
 }
 };
