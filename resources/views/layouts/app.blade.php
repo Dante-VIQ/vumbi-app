@@ -46,6 +46,17 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://www.dwin2.com/pub.2580697.min.js"></script>
 
+    <!-- Default organisation + website schemas (always present) -->
+<script type="application/ld+json">
+@json($organizationSchema)
+</script>
+<script type="application/ld+json">
+@json($websiteSchema)
+</script>
+
+<!-- Page‑specific schemas will be injected here -->
+@stack('structured_data')
+
     <script>
         var ahrefs_analytics_script = document.createElement('script');
         ahrefs_analytics_script.async = true;

@@ -5,7 +5,7 @@
 @section('content')
 
     <!-- Hero Section -->
-    @include('pages.home')
+    @include('pages.discovery')
 
 @endsection
 

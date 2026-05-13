@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PartnerPackage;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 
 class TourController extends Controller
 {
@@ -64,6 +66,12 @@ class TourController extends Controller
                     ->take(4)
                     ->get();
 
-        return view('tours.show', compact('package', 'similar'));
+                        $seo = [
+        'title' => "{$package->title} – {$package->location} Safari | Vumbi Ventures",
+        'description' => Str::limit(strip_tags($package->description), 160),
+        'og_image' => $package->image ?: 'https://picsum.photos/1200/630',
+    ];
+
+        return view('tours.show', compact('package', 'similar', 'seo'));
     }
 }

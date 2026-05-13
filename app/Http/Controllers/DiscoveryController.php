@@ -158,4 +158,18 @@ class DiscoveryController extends Controller
             ]
         ]);
     }
+
+    public function show(City $city)
+{
+    // Build the same data as the AJAX endpoint, but server-side
+    $searchResult = app(SearchOrchestratorService::class)->search($city->name);
+    
+    $seo = [
+        'title' => "{$city->name} Travel Guide – Best Time, Hotels, Safaris | Vumbi Ventures",
+        'description' => "Explore {$city->name} with our AI‑powered travel guide. Find the best hotels, flights, safari tours, and local tips. Plan your trip now.",
+        'og_image' => $city->image_url ?? asset('images/cities/' . $city->slug . '.jpg'),
+    ];
+
+    return view('pages.discovery-city', compact('city', 'searchResult', 'seo'));
+}
 }

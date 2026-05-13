@@ -17,10 +17,12 @@ use App\Services\TravelPayouts\FlightService;
 use App\Services\TravelPayouts\HotelService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -68,6 +70,33 @@ $this->app->singleton(SearchOrchestratorService::class);
         if ($this->app->environment('local', 'testing')) {
             Model::preventLazyLoading();
         }
+
+        View::composer('*', function ($view) {
+        $view->with('organizationSchema', [
+            "@context" => "https://schema.org",
+            "@type" => "Organization",
+            "name" => "Vumbi Ventures",
+            "url" => url('/'),
+            "logo" => asset('images/vumbi-ventures-logo.png'),
+            "sameAs" => [
+                "https://twitter.com/vumbiventures",
+                "https://linkedin.com/company/vumbi-ventures",
+                "https://instagram.com/vumbiventures"
+            ]
+        ]);
+
+        $view->with('websiteSchema', [
+            "@context" => "https://schema.org",
+            "@type" => "WebSite",
+            "name" => "Vumbi Ventures",
+            "url" => url('/'),
+            "potentialAction" => [
+                "@type" => "SearchAction",
+                "target" => url('/discover') . "?q={search_term_string}",
+                "query-input" => "required name=search_term_string"
+            ]
+        ]);
+    });
     }
 
     /**

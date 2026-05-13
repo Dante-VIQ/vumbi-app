@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('structured_data')
+{!! \App\Helpers\SchemaBuilder::tourPackage($package) !!}
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-zinc-950 text-white">
     <!-- Hero -->

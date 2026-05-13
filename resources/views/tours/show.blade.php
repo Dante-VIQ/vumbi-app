@@ -1,5 +1,15 @@
 @extends('layouts.app')
 
+@section('title', $seo['title'])
+@section('meta_description', $seo['description'])
+@section('og_title', $seo['title'])
+@section('og_description', $seo['description'])
+@section('og_image', $seo['og_image'])
+
+@push('structured_data')
+{!! \App\Helpers\SchemaBuilder::touristAttraction($package) !!}
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-zinc-950 text-white">
     <!-- Hero -->
