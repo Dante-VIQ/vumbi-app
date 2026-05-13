@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-3xl mx-auto px-6 py-12 text-white">
     <!-- Back link -->
-    <a href="{{ route('admin.leads.index') }}" class="text-zinc-400 hover:text-white mb-6 inline-block">
+    <a href="{{ route('leads.index') }}" class="text-zinc-400 hover:text-white mb-6 inline-block">
         ← Back to leads
     </a>
 
@@ -95,7 +95,7 @@
     <!-- Status update form -->
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
         <h2 class="text-xl font-semibold mb-4">Update Status</h2>
-        <form action="{{ route('admin.leads.update-status', $lead) }}" method="POST" class="flex items-center gap-4">
+        <form action="{{ route('leads.update-status', $lead) }}" method="POST" class="flex items-center gap-4">
             @csrf
             @method('PATCH')
             <select name="status" class="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2 text-white">
