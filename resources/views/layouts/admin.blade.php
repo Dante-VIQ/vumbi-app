@@ -92,13 +92,13 @@
                     </li>
 
                     <li>
-                        <a href="/admin/partners"
+                        <a href="/admin/packages"
                            class="flex items-center gap-3 p-3 rounded transition {{ request()->routeIs('admin.cultures.*') ? 'bg-terracotta text-raw-linen' : 'hover:bg-terracotta hover:bg-opacity-30' }}">
                             <i class="fas fa-users w-5"></i>
-                            <span>Partners</span>
+                            <span>Packages</span>
                         </a>
                     </li>
-                    
+
                     <li>
                         <a href="/admin/leads"
                            class="flex items-center gap-3 p-3 rounded transition {{ request()->routeIs('admin.cultures.*') ? 'bg-terracotta text-raw-linen' : 'hover:bg-terracotta hover:bg-opacity-30' }}">

@@ -5,7 +5,7 @@
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">Partner Leads</h1>
         <div class="flex gap-4">
-            <a href="{{ route('admin.leads.export', request()->query()) }}" 
+            <a href="{{ route('leads.export', request()->query()) }}" 
                class="bg-amber-400 hover:bg-amber-300 text-black px-5 py-2 rounded-xl text-sm font-medium">
                 Export CSV
             </a>

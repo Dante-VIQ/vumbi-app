@@ -4,7 +4,7 @@
 <div class="max-w-7xl mx-auto px-6 py-12 text-white">
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">Partner Packages</h1>
-        <a href="{{ route('admin.packages.create') }}" class="bg-green-600 hover:bg-green-500 px-5 py-2 rounded-xl text-sm font-medium">+ New Package</a>
+        <a href="{{ route('packages.create') }}" class="bg-green-600 hover:bg-green-500 px-5 py-2 rounded-xl text-sm font-medium">+ New Package</a>
     </div>
 
     @if(session('success'))
@@ -32,8 +32,8 @@
                     <td class="p-4">KSh {{ number_format($pkg->price) }}</td>
                     <td class="p-4">{{ $pkg->active ? '✅' : '❌' }}</td>
                     <td class="p-4">
-                        <a href="{{ route('admin.packages.edit', $pkg) }}" class="text-amber-400 hover:underline mr-3">Edit</a>
-                        <form action="{{ route('admin.packages.destroy', $pkg) }}" method="POST" class="inline" onsubmit="return confirm('Delete this package?')">
+                        <a href="{{ route('packages.edit', $pkg) }}" class="text-amber-400 hover:underline mr-3">Edit</a>
+                        <form action="{{ route('packages.destroy', $pkg) }}" method="POST" class="inline" onsubmit="return confirm('Delete this package?')">
                             @csrf @method('DELETE')
                             <button class="text-red-400 hover:underline">Delete</button>
                         </form>
