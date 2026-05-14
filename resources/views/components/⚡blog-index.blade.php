@@ -127,13 +127,13 @@ new class extends Component {
     </section>
 
     @php
-        $featuredPosts = Blog::where('is_featured', true)
+        $featuredBlogs = Blog::where('is_featured', true)
                      ->latest()
-                     ->take(1) // or however many your featured section shows
+                     ->take(1)
                      ->get();
     @endphp
 
-    @foreach($featuredPosts as $post)
+    @foreach($featuredBlogs as $blog)
     {{-- your featured story card --}}
 
     {{-- FEATURED STORY (Optional - can be dynamic) --}}

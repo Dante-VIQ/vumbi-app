@@ -80,7 +80,7 @@ class BlogController extends Controller
             $validated['media_type'] = $request->media_type;
             // $mediaType = $this->getMediaType($this->media->getClientOriginalExtension());
         }
-
+        $validated['is_featured'] = $request->has('is_featured') ? true : false;
         $validated['user_id'] = $request->user()->id;
 
         Blog::create($validated);
@@ -121,7 +121,7 @@ class BlogController extends Controller
             $validated['media_path'] = $mediaPath;
             $validated['media_type'] = $request->media_type;
         }
-
+        $validated['is_featured'] = $request->has('is_featured') ? true : false;
         $blog->update($validated);
 
         return redirect()->route('blogs.index')
