@@ -26,10 +26,7 @@ new class extends Component {
     {
         $this->categories = Blog::select('category')->distinct()->pluck('category')->toArray();
 
-        $featuredPosts = Blog::where('is_featured', true)
-                     ->latest()
-                     ->take(1) // or however many your featured section shows
-                     ->get();
+
     }
 
     public function updatedSearch() { $this->resetPage(); }
@@ -128,6 +125,13 @@ new class extends Component {
             </div>
         </div>
     </section>
+
+    @php
+        $featuredPosts = Blog::where('is_featured', true)
+                     ->latest()
+                     ->take(1) // or however many your featured section shows
+                     ->get();
+    @endphp
 
     @foreach($featuredPosts as $post)
     {{-- your featured story card --}}
