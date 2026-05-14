@@ -25,6 +25,11 @@ new class extends Component {
     public function mount()
     {
         $this->categories = Blog::select('category')->distinct()->pluck('category')->toArray();
+
+        $featuredPosts = Blog::where('is_featured', true)
+                     ->latest()
+                     ->take(1) // or however many your featured section shows
+                     ->get();
     }
 
     public function updatedSearch() { $this->resetPage(); }
@@ -51,6 +56,7 @@ new class extends Component {
                   ->orWhere('description', 'like', '%' . $this->search . '%');
             });
         }
+
 
         return $query->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
@@ -123,30 +129,35 @@ new class extends Component {
         </div>
     </section>
 
+    @foreach($featuredPosts as $post)
+    {{-- your featured story card --}}
+
     {{-- FEATURED STORY (Optional - can be dynamic) --}}
     <section class="container mx-auto px-6 py-14">
         <div class="glass-panel rounded-3xl overflow-hidden border border-white/50 shadow-xl">
             <div class="grid md:grid-cols-2 items-center">
                 <div class="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=2070"
-                        alt="Featured story"
+                    <img src="{{ asset($blog->media_path) }}"
+                        alt="{{ $blog->title }}"
                         class="w-full h-full object-cover">
                 </div>
                 <div class="p-8 md:p-10">
                     <span class="text-xs uppercase tracking-widest text-[#8B5A2B] font-medium">Featured Story</span>
                     <h2 class="text-2xl md:text-3xl font-semibold mt-3 leading-snug">
-                        The Seamstress Who Built a Secret Classroom in Kumasi
+                        {{ $blog->title }}
                     </h2>
                     <p class="text-[#5C5C5C] mt-4 leading-relaxed">
-                        In a small workshop, education is being rebuilt stitch by stitch — away from formal systems.
+                        {{ Str::limit(strip_tags($blog->description), 120) }}
                     </p>
-                    <a href="#" class="inline-block mt-6 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md">
+                    <a href="{{ route('blog.show', $blog->id) }}" class="inline-block mt-6 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md">
                         Read Story →
                     </a>
                 </div>
             </div>
         </div>
     </section>
+
+    @endforeach
 
     {{-- BLOG GRID --}}
     <section class="container mx-auto px-6 pb-24">
