@@ -1,10 +1,6 @@
 @extends('layouts.app')
 
 @push('meta')
-    @php
-      $blog = App\Models\Blog::all();
-
-   @endphp
 <title>{{ $blog->meta_title ?? $blog->title }} | Vumbi Ventures</title>
 <meta name="description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
 
@@ -13,10 +9,18 @@
 <meta property="og:description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:image" content="{{ asset($blog->media_path ?? 'images/default-blog-image.jpg') }}">
+<meta property="og:type" content="article">
 
 {{-- Twitter Card --}}
-<meta name="twitter:title" content="{{ $blog->meta_title ?? $post->title }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $blog->meta_title ?? $blog->title }}">
 <meta name="twitter:description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
+<meta name="twitter:image" content="{{ asset($blog->media_path ?? 'images/default-blog-image.jpg') }}">
+
+{{-- Keywords --}}
+@if($blog->meta_keywords)
+<meta name="keywords" content="{{ $blog->meta_keywords }}">
+@endif
 @endpush
 
 @push('styles')
@@ -120,10 +124,10 @@
         $blogPostingSchema = [
             "@context" => "https://schema.org",
             "@type" => "BlogPosting",
-            "headline" => $blog->title,
-            "description" => $blog->excerpt ?? strip_tags(substr($blog->content, 0, 160)),
-           "datePublished" => "{{ optional($blog->created_at)->toIso8601String() ?? $blog->created_at?->format('c') ?? now()->toIso8601String() }}",
-            "dateModified" => "{{ optional($blog->updated_at)->toIso8601String() ?? $blog->updated_at?->format('c') ?? now()->toIso8601String() }}",
+            "headline" => $blog->meta_title ?? $blog->title,
+            "description" => $blog->meta_description ?? $blog->excerpt ?? strip_tags(substr($blog->content, 0, 160)),
+            "datePublished" => optional($blog->created_at)->toIso8601String() ?? now()->toIso8601String(),
+            "dateModified" => optional($blog->updated_at)->toIso8601String() ?? now()->toIso8601String(),
             "author" => [
                 "@type" => "Person",
                 "name" => $blog->author->name ?? "Field Notes Team",
@@ -141,9 +145,9 @@
                 "@type" => "WebPage",
                 "@id" => url()->current()
             ],
-            "image" => $blog->featured_image ? asset('storage/' . $blog->featured_image) : null,
-            "keywords" => $blog->tags ?? null,
-            "articleSection" => $blog->category,
+            "image" => $blog->media_path ? asset($blog->media_path) : asset('images/default-blog-image.jpg'),
+            "keywords" => $blog->meta_keywords ?? $blog->tags ?? null,
+            "articleSection" => $blog->category ?? null,
             "inLanguage" => "en"
         ];
     @endphp
