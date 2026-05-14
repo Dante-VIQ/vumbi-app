@@ -2,26 +2,15 @@
 
 @push('meta')
 <title>{{ $blog->meta_title ?? $blog->title }} | Vumbi Ventures</title>
-<meta name="description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
-
-{{-- Open Graph --}}
-<meta property="og:title" content="{{ $blog->meta_title ?? $blog->title }}">
-<meta property="og:description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
-<meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:image" content="{{ asset($blog->media_path ?? 'images/default-blog-image.jpg') }}">
-<meta property="og:type" content="article">
-
-{{-- Twitter Card --}}
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ $blog->meta_title ?? $blog->title }}">
-<meta name="twitter:description" content="{{ $blog->meta_description ?? Str::limit($blog->excerpt, 155) }}">
-<meta name="twitter:image" content="{{ asset($blog->media_path ?? 'images/default-blog-image.jpg') }}">
-
-{{-- Keywords --}}
-@if($blog->meta_keywords)
-<meta name="keywords" content="{{ $blog->meta_keywords }}">
-@endif
+<meta name="description" content="{{ $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155) }}">
 @endpush
+
+@section('og_title', $blog->meta_title ?? $blog->title)
+@section('og_description', $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155))
+@section('og_image', asset($blog->media_path ?? 'images/og-default.jpg'))
+@section('twitter_title', $blog->meta_title ?? $blog->title)
+@section('twitter_description', $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155))
+@section('twitter_image', asset($blog->media_path ?? 'images/og-default.jpg'))
 
 @push('styles')
 <style>

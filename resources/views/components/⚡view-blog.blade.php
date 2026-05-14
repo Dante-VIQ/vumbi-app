@@ -247,50 +247,6 @@ private function shouldInsertWidget($blockIndex): bool
 ?>
 
 <div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]">
-    {{-- Dynamic SEO Meta (handled via layoutData in component)
-    @php
-        $seo = $this->layoutData();
-    @endphp
-    @section('title', $seo['title'])
-    @section('meta_description', $seo['description'])
-    @push('meta')
-        <meta property="og:title" content="{{ $seo['title'] }}">
-        <meta property="og:description" content="{{ $seo['description'] }}">
-        <meta property="og:image" content="{{ $seo['ogImage'] }}">
-        <meta property="og:type" content="article">
-        <meta property="article:published_time" content="{{ $blog->created_at->toIso8601String() }}">
-        <meta property="article:author" content="{{ $blog->author->name ?? 'Vumbi Ventures' }}">
-        <link rel="canonical" href="{{ $seo['canonical'] }}">
-    @endpush
-
-    @push('structured-data')
-       @php
-
-       $articleSchema = [
-          "@context" => "https://schema.org",
-          "@type" => "Article",
-          "headline" => $blog->title,
-          "image" => $seo['ogImage'],
-          "author" => [
-            "@type" => "Person",
-            "name" => $blog->author->name ?? 'Vumbi Ventures'
-          ],
-          "publisher" => [
-            "@type" => "Organization",
-            "name" => "Vumbi Ventures",
-            "logo" => [
-              "@type" => "ImageObject",
-              "url" => asset('images/logo1.png')
-            ]
-          ],
-          "datePublished" => $blog->created_at->toIso8601String(),
-          "description" => $seo['description']
-       ];
-      @endphp
-      <script type="application/ld+json">
-        {!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}
-      </script>
-    @endpush --}}
 
     {{-- ===================== HERO HEADER ===================== --}}
     <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">

@@ -4,79 +4,42 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- Primary SEO --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Primary SEO defaults — overridden per page via @stack('meta') --}}
     <title>@yield('title', 'Discover Africa Travel Guides & Trip Planning | Vumbi Ventures')</title>
-    <meta name="description"
-        content="@yield('description', 'Discover Africa through curated travel guides, destination insights, and personalized trip planning. Explore safaris, cities, beaches and hidden gems across Africa.')">
+    <meta name="description" content="@yield('description', 'Discover Africa through curated travel guides, destination insights, and personalized trip planning.')">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ url()->current() }}">
     <meta name="theme-color" content="#ffffff">
 
-    {{-- Performance hints --}}
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo1.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/logo1.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo1.png') }}">
-
-    {{-- Open Graph
+    {{-- Open Graph defaults --}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Vumbi Ventures">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('og_title', 'Discover Africa | Travel Guides & Trip Planning')">
-    <meta property="og:description"
-        content="@yield('og_description', 'Explore Africa through curated destination guides, stories and personalized travel planning.')">
-    <meta property="og:image" content="@yield('og_image', asset('images/logo1.png'))"> --}}
+    <meta property="og:description" content="@yield('og_description', 'Explore Africa through curated destination guides, stories and personalized travel planning.')">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
 
-    {{-- Twitter --}}
+    {{-- Twitter defaults --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', 'Discover Africa with Vumbi Ventures')">
-    <meta name="twitter:description"
-        content="@yield('twitter_description', 'Curated African travel guides and personalized trip planning.')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Curated African travel guides and personalized trip planning.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
-    {{-- Favicon --}}
+    {{-- Page-specific meta overrides injected here --}}
+    @stack('meta')
+
+    {{-- Canonical --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Favicons --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://www.dwin2.com/pub.2580697.min.js"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo1.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo1.png') }}">
 
-    <!-- Default organisation + website schemas (always present) -->
-<script type="application/ld+json">
-@json($organizationSchema)
-</script>
-<script type="application/ld+json">
-@json($websiteSchema)
-</script>
-
-<!-- Page‑specific schemas will be injected here -->
-@stack('structured_data')
-
-    <script>
-        var ahrefs_analytics_script = document.createElement('script');
-        ahrefs_analytics_script.async = true;
-        ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
-        ahrefs_analytics_script.setAttribute('data-key', '86XMcrcnBj1CKAdhUIRDSg');
-        document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
-    </script>
-
-<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
-  (function () {
-      var script = document.createElement("script");
-      script.async = 1;
-      script.src = 'https://emrldtp.cc/NDY1NDg3.js?t=465487';
-      document.head.appendChild(script);
-  })();
-</script>
-    {{-- Styles --}}
-    @livewireStyles
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
+    {{-- Performance hints --}}
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     {{-- Structured Data --}}
     @php
@@ -105,19 +68,37 @@
             ]
         ];
     @endphp
-
-    <script type="application/ld+json">
-        {!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES) !!}
+    <script>
+        var ahrefs_analytics_script = document.createElement('script');
+        ahrefs_analytics_script.async = true;
+        ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
+        ahrefs_analytics_script.setAttribute('data-key', '86XMcrcnBj1CKAdhUIRDSg');
+        document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
     </script>
 
+<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
+  (function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.src = 'https://emrldtp.cc/NDY1NDg3.js?t=465487';
+      document.head.appendChild(script);
+  })();
+</script>
     <script type="application/ld+json">
-        {!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}
+        {!! json_encode($organizationSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
+    </script>
+    <script type="application/ld+json">
+        {!! json_encode($websiteSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
     </script>
 
+    {{-- Page-specific schema --}}
     @stack('schema')
-    @stack('meta')
-</head>
 
+    {{-- Styles --}}
+    @livewireStyles
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
+</head>
 <body class="font-sans antialiased text-[#1A1A1A] bg-white">
 
     {{-- Livewire Loading Overlay --}}
