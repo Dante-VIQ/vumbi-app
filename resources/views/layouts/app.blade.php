@@ -24,14 +24,14 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/logo1.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo1.png') }}">
 
-    {{-- Open Graph --}}
+    {{-- Open Graph
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Vumbi Ventures">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('og_title', 'Discover Africa | Travel Guides & Trip Planning')">
     <meta property="og:description"
         content="@yield('og_description', 'Explore Africa through curated destination guides, stories and personalized travel planning.')">
-    <meta property="og:image" content="@yield('og_image', asset('images/logo1.png'))">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo1.png'))"> --}}
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">

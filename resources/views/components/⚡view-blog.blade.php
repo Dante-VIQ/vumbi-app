@@ -247,7 +247,7 @@ private function shouldInsertWidget($blockIndex): bool
 ?>
 
 <div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]">
-    {{-- Dynamic SEO Meta (handled via layoutData in component) --}}
+    {{-- Dynamic SEO Meta (handled via layoutData in component)
     @php
         $seo = $this->layoutData();
     @endphp
@@ -290,7 +290,7 @@ private function shouldInsertWidget($blockIndex): bool
       <script type="application/ld+json">
         {!! json_encode($articleSchema, JSON_UNESCAPED_SLASHES) !!}
       </script>
-    @endpush
+    @endpush --}}
 
     {{-- ===================== HERO HEADER ===================== --}}
     <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">
