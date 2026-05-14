@@ -47,7 +47,7 @@ class PartnerPackageController extends Controller
         unset($validated['itinerary_text'], $validated['included_text'], $validated['excluded_text']);
         PartnerPackage::create($validated);
 
-        return redirect()->route('admin.packages.index')
+        return redirect()->route('packages.index')
             ->with('success', 'Package created.');
     }
 
@@ -83,7 +83,7 @@ class PartnerPackageController extends Controller
         unset($validated['itinerary_text'], $validated['included_text'], $validated['excluded_text']);
         $package->update($validated);
 
-        return redirect()->route('admin.packages.index')
+        return redirect()->route('packages.index')
             ->with('success', 'Package updated.');
     }
 
@@ -91,7 +91,7 @@ class PartnerPackageController extends Controller
     {
         $package->delete();
 
-        return redirect()->route('admin.packages.index')
+        return redirect()->route('packages.index')
             ->with('success', 'Package deleted.');
     }
 }

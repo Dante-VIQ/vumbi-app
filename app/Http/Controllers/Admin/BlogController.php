@@ -136,7 +136,7 @@ class BlogController extends Controller
 
         $blog->delete();
 
-        return redirect()->route('admin.blogs.index')
+        return redirect()->route('blogs.index')
             ->with('success', 'Blog post deleted successfully.');
     }
 
@@ -156,7 +156,7 @@ class BlogController extends Controller
             $blog->delete();
         }
 
-        return redirect()->route('admin.blogs.index')
+        return redirect()->route('blogs.index')
             ->with('success', count($request->ids).' blog posts deleted successfully.');
     }
 }

@@ -115,6 +115,7 @@
     </script>
 
     @stack('schema')
+    @stack('meta')
 </head>
 
 <body class="font-sans antialiased text-[#1A1A1A] bg-white">

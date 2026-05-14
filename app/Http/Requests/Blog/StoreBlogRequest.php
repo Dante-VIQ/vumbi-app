@@ -26,8 +26,11 @@ class StoreBlogRequest extends FormRequest
             'title' => 'required|string|max:255',
             'category' => 'required|string',
             'description' => 'required|string|min:10',  // Sanitize in Model or here with purifier
-'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi|max:8192', // 8MB
-'media_type' => 'required_with:media|in:image,video',
+            'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi|max:8192', // 8MB
+            'media_type' => 'required_with:media|in:image,video',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:255',
+            'meta_keywords' => 'nullable|string|max:255',
         ];
     }
 }

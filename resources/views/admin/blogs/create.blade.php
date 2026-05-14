@@ -25,6 +25,40 @@
             @enderror
         </div>
 
+        <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
+            <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Meta Title</label>
+            <input type="text"
+                   name="meta_title"
+                   value="{{ old('meta_title') }}"
+                   class="w-full bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none @error('meta_title') border-red-500 @enderror"
+                   placeholder="Enter a compelling meta title...">
+            @error('meta_title')
+                <p class="mt-2 text-red-500 text-sm">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
+            <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Meta Description</label>
+            <input type="text"
+                   name="meta_description"
+                   value="{{ old('meta_description') }}"
+                   class="w-full bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none @error('meta_description') border-red-500 @enderror"
+                   placeholder="Enter a compelling meta description...">
+            @error('meta_description')
+                <p class="mt-2 text-red-500 text-sm">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
+            <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Meta Keywords</label>
+            <input type="text"
+                   name="meta_keywords"
+                   value="{{ old('meta_keywords') }}"
+                   class="w-full bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none @error('meta_keywords') border-red-500 @enderror"
+                   placeholder="Enter meta keywords (comma-separated)...">
+            @error('meta_keywords')
+                <p class="mt-2 text-red-500 text-sm">{{ $message }}</p>
+            @enderror
+        </div>
+
         {{-- Category --}}
         <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
             <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Category</label>
@@ -69,6 +103,20 @@
             </div>
         </div>
 
+        <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
+            <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Featured</label>
+            <div class="grid md:grid-cols-3 gap-4">
+
+                    <label class="flex items-center gap-3 p-4 border border-dust-mite cursor-pointer hover:border-sunflare transition">
+                        <input type="radio"
+                               name="is_featured"
+                               value="is_featured"
+                               {{ old('is_featured') == 'is_featured' ? 'checked' : '' }}
+                               class="appearance-none w-4 h-4 border border-dust-mite checked:bg-sunflare checked:border-sunflare">
+                    </label>
+
+
+        </div>
         {{-- Media Upload --}}
         <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded"
              x-data="{

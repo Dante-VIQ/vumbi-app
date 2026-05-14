@@ -13,7 +13,7 @@ class Blog extends Model
 
     protected $table = 'blogs'; // Ensure this matches your table name
 
-    protected $fillable = ['user_id', 'category', 'title', 'description', 'media_path', 'media_type'];
+    protected $fillable = ['user_id', 'category', 'title', 'description', 'media_path', 'media_type', 'meta_title', 'meta_description', 'meta_keywords'];
 
     protected $casts = [
         'created_at' => 'datetime',

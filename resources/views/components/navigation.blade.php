@@ -31,6 +31,7 @@
                     '/services' => ['Services', 'fas fa-toolbox'],
                     '/about' => ['About', 'fas fa-info-circle'],
                     '/contact' => ['Contact', 'fas fa-envelope'],
+                    '/tours' => ['Safari', 'fas fa-briefcase'],
                 ];
             @endphp
 

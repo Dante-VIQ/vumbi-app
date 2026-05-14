@@ -85,7 +85,7 @@
     <h2 class="text-3xl font-bold mb-8 text-center">🌍 Featured Trips</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($featuredPackages as $pkg)
-        <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
+        <a href="{{ route('tours.show', $pkg) }}" class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
             <div class="h-48 bg-cover bg-center" 
                  style="background-image: url('{{ $pkg->image ?: 'https://picsum.photos/400/250' }}')">
             </div>
@@ -101,7 +101,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </a>
         @endforeach
     </div>
 </section>
