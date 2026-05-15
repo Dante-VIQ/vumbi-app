@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Primary SEO defaults — overridden per page via @stack('meta') --}}
-    <title>@yield('title', 'Discover Africa Travel Guides & Trip Planning | Vumbi Ventures')</title>
-    <meta name="description" content="@yield('description', 'Discover Africa through curated travel guides, destination insights, and personalized trip planning.')">
+    {{-- Page-specific meta overrides injected here --}}
+        @stack('meta')
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#ffffff">
 
@@ -26,8 +26,7 @@
     <meta name="twitter:description" content="@yield('twitter_description', 'Curated African travel guides and personalized trip planning.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
-    {{-- Page-specific meta overrides injected here --}}
-    @stack('meta')
+
 
     {{-- Canonical --}}
     <link rel="canonical" href="{{ url()->current() }}">
