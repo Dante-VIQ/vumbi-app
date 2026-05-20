@@ -1,8 +1,12 @@
 @extends('layouts.app')
 
 @push('meta')
-<title>{{ $blog->meta_title ?? $blog->title }} | Vumbi Ventures</title>
+
+<meta name="title" content="{{ $blog->meta_title ??  $blog->title }}">
+
 <meta name="description" content="{{ $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155) }}">
+
+<meta name="keywords" content="{{ $blog->meta_keywords ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155) }}">
 @endpush
 
 @section('og_title', $blog->meta_title ?? $blog->title)
