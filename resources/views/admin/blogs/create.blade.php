@@ -103,20 +103,19 @@
             </div>
         </div>
 
-        <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
-            <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Featured</label>
-            <div class="grid md:grid-cols-3 gap-4">
-
-                    <label class="flex items-center gap-3 p-4 border border-dust-mite cursor-pointer hover:border-sunflare transition">
-                        <input type="radio"
-                               name="is_featured"
-                               value="is_featured"
-                               {{ old('is_featured') == 'is_featured' ? 'checked' : '' }}
-                               class="appearance-none w-4 h-4 border border-dust-mite checked:bg-sunflare checked:border-sunflare">
-                    </label>
-
-
-        </div>
+<div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded">
+    <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Featured</label>
+    
+    <label class="flex items-center gap-3 p-4 border border-dust-mite cursor-pointer hover:border-sunflare transition w-fit">
+        <input 
+            type="checkbox"
+            name="is_featured"
+            value="1"
+            {{ old('is_featured', $blog->is_featured ?? false) ? 'checked' : '' }}
+            class="w-4 h-4 accent-sunflare cursor-pointer">
+        <span class="text-sm text-dust-mite">Feature this article on the blog homepage</span>
+    </label>
+</div>
         {{-- Media Upload --}}
         <div class="bg-indigo-night bg-opacity-30 p-6 border border-dust-mite rounded"
              x-data="{
