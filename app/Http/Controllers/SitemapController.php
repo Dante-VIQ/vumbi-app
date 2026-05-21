@@ -21,7 +21,7 @@ public function index()
 
     $staticPages = [
         (object) ['loc' => url('/'), 'lastmod' => now()->toDateString(), 'priority' => '1.0', 'changefreq' => 'weekly'],
-        (object) ['loc' => url('/ecosystem'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'monthly'],
+        (object) ['loc' => url('/servies'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'monthly'],
         (object) ['loc' => url('/contact'), 'lastmod' => now()->toDateString(), 'priority' => '0.6', 'changefreq' => 'yearly'],
         (object) ['loc' => url('/discover'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'weekly'],
         (object) ['loc' => url('/blog'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],

@@ -20,7 +20,6 @@ new class extends Component {
     'search' => ['except' => ''],
     'sortField' => ['except' => 'created_at'],
     'sortDirection' => ['except' => 'desc'],
-    'page' => ['except' => 1],
 ];
 
     public function mount()
