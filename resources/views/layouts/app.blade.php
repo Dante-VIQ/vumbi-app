@@ -10,6 +10,10 @@
 <meta name="keywords" content="@yield('meta_keywords')">         
 {{-- important --}}
 <link rel="canonical" href="@yield('canonical_url', url()->current())">
+
+@hasSection('meta_keywords')
+    <meta name="keywords" content="@yield('meta_keywords')">
+@endif
     {{-- Primary SEO defaults — overridden per page via @stack('meta') --}}
     {{-- Page-specific meta overrides injected here --}}
         @stack('meta')
@@ -29,12 +33,7 @@
     <meta name="twitter:title" content="@yield('twitter_title', 'Discover Africa with Vumbi Ventures')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Curated African travel guides and personalized trip planning.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
-
-
-
-    {{-- Canonical --}}
-    <link rel="canonical" href="{{ url()->current() }}">
-
+    
     {{-- Favicons --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo1.png') }}">
