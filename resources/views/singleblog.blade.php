@@ -4,6 +4,8 @@
 
 @section('meta_description', $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155))
 
+@section('meta_keywords', $blog->meta_keywords ?? '')
+
 @section('og_title', $blog->meta_title ?? $blog->title)
 @section('og_description', $blog->meta_description ?? Str::limit(strip_tags($blog->excerpt ?? ''), 155))
 @section('og_image', asset($blog->media_path ?? 'images/og-default.jpg'))
