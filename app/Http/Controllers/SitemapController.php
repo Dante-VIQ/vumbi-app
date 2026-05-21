@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 // use App\Models\Culture;
 // use App\Models\Doctor; // Destinations model
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
 
 class SitemapController extends Controller
