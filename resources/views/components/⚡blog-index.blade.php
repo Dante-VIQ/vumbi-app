@@ -16,11 +16,12 @@ new class extends Component {
     public $categories = [];
 
     protected $queryString = [
-        'selectedCategory' => ['except' => 'all'],
-        'search' => ['except' => ''],
-        'sortField' => ['except' => 'created_at'],
-        'sortDirection' => ['except' => 'desc'],
-    ];
+    'selectedCategory' => ['except' => 'all'],
+    'search' => ['except' => ''],
+    'sortField' => ['except' => 'created_at'],
+    'sortDirection' => ['except' => 'desc'],
+    'page' => ['except' => 1],
+];
 
     public function mount()
     {
@@ -64,6 +65,7 @@ new class extends Component {
         return [
             'blogs' => $this->blogs(),
             'categories' => $this->categories,
+            'featuredBlogs' => Blog::where('is_featured', true)->latest()->take(1)->get(),
         ];
     }
 };
@@ -126,12 +128,6 @@ new class extends Component {
         </div>
     </section>
 
-    @php
-        $featuredBlogs = Blog::where('is_featured', true)
-                     ->latest()
-                     ->take(1)
-                     ->get();
-    @endphp
 
     @foreach($featuredBlogs as $blog)
     {{-- your featured story card --}}
@@ -208,7 +204,7 @@ new class extends Component {
 
             {{-- Pagination --}}
             <div class="mt-12">
-                {{ $blogs->links() }}
+                {{ $blogs->links('pagination::tailwind') }}
             </div>
         @else
             <div class="text-center py-20 text-[#6B6B6B]">
