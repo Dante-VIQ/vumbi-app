@@ -5,7 +5,7 @@
         class="grain absolute inset-0 pointer-events-none bg-[radial-gradient(#8B5A2B_0.8px,transparent_1px)] [background-size:40px_40px] opacity-10">
     </div>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20 lg:pt-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-15 lg:pt-12">
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 xl:gap-20 items-center">
 
             <!-- Left Content -->
