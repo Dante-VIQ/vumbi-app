@@ -18,7 +18,24 @@ use App\Http\Controllers\TourController;
 
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
-Route::view('/', 'home');
+// Route::view('/', 'home');
+
+Route::get('/', function () {
+    $blogs = App\Models\Blog::latest()
+                ->with('author')
+                ->take(3)
+                ->get();
+
+    $featuredBlog = App\Models\Blog::where('is_featured', true)
+                ->latest()
+                ->first();
+
+    $headerMedia = App\Models\HeaderMedia::latest()
+                ->take(6)
+                ->get();
+
+    return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
+});
 
 // /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
