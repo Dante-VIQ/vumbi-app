@@ -158,10 +158,10 @@
                     <div class="text-3xl font-bold text-green-400 mb-4">KSh {{ number_format($package->price) }}</div>
                     <p class="text-sm text-zinc-400 mb-6">Per person</p>
 
-<a href="{{ url('booking/' . $partnerPackage->slug) }}"
-   class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-4 transition">
-    Book This Safari
-</a>
+                    <a href="{{ url('booking/' . $partnerPackage->slug) }}"
+                        class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-4 transition">
+                        Book This Safari
+                    </a>
                     <button
                         class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 py-3 rounded-xl font-medium transition">
                         <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
