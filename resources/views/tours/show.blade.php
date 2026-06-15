@@ -158,26 +158,27 @@
                     <div class="text-3xl font-bold text-green-400 mb-4">KSh {{ number_format($package->price) }}</div>
                     <p class="text-sm text-zinc-400 mb-6">Per person</p>
 
-                    <a href="{{ url('booking/' . $partnerPackage->slug) }}"
+                    <a href="{{ url('booking/' . $partner->slug) }}"
                         class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-4 transition">
                         Book This Safari
                     </a>
-                    <button
+                    <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
+                        target="_blank"
                         class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 py-3 rounded-xl font-medium transition">
                         <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
                             target="_blank" class="flex justify-center items-center gap-2">
                             💬 Ask on WhatsApp
                         </a>
-                    </button>
 
-                    <div class="border-t border-zinc-800 mt-6 pt-4 text-sm text-zinc-500 space-y-2">
-                        @if($package->duration_days)
-                            <p>Duration: {{ $package->duration_days }}D / {{ $package->duration_nights }}N</p>
-                        @endif
-                        @if($package->difficulty)
-                            <p>Difficulty: {{ ucfirst($package->difficulty) }}</p>
-                        @endif
-                    </div>
+
+                        <div class="border-t border-zinc-800 mt-6 pt-4 text-sm text-zinc-500 space-y-2">
+                            @if($package->duration_days)
+                                <p>Duration: {{ $package->duration_days }}D / {{ $package->duration_nights }}N</p>
+                            @endif
+                            @if($package->difficulty)
+                                <p>Difficulty: {{ ucfirst($package->difficulty) }}</p>
+                            @endif
+                        </div>
                 </div>
             </div>
         </div>
