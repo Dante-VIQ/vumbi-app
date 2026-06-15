@@ -158,7 +158,7 @@
                     <div class="text-3xl font-bold text-green-400 mb-4">KSh {{ number_format($package->price) }}</div>
                     <p class="text-sm text-zinc-400 mb-6">Per person</p>
 
-                    <a href="{{ url('booking/' . $partner->slug) }}"
+                    <a href="{{ route('booking', $package->slug) }}"
                         class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-4 transition">
                         Book This Safari
                     </a>
