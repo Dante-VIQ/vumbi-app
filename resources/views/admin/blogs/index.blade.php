@@ -10,11 +10,13 @@
         <div class="text-sm text-[#C4B9A6]">
             Total Posts: <span class="text-raw-linen">{{ $blogs->total() }}</span>
         </div>
+        @can('create-blog', App\Models\Blog::class)
         <a href="{{ route('blogs.create') }}"
            class="bg-terracotta px-6 py-3 text-raw-linen hover:bg-sunflare hover:text-deep-earth transition flex items-center gap-2">
             <i class="fas fa-plus"></i>
             Create New Post
         </a>
+        @endcan
     </div>
 
     {{-- Filters --}}
@@ -148,18 +150,20 @@
                     </td>
                     <td class="p-4">
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('blogs.edit', $blog) }}"
-                               class="p-2 border border-dust-mite hover:bg-terracotta transition text-sunflare"
-                               title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                            @can('update-blog', $blog)
+                                <a href="{{ route('blogs.edit', $blog) }}"
+                                   class="p-2 border border-dust-mite hover:bg-terracotta transition text-sunflare"
+                                   title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            @endcan
 
                             {{-- <a href="{{ route('blog.show', $blog->id) }}" target="_blank"
                                class="p-2 border border-dust-mite hover:bg-terracotta transition text-sunflare"
                                title="View">
                                 <i class="fas fa-external-link-alt"></i>
                             </a> --}}
-
+                            @can('delete-blog', $blog)
                             <form action="{{ route('blogs.destroy', $blog) }}"
                                   method="POST"
                                   onsubmit="return confirm('Are you sure you want to delete this post?');"
@@ -172,6 +176,7 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            @endcan
                         </div>
                     </td>
                 </tr>
@@ -181,11 +186,13 @@
                         <i class="fas fa-blog text-4xl mb-4 block"></i>
                         <p class="text-xl mb-2">No blog posts found</p>
                         <p class="mb-4">Get started by creating your first post</p>
-                        <a href="{{ route('blogs.create') }}"
-                           class="bg-terracotta px-6 py-3 text-raw-linen hover:bg-sunflare hover:text-deep-earth transition inline-flex items-center gap-2">
-                            <i class="fas fa-plus"></i>
-                            Create New Post
-                        </a>
+                        @can('create-blog', App\Models\Blog::class)
+                            <a href="{{ route('blogs.create') }}"
+                               class="bg-terracotta px-6 py-3 text-raw-linen hover:bg-sunflare hover:text-deep-earth transition inline-flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                Create New Post
+                            </a>
+                        @endcan
                     </td>
                 </tr>
                 @endforelse

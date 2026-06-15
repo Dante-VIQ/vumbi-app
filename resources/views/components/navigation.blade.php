@@ -115,10 +115,10 @@
             @endguest
 
             <!-- Primary CTA Button -->
-            <a href="/discover"
+            <a href="/booking"
                class="hidden lg:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#8B5A2B] to-[#5C3A1E] text-white rounded-xl text-sm font-semibold hover:from-[#5C3A1E] hover:to-[#8B5A2B] transition-all duration-200 shadow-md shadow-[#8B5A2B]/20 ml-2">
                 <i class="fas fa-compass"></i>
-                Start Exploring
+                Plan A Trip
             </a>
 
             <!-- Mobile Menu Button -->
@@ -171,13 +171,13 @@
                 @endrole
 
                 <!-- Mobile CTA -->
-                <div class="pt-4 mt-4 border-t border-[#8B5A2B]/10">
-                    <a href="/discover" @click="mobileOpen = false"
+                {{-- <div class="pt-4 mt-4 border-t border-[#8B5A2B]/10">
+                    <a href="/booking" @click="mobileOpen = false"
                        class="flex items-center justify-center gap-2 px-5 py-4 bg-gradient-to-r from-[#8B5A2B] to-[#5C3A1E] text-white rounded-xl font-semibold shadow-md hover:from-[#5C3A1E] hover:to-[#8B5A2B] transition-all duration-200">
                         <i class="fas fa-compass"></i>
-                        Start Exploring
+                        Plan A Trip
                     </a>
-                </div>
+                </div> --}}
 
                 <!-- Mobile Auth Section -->
                 @auth

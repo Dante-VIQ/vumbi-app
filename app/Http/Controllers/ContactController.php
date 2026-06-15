@@ -2,14 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormSubmitted;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ContactController extends Controller
 {
     public function submit(Request $request)
 {
+ $key = 'contact-form:' . $request->ip();
+
+    if (RateLimiter::tooManyAttempts($key, 3)) {
+        return response()->json([
+            'message' => 'Too many submissions. Please try again later.'
+        ], 429);
+    }
+  RateLimiter::hit($key, 600); // 600 seconds = 10 minutes
+  
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email',

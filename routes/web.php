@@ -14,7 +14,7 @@ use App\Models\Culture;
 use App\Models\Destination;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
-
+use App\Models\PartnerPackage;
 
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
@@ -63,6 +63,11 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/ecosystem', 'pages.ecosystem');
 Route::view('/header', 'pages.header-media');
 
+Route::get('/booking/{partnerPackage:slug}', function (PartnerPackage $partnerPackage) {
+    return view('booking', compact('partnerPackage'));
+})->name('booking');
+
+
 Route::post('/contact', [ContactController::class, 'submit'])
     ->name('contact.submit');
 
@@ -106,7 +111,7 @@ Route::get('/cultures/{slug}', function ($slug) {
     return view('pages.culture', compact('slug'));
 })->name('culture.show');
 
-Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,10');
 
 // ======================
 // BLOG ROUTES (Public)

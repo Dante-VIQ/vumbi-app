@@ -24,13 +24,13 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Vumbi Ventures">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', 'Discover Africa | Travel Guides & Trip Planning')">
+    <meta property="og:title" content="@yield('og_title', 'Travel Africa | Travel Guides & Trip Planning')">
     <meta property="og:description" content="@yield('og_description', 'Explore Africa through curated destination guides, stories and personalized travel planning.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
 
     {{-- Twitter defaults --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', 'Discover Africa with Vumbi Ventures')">
+    <meta name="twitter:title" content="@yield('twitter_title', 'Travel Africa with Vumbi Ventures')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Curated African travel guides and personalized trip planning.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
     

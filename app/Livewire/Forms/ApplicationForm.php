@@ -8,7 +8,7 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 
-class AppointmentForm extends Form
+class ApplicationForm extends Form
 {
     #[Rule('required|min:3|max:200')]
     public $name;

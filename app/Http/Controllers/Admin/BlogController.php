@@ -7,6 +7,7 @@ use App\Http\Requests\Blog\UpdateBlogRequest;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,6 +52,8 @@ class BlogController extends Controller
 
     public function create()
     {
+        Gate::authorize('create-blog', Blog::class);
+        
         $categories = Blog::select('category')->distinct()->pluck('category');
 
         return view('admin.blogs.create', compact('categories'));
@@ -58,6 +61,9 @@ class BlogController extends Controller
 
     public function store(StoreBlogRequest $request)
     {
+        if ($request->user()->cannot('create-blog', Blog::class)) {
+            abort(403, 'Unauthorized');
+        }
         $key = 'blog-store|'.$request->user()->id;
         if (RateLimiter::tooManyAttempts($key, 8)) { // 8 posts per hour per admin
             abort(429, 'Too many blog posts created recently. Please try again later.');
@@ -91,6 +97,9 @@ class BlogController extends Controller
 
     public function edit(Blog $blog)
     {
+            if (! Gate::allows('update-blog', $blog)) {
+                abort(403, 'Unauthorized');
+            }
         $categories = Blog::select('category')->distinct()->pluck('category');
 
         return view('admin.blogs.edit', compact('blog', 'categories'));
@@ -103,6 +112,11 @@ class BlogController extends Controller
 
     public function update(UpdateBlogRequest $request, Blog $blog)
     {
+
+        if (! Gate::allows('update-blog', $blog)) {
+            abort(403, 'Unauthorized');
+        }
+        
         $validated = $request->validated();
 
         // Remove old media
@@ -130,6 +144,10 @@ class BlogController extends Controller
 
     public function destroy(Blog $blog)
     {
+        if (! Gate::allows('delete-blog', $blog)) {
+            abort(403, 'Unauthorized');
+        }
+
         if ($blog->media_path) {
             Storage::disk('public_direct')->delete($blog->media_path);
         }
@@ -142,6 +160,10 @@ class BlogController extends Controller
 
     public function bulkDestroy(Request $request)
     {
+        if (! Gate::allows('delete-blog', new Blog())) {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'exists:blogs,id',

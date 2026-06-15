@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Blog;
+use App\Policies\BlogPolicy;
 use App\Services\AI\AIContentService;
 use App\Services\ApiClients\OpenStreetMapClient;
 use App\Services\ApiClients\OpenTripMapClient;
@@ -65,6 +67,10 @@ $this->app->singleton(SearchOrchestratorService::class);
                 return null; // Continue with normal permission checks
             });
         }
+Gate::policy(\App\Models\Blog::class, \App\Policies\BlogPolicy::class);
+        Gate::define('create-blog', [BlogPolicy::class, 'create']);
+        Gate::define('update-blog', [BlogPolicy::class, 'update']);
+        Gate::define('delete-blog', [BlogPolicy::class, 'delete']);
 
         // Development helpers
         if ($this->app->environment('local', 'testing')) {

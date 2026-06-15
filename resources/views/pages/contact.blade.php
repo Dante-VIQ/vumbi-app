@@ -213,7 +213,11 @@
                         <textarea name="message" id="message" rows="5" required
                                   class="input-field" placeholder="Tell us more about your inquiry..."></textarea>
                     </div>
-
+                        <div>
+                            <label for="website" class="block text-sm font-medium text-[#5C5C5C] mb-1">Website (optional)</label>
+                            <input type="url" name="website" id="website"
+                                   class="input-field" placeholder="https://yourwebsite.com">
+                        </div>
                     <div class="flex items-center gap-3">
                         <input type="checkbox" name="consent" id="consent" required class="w-4 h-4 text-[#8B5A2B] rounded border-gray-300">
                         <label for="consent" class="text-sm text-[#5C5C5C]">

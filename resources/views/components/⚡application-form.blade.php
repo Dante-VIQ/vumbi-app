@@ -3,18 +3,23 @@
 use Livewire\Component;
 use App\Models\Doctor;
 use Livewire\Attributes\Computed;
+use App\Livewire\Forms\ApplicationForm;
 
 new class extends Component {
-   
-    public AppointmentForm $form;
+
+    public ApplicationForm $form;
 
     public function submitForm()
     {
+        if (!empty(request()->input('website'))) {
+            // Treat as spam
+            abort(403, 'Spam detected.');
+        }
         $this->form->validate();
 
         // send email
 
-        session()->flash('success', 'Appointment Created');
+        session()->flash('success', 'Application Submitted Successfully!');
 
         $this->form->reset();
     }
