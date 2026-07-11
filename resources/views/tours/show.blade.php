@@ -81,10 +81,25 @@
     <div>
         <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
         <div class="space-y-4">
-            @foreach($package->itinerary as $day)
+            @foreach($package->itinerary as $index => $dayContent)
+                @php
+                    // Split into lines
+                    $lines = explode("\n", trim($dayContent));
+                    
+                    // First line is the title
+                    $title = array_shift($lines) ?: 'Day ' . ($index + 1);
+                    
+                    // Everything else is the description
+                    $description = implode("\n", $lines);
+                    $description = trim($description);
+                @endphp
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-                    <div class="text-green-400 font-semibold mb-1">{{ $day['title'] }}</div>
-                    <div class="text-zinc-300 whitespace-pre-line">{{ $day['description'] }}</div>
+                    <div class="text-green-400 font-semibold mb-1">
+                        {{ $title }}
+                    </div>
+                    @if($description)
+                        <div class="text-zinc-300 whitespace-pre-line">{{ $description }}</div>
+                    @endif
                 </div>
             @endforeach
         </div>
