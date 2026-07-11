@@ -77,29 +77,19 @@
                 </div>
                 @endif --}}
 
-                @if(!empty($package->itinerary))
-                    <div>
-                        <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
-                        <div class="space-y-4">
-                            @foreach($package->itinerary as $index => $day)
-                                @php
-                                    // Split into title (first line) and description (rest)
-                                    $lines = preg_split('/\r\n|\r|\n/', $day, 2);
-                                    $title = $lines[0] ?? 'Day ' . ($index + 1);
-                                    $day = $lines[1] ?? '';
-                                @endphp
-                                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-                                    <div class="text-green-400 font-semibold mb-1">
-                                        Day {{ $index + 1 }}: {{ $title }}
-                                    </div>
-                                    @if($day)
-                                        <p class="text-zinc-300 whitespace-pre-line">{{ $day }}</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+@if(!empty($package->itinerary))
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
+        <div class="space-y-4">
+            @foreach($package->itinerary as $day)
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+                    <div class="text-green-400 font-semibold mb-1">{{ $day['title'] }}</div>
+                    <div class="text-zinc-300 whitespace-pre-line">{{ $day['description'] }}</div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
 
                 <!-- Included / Excluded -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

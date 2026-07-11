@@ -47,5 +47,34 @@ protected static function booted(): void
     {
         return $query->whereRaw('LOWER(location) LIKE ?', ['%' . strtolower($location) . '%']);
     }
+
+    public function setItineraryAttribute($value)
+{
+    // If it's a string (from a textarea), parse it into structured data
+    if (is_string($value)) {
+        // Split by "Day X:" pattern
+        $days = preg_split('/(?=Day\s+\d+:)/i', trim($value));
+        $days = array_filter(array_map('trim', $days)); // Remove empty and trim
+        
+        $structured = [];
+        foreach ($days as $day) {
+            $lines = explode("\n", $day);
+            $title = array_shift($lines);
+            $description = implode("\n", $lines);
+            
+            $structured[] = [
+                'title' => trim($title),
+                'description' => trim($description)
+            ];
+        }
+        
+        $this->attributes['itinerary'] = json_encode($structured);
+    } else {
+        // If it's already an array or null, store as-is
+        $this->attributes['itinerary'] = is_array($value) 
+            ? json_encode($value) 
+            : $value;
+    }
+}
     
 }
