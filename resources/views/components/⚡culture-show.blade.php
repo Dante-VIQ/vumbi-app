@@ -76,8 +76,8 @@ new class extends Component
           "headline" => "{{ $culture->name }}",
           "image" => "{{ asset($culture->image) }}",
           "description" => "{{ Str::limit(strip_tags($culture->detail), 155) }}",
-          "author" => { "@type": "Organization", "name": "Vumbi Ventures" },
-          "publisher" => { "@type": "Organization", "name": "Vumbi Ventures", "logo": { "@type": "ImageObject", "url": "{{ asset('images/logo.png') }}" } },
+          "author" => ["@type" => "Organization", "name" => "Vumbi Ventures"],
+          "publisher" => ["@type" => "Organization", "name" => "Vumbi Ventures", "logo" => ["@type" => "ImageObject", "url" => "{{ asset('images/logo.png') }}"]],
           "datePublished" => "{{ $culture->created_at->toIso8601String() }}"
        ]
         @endphp
