@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
 
-Schema::create('partner_leads', function (Blueprint $table) {
-                $table->id();
+        Schema::create('partner_leads', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('partner_package_id')->constrained()->cascadeOnDelete();
             $table->string('first_name');
             $table->string('phone');
@@ -21,7 +21,7 @@ Schema::create('partner_leads', function (Blueprint $table) {
             $table->date('start_date')->nullable();
             $table->string('status')->default('new'); // new | contacted | confirmed | lost
             $table->timestamps();
-});
+        });
     }
 
     /**
