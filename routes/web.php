@@ -20,11 +20,6 @@ use App\Models\HeaderMedia;
 use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
 
-
-
-
-
-
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 // Route::view('/', 'home');
 
