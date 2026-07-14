@@ -1,11 +1,5 @@
 import './bootstrap';
 
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
-
 document.addEventListener('DOMContentLoaded', function () {
     const track = document.getElementById('slider-track');
     const slides = document.querySelectorAll('#slider-track > div');
