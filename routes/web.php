@@ -37,6 +37,9 @@ Route::get('/', function () {
     return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
 });
 
+Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
+    ->name('affiliate.redirect');
+
 // /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->firstOrFail();

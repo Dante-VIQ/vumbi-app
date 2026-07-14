@@ -128,7 +128,47 @@
     {{-- Footer --}}
     <x-footer />
 
+        <div x-data="{ openGeneralBooking: false, search: '', packages: [] }">
+            <!-- Floating button -->
+            <button @click="openGeneralBooking = true"
+                class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-500 text-white p-4 rounded-full shadow-2xl z-40 transition transform hover:scale-105">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </button>
 
+            <!-- Modal -->
+            <div x-show="openGeneralBooking" x-cloak
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                <div class="bg-zinc-900 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-zinc-800"
+                    @click.away="openGeneralBooking = false">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">Book a Trip</h3>
+                        <button @click="openGeneralBooking = false" class="text-zinc-400 hover:text-white">✕</button>
+                    </div>
+                    <input type="text" x-model="search"
+                        @input.debounce.300ms="fetch('/api/packages/search?q='+search).then(r=>r.json()).then(d=>packages=d)"
+                        placeholder="Where do you want to go? (e.g. Maasai Mara)"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-400 focus:border-green-400 outline-none mb-4">
+                    <div class="max-h-64 overflow-y-auto space-y-3">
+                        <template x-for="pkg in packages" :key="pkg.id">
+                            <div class="flex items-center justify-between p-3 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition cursor-pointer"
+                                @click="openGeneralBooking = false; $dispatch('open-booking', { packageId: pkg.id })">
+                                <div>
+                                    <div x-text="pkg.title" class="font-medium"></div>
+                                    <div x-text="pkg.location" class="text-sm text-zinc-400"></div>
+                                </div>
+                                <span x-text="'$ ' + Number(pkg.price).toLocaleString()"
+                                    class="text-green-400 font-semibold"></span>
+                            </div>
+                        </template>
+                        <div x-show="search && !packages.length" class="text-center text-zinc-500 py-4">No packages found
+                            for this destination.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {{-- Scripts --}}
     @livewireScripts
     @stack('scripts')

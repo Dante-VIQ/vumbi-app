@@ -107,7 +107,7 @@
 @endif
 
                 <!-- Included / Excluded -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                     @if(!empty($package->included))
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                             <h3 class="text-lg font-semibold text-green-400 mb-3">What's Included</h3>
@@ -160,18 +160,38 @@
             <!-- Sidebar Card (Sticky Booking) -->
             <div class="lg:sticky lg:top-8 h-fit">
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                    <div class="text-3xl font-bold text-green-400 mb-4">KSh {{ number_format($package->price) }}</div>
+                    <div class="text-3xl font-bold text-green-400 mb-4">$ {{ number_format($package->price) }}</div>
                     <p class="text-sm text-zinc-400 mb-6">Per person</p>
 
                     <a href="{{ route('booking', $package->slug) }}"
-                        class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-4 transition">
+                        class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-medium mb-6 transition p-4 flex justify-center items-center gap-2">
                         Book This Safari
                     </a>
+                    {{-- tours/show.blade.php --}}
+<div class="tour-cta-block">
+    @if($package->isAffiliate())
+        <a href="{{ route('affiliate.redirect', [$package->affiliate_source, packaget->id]) }}"
+           target="_blank"
+           class="btn-primary btn-large">
+            Book This Trip Now →
+        </a>
+    @else
+        <button onclick="window.dispatchEvent(new CustomEvent('open-booking-modal'))"
+                class="btn-primary btn-large">
+            Request to Book →
+        </button>
+
+        {{-- Modal, hidden until triggered --}}
+        <div x-data="{ open: false }" x-on:open-booking-modal.window="open = true" x-show="open" x-cloak>
+            <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" x-on:click.self="open = false">
+                @livewire('booking-modal', ['package' => $package])
+            </div>
+        </div>
+    @endif
+</div>
                     <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
                         target="_blank"
-                        class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 py-3 rounded-xl font-medium transition">
-                        <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
-                            target="_blank" class="flex justify-center items-center gap-2">
+                        class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 py-3 rounded-xl font-medium transition flex justify-center items-center gap-2 mt-6">
                             💬 Ask on WhatsApp
                         </a>
 

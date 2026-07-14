@@ -43,5 +43,11 @@ class Lead extends Model
     // public function partner()
     // {
     //     return $this->belongsTo(Partner::class);
+
+    // }
+
+    //     public function tour()
+    // {
+    //     return $this->belongsTo(Tour::class);
     // }
 }

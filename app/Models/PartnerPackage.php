@@ -8,13 +8,12 @@ use Illuminate\Support\Str;
 class PartnerPackage extends Model
 {
     protected $fillable = [
-            'location', 'title', 'slug', 'description', 'price',
+    'location', 'title', 'slug', 'description', 'price',
     'vehicle_type', 'image', 'type', 'active',
     'duration_days', 'duration_nights',
     'itinerary', 'included', 'excluded',
     'difficulty', 'group_size_min', 'group_size_max',
     ];
-
     protected $casts = [
       'active'        => 'boolean',
     'price'         => 'decimal:2',
@@ -22,7 +21,6 @@ class PartnerPackage extends Model
     'included'      => 'array',
     'excluded'      => 'array',
     ];
-
 
 protected static function booted(): void
 {
@@ -77,4 +75,18 @@ protected static function booted(): void
     }
 }
     
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    public function isAffiliate(): bool
+    {
+        return $this->booking_type === 'affiliate';
+    }
+
+    public function isManual(): bool
+    {
+        return $this->booking_type === 'manual';
+    }
 }
