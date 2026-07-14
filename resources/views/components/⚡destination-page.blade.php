@@ -67,12 +67,12 @@ new class extends Component {
             <h3 class="text-lg font-semibold text-white">
                 {{ $location ? "Explore {$location}" : 'Explore Destinations' }}
             </h3>
-            <a href="{{ route('destinations.index') }}" class="text-sm text-green-400 hover:text-green-300">View all →</a>
+            <a href="{{ route('pages.destination') }}" class="text-sm text-green-400 hover:text-green-300">View all →</a>
         </div>
     @endif
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         @foreach ($this->getDestinations() as $destination)
-            <a href="{{ route('destination.show', $destination) }}"
+            <a href="{{ route('destinations.give', $destination) }}"
                 class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1">
                 <div class="h-48 bg-cover bg-center"
                     style="background-image: url('{{ $destination->image ?: 'https://picsum.photos/400/250?random=' . $destination->id }}')">

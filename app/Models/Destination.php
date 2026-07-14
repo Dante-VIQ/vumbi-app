@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\HasSlug;
 
 class Destination extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlug;
 
 protected $fillable = [
     'name', 'slug', 'location', 'detail', 'media_path',
@@ -34,6 +36,6 @@ protected $fillable = [
 
     public function getImageUrlAttribute()
     {
-        return $this->media_path ? \Storage::url($this->media_path) : null;
+        return $this->media_path ? Storage::url($this->media_path) : null;
     }
 }

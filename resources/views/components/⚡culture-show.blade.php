@@ -1,10 +1,13 @@
 <?php
+// resources/views/livewire/culture-show.blade.php
 
 use Livewire\Component;
 use App\Models\Culture;
 use App\Models\Destination;
 use App\Services\AffiliateMatcher;
 use App\Services\AffiliateExecutionService;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 new class extends Component
 {
@@ -17,7 +20,6 @@ new class extends Component
     {
         $this->culture = $culture;
 
-        // Related cultural stories (same category or location)
         $this->relatedCultures = Culture::where('id', '!=', $culture->id)
             ->where(function ($q) use ($culture) {
                 $q->where('location', $culture->location)
@@ -27,19 +29,16 @@ new class extends Component
             ->limit(3)
             ->get();
 
-        // Nearby destinations for travel CTA
         $this->nearbyDestinations = Destination::where('location', 'like', '%' . $culture->location . '%')
             ->orWhere('name', 'like', '%' . $culture->location . '%')
             ->limit(3)
             ->get();
 
-        // Affiliate offers based on location
         $this->affiliateOffers = $this->fetchAffiliateOffers($culture->location);
     }
 
     private function fetchAffiliateOffers($location)
     {
-        // Use your existing affiliate services
         try {
             $matcher = app(AffiliateMatcher::class);
             $plan = method_exists($matcher, 'match') ? $matcher->match($location) : [];
@@ -55,32 +54,24 @@ new class extends Component
 ?>
 
 <div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]">
-    {{-- SEO Meta --}}
-    @section('title', $culture->name . ' — Cultural Story | Vumbi Ventures')
-    @section('meta_description', Str::limit(strip_tags($culture->detail), 155))
-
-    @push('meta')
-        <meta property="og:title" content="{{ $culture->name }} — Vumbi Ventures">
-        <meta property="og:description" content="{{ Str::limit(strip_tags($culture->detail), 155) }}">
-        <meta property="og:image" content="{{ asset($culture->image) }}">
-        <meta property="og:type" content="article">
-        <link rel="canonical" href="{{ url()->current() }}">
-    @endpush
-
     @push('structured-data')
-       @php
-
-       $articleSchema = [
-          "@context" => "https://schema.org",
-          "@type" => "Article",
-          "headline" => "{{ $culture->name }}",
-          "image" => "{{ asset($culture->image) }}",
-          "description" => "{{ Str::limit(strip_tags($culture->detail), 155) }}",
-          "author" => ["@type" => "Organization", "name" => "Vumbi Ventures"],
-          "publisher" => ["@type" => "Organization", "name" => "Vumbi Ventures", "logo" => ["@type" => "ImageObject", "url" => "{{ asset('images/logo.png') }}"]],
-          "datePublished" => "{{ $culture->created_at->toIso8601String() }}"
-       ]
+        @php
+            $articleSchema = [
+                "@context" => "https://schema.org",
+                "@type" => "Article",
+                "headline" => $culture->name,
+                "image" => asset($culture->image),
+                "description" => Str::limit(strip_tags($culture->detail), 155),
+                "author" => ["@type" => "Organization", "name" => "Vumbi Ventures"],
+                "publisher" => [
+                    "@type" => "Organization",
+                    "name" => "Vumbi Ventures",
+                    "logo" => ["@type" => "ImageObject", "url" => asset('images/logo.png')],
+                ],
+                "datePublished" => $culture->created_at->toIso8601String(),
+            ];
         @endphp
+        <script type="application/ld+json">{!! json_encode($articleSchema) !!}</script>
     @endpush
 
     {{-- Hero --}}
@@ -105,7 +96,6 @@ new class extends Component
         </div>
     </section>
 
-    {{-- Featured Image --}}
     @if($culture->image)
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
@@ -115,10 +105,8 @@ new class extends Component
         </div>
     @endif
 
-    {{-- Content + Sidebar --}}
     <div class="container mx-auto px-6 py-8">
         <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
-            {{-- Main Content --}}
             <div class="lg:col-span-8">
                 <article class="prose prose-lg max-w-none
                     prose-p:text-[#3A3A3A] prose-p:leading-relaxed
@@ -126,7 +114,6 @@ new class extends Component
                     {!! nl2br(e($culture->detail)) !!}
                 </article>
 
-                {{-- Share --}}
                 <div class="mt-10 pt-6 border-t border-black/5 flex items-center gap-4">
                     <span class="text-sm text-[#5C5C5C]">Share this story:</span>
                     <div class="flex gap-2">
@@ -142,9 +129,7 @@ new class extends Component
                 </div>
             </div>
 
-            {{-- Sidebar --}}
             <aside class="lg:col-span-4 space-y-8">
-                {{-- Primary CTA: Book Travel to this Location --}}
                 <div class="bg-gradient-to-br from-[#8B5A2B] to-[#5C3A1E] p-6 rounded-2xl text-white shadow-lg">
                     <h3 class="text-xl font-semibold mb-2">Experience {{ $culture->location ?? 'Africa' }}</h3>
                     <p class="text-white/80 text-sm mb-4">Discover hotels, tours, and cultural experiences in this region.</p>
@@ -154,7 +139,6 @@ new class extends Component
                     </a>
                 </div>
 
-                {{-- Nearby Destinations --}}
                 @if($nearbyDestinations->count())
                     <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
                         <h3 class="font-semibold text-lg mb-4">Nearby Destinations</h3>
@@ -174,7 +158,6 @@ new class extends Component
                     </div>
                 @endif
 
-                {{-- Affiliate Offers --}}
                 @if(!empty($affiliateOffers))
                     <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
                         <h3 class="font-semibold text-lg mb-4">Travel Deals</h3>
@@ -187,7 +170,6 @@ new class extends Component
                     </div>
                 @endif
 
-                {{-- Related Cultural Stories --}}
                 @if($relatedCultures->count())
                     <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
                         <h3 class="font-semibold text-lg mb-4">More Cultural Stories</h3>
