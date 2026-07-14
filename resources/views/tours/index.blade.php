@@ -1,5 +1,14 @@
 @extends('layouts.app')
 
+@php
+    $seo_title = 'East Africa Safari Marketplace – Book Kenya & Tanzania Tours';
+    $seo_description = 'Browse vetted safari packages across Kenya, Tanzania and East Africa. Filter by destination, difficulty and price, and book directly with trusted local partners.';
+    $seo_og_title = 'East Africa Safari Marketplace';
+    $seo_og_description = 'Find your perfect adventure in Kenya, Tanzania & beyond — compare safari packages by destination, type and price.';
+ 
+    $seo_canonical = url('/tours');
+@endphp
+ 
 {{-- @push('structured_data')
 {!! \App\Helpers\SchemaBuilder::tourPackage($package) !!}
 @endpush --}}
@@ -124,7 +133,7 @@
             </div>
 
             <!-- Tour cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($packages as $pkg)
                     <a href="{{ route('tours.show', $pkg) }}"
                        class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1">

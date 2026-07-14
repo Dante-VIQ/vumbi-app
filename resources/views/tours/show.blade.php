@@ -1,15 +1,23 @@
 @extends('layouts.app')
 
-@section('title', $seo['title'])
-@section('meta_description', $seo['description'])
-@section('og_title', $seo['title'])
-@section('og_description', $seo['description'])
-@section('og_image', $seo['og_image'])
-
-@push('structured_data')
-    {!! \App\Helpers\SchemaBuilder::touristAttraction($package) !!}
+@php
+    $seo_title = $package->title . ' | Vumbi Ventures Safari Marketplace';
+    $seo_description = \Illuminate\Support\Str::limit(strip_tags($package->description), 155);
+    $seo_og_title = $package->title;
+    $seo_og_description = $seo_description;
+ 
+    if (!empty($package->image)) {
+        $seo_og_image = $package->image;
+    }
+@endphp
+ 
+@push('schema')
+    {{-- Product drives the actual Google rich result (price/availability/rating).
+         TouristTrip adds itinerary/context for AI answer engines. Both describe
+         the same bookable package — this is the one call you need per tour page. --}}
+    {!! \App\Helpers\SchemaBuilder::tourPage($package) !!}
 @endpush
-
+ 
 @section('content')
     <div class="min-h-screen bg-zinc-950 text-white">
         <!-- Hero -->
@@ -29,26 +37,28 @@
             <div class="lg:col-span-2 space-y-10">
                 <!-- Quick Facts -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    @if($package->duration_days)
+                    @if ($package->duration_days)
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-center">
-                            <div class="text-2xl font-bold">{{ $package->duration_days }}D / {{ $package->duration_nights }}N
+                            <div class="text-2xl font-bold">{{ $package->duration_days }}D /
+                                {{ $package->duration_nights }}N
                             </div>
                             <div class="text-xs text-zinc-400 mt-1">Duration</div>
                         </div>
                     @endif
-                    @if($package->difficulty)
+                    @if ($package->difficulty)
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-center">
                             <div class="text-2xl font-bold capitalize">{{ $package->difficulty }}</div>
                             <div class="text-xs text-zinc-400 mt-1">Difficulty</div>
                         </div>
                     @endif
-                    @if($package->group_size_max)
+                    @if ($package->group_size_max)
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-center">
-                            <div class="text-2xl font-bold">{{ $package->group_size_min }}‑{{ $package->group_size_max }}</div>
+                            <div class="text-2xl font-bold">{{ $package->group_size_min }}‑{{ $package->group_size_max }}
+                            </div>
                             <div class="text-xs text-zinc-400 mt-1">Group Size</div>
                         </div>
                     @endif
-                    @if($package->vehicle_type)
+                    @if ($package->vehicle_type)
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-center">
                             <div class="text-2xl font-bold text-sm">{{ $package->vehicle_type }}</div>
                             <div class="text-xs text-zinc-400 mt-1">Vehicle</div>
@@ -63,11 +73,11 @@
                 </div>
 
                 <!-- Itinerary -->
-                {{-- @if(!empty($package->itinerary))
+                {{-- @if (!empty($package->itinerary))
                 <div>
                     <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
                     <div class="space-y-4">
-                        @foreach($package->itinerary as $index => $day)
+                        @foreach ($package->itinerary as $index => $day)
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
                             <div class="text-green-400 font-semibold mb-1">Day {{ $index + 1 }}</div>
                             <p class="text-zinc-300">{{ $day }}</p>
@@ -77,42 +87,42 @@
                 </div>
                 @endif --}}
 
-@if(!empty($package->itinerary))
-    <div>
-        <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
-        <div class="space-y-4">
-            @foreach($package->itinerary as $index => $dayContent)
-                @php
-                    // Split into lines
-                    $lines = explode("\n", trim($dayContent));
-                    
-                    // First line is the title
-                    $title = array_shift($lines) ?: 'Day ' . ($index + 1);
-                    
-                    // Everything else is the description
-                    $description = implode("\n", $lines);
-                    $description = trim($description);
-                @endphp
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-                    <div class="text-green-400 font-semibold mb-1">
-                        {{ $title }}
+                @if (!empty($package->itinerary))
+                    <div>
+                        <h2 class="text-2xl font-semibold mb-4">Day‑by‑day Itinerary</h2>
+                        <div class="space-y-4">
+                            @foreach ($package->itinerary as $index => $dayContent)
+                                @php
+                                    // Split into lines
+                                    $lines = explode("\n", trim($dayContent));
+
+                                    // First line is the title
+                                    $title = array_shift($lines) ?: 'Day ' . ($index + 1);
+
+                                    // Everything else is the description
+                                    $description = implode("\n", $lines);
+                                    $description = trim($description);
+                                @endphp
+                                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+                                    <div class="text-green-400 font-semibold mb-1">
+                                        {{ $title }}
+                                    </div>
+                                    @if ($description)
+                                        <div class="text-gray-300 whitespace-pre-line">{{ $description }}</div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                    @if($description)
-                        <div class="text-zinc-300 whitespace-pre-line">{{ $description }}</div>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-    </div>
-@endif
+                @endif
 
                 <!-- Included / Excluded -->
                 <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
-                    @if(!empty($package->included))
+                    @if (!empty($package->included))
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                             <h3 class="text-lg font-semibold text-green-400 mb-3">What's Included</h3>
                             <ul class="space-y-2">
-                                @foreach($package->included as $item)
+                                @foreach ($package->included as $item)
                                     <li class="flex items-center gap-2 text-zinc-300">
                                         <span class="text-green-400">✓</span> {{ $item }}
                                     </li>
@@ -120,11 +130,11 @@
                             </ul>
                         </div>
                     @endif
-                    @if(!empty($package->excluded))
+                    @if (!empty($package->excluded))
                         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                             <h3 class="text-lg font-semibold text-red-400 mb-3">What's Excluded</h3>
                             <ul class="space-y-2">
-                                @foreach($package->excluded as $item)
+                                @foreach ($package->excluded as $item)
                                     <li class="flex items-center gap-2 text-zinc-300">
                                         <span class="text-red-400">✗</span> {{ $item }}
                                     </li>
@@ -135,11 +145,11 @@
                 </div>
 
                 <!-- Similar Tours -->
-                @if($similar->count())
+                @if ($similar->count())
                     <div>
                         <h2 class="text-2xl font-semibold mb-6">You May Also Like</h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            @foreach($similar as $similarTour)
+                            @foreach ($similar as $similarTour)
                                 <a href="{{ route('tours.show', $similarTour) }}"
                                     class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-green-400/50 transition">
                                     <div class="h-32 bg-cover bg-center"
@@ -168,42 +178,43 @@
                         Book This Safari
                     </a>
                     {{-- tours/show.blade.php --}}
-<div class="tour-cta-block">
-    @if($package->isAffiliate())
-        <a href="{{ route('affiliate.redirect', [$package->affiliate_source, packaget->id]) }}"
-           target="_blank"
-           class="btn-primary btn-large">
-            Book This Trip Now →
-        </a>
-    @else
-        <button onclick="window.dispatchEvent(new CustomEvent('open-booking-modal'))"
-                class="btn-primary btn-large">
-            Request to Book →
-        </button>
+                    <div class="tour-cta-block">
+                        @if ($package->isAffiliate())
+                            <a href="{{ route('affiliate.redirect', [$package->affiliate_source, packaget->id]) }}"
+                                target="_blank" class="btn-primary btn-large">
+                                Book This Trip Now →
+                            </a>
+                        @else
+                            <button onclick="window.dispatchEvent(new CustomEvent('open-booking-modal'))"
+                                class="btn-primary btn-large">
+                                Request to Book →
+                            </button>
 
-        {{-- Modal, hidden until triggered --}}
-        <div x-data="{ open: false }" x-on:open-booking-modal.window="open = true" x-show="open" x-cloak>
-            <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" x-on:click.self="open = false">
-                @livewire('booking-modal', ['package' => $package])
-            </div>
-        </div>
-    @endif
-</div>
+                            {{-- Modal, hidden until triggered --}}
+                            <div x-data="{ open: false }" x-on:open-booking-modal.window="open = true" x-show="open"
+                                x-cloak>
+                                <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+                                    x-on:click.self="open = false">
+                                    @livewire('booking-modal', ['package' => $package])
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                     <a href="https://wa.me/254734591543?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
                         target="_blank"
                         class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 py-3 rounded-xl font-medium transition flex justify-center items-center gap-2 mt-6">
-                            💬 Ask on WhatsApp
-                        </a>
+                        💬 Ask on WhatsApp
+                    </a>
 
 
-                        <div class="border-t border-zinc-800 mt-6 pt-4 text-sm text-zinc-500 space-y-2">
-                            @if($package->duration_days)
-                                <p>Duration: {{ $package->duration_days }}D / {{ $package->duration_nights }}N</p>
-                            @endif
-                            @if($package->difficulty)
-                                <p>Difficulty: {{ ucfirst($package->difficulty) }}</p>
-                            @endif
-                        </div>
+                    <div class="border-t border-zinc-800 mt-6 pt-4 text-sm text-zinc-500 space-y-2">
+                        @if ($package->duration_days)
+                            <p>Duration: {{ $package->duration_days }}D / {{ $package->duration_nights }}N</p>
+                        @endif
+                        @if ($package->difficulty)
+                            <p>Difficulty: {{ ucfirst($package->difficulty) }}</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,7 +222,11 @@
 
     <script>
         function dispatchBookingEvent(packageId) {
-            document.dispatchEvent(new CustomEvent('open-booking', { detail: { packageId } }));
+            document.dispatchEvent(new CustomEvent('open-booking', {
+                detail: {
+                    packageId
+                }
+            }));
         }
     </script>
 @endsection

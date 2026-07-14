@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Vumbi Ventures — Book Travel or Discuss a Project')
-@section('meta_description', 'Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities. We respond within 24 hours.')
-
+@php
+    $seo_title = 'Contact Vumbi Ventures – Travel Bookings & Web Development Inquiries';
+    $seo_description = 'Reach Vumbi Ventures for African travel bookings, web development quotes or partnerships. Based in Nakuru, Kenya — we respond within 24 hours.';
+    $seo_og_title = 'Ready to Start?';
+    $seo_og_description = "Whether you're planning an African adventure or need a website that drives results, we're here to help.";
+@endphp
 @section('content')
 
 @push('meta')

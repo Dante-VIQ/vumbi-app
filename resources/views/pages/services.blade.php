@@ -1,17 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Services — Travel Discovery & Web Development | Vumbi Ventures')
-@section('meta_description', 'Discover Africa with our curated travel platform, or grow your business with custom web development, media, and marketing solutions.')
-
+@php
+    $seo_title = 'Web Development & Digital Growth Services – Vumbi Ventures';
+    $seo_description = "Custom websites, branding and marketing that grow your business — built by the team behind Vumbi Ventures' Africa travel platform. Packages from $700.";
+    $seo_og_title = 'Two Ways to Grow With Us';
+    $seo_og_description = 'Travel discovery for explorers. Web development, branding and marketing for businesses ready to scale.';
+@endphp
+ 
 @section('content')
 
-@push('meta')
-    <meta name="description" content="Discover Africa with our curated travel platform, or grow your business with custom web development, media, and marketing solutions.">
+{{-- @push('meta')
+    <meta name="description" content="{{ $seo_description }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:title" content="Services — Travel Discovery & Web Development | Vumbi Ventures">
-    <meta property="og:description" content="Discover Africa with our curated travel platform, or grow your business with custom web development, media, and marketing solutions.">
+    <meta property="og:title" content="{{ $seo_og_title }}">
+    <meta property="og:description" content="{{ $seo_og_description }}">
     <meta property="og:type" content="website">
-@endpush
+@endpush --}}
 
 @push('styles')
 <style>

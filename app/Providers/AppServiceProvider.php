@@ -17,6 +17,7 @@ use App\Services\Search\RouteDecisionService;
 use App\Services\Search\SearchOrchestratorService;
 use App\Services\TravelPayouts\FlightService;
 use App\Services\TravelPayouts\HotelService;
+use App\View\Composers\SeoComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
@@ -67,10 +68,16 @@ $this->app->singleton(SearchOrchestratorService::class);
                 return null; // Continue with normal permission checks
             });
         }
-Gate::policy(\App\Models\Blog::class, \App\Policies\BlogPolicy::class);
-        Gate::define('create-blog', [BlogPolicy::class, 'create']);
-        Gate::define('update-blog', [BlogPolicy::class, 'update']);
-        Gate::define('delete-blog', [BlogPolicy::class, 'delete']);
+        Gate::policy(Blog::class, BlogPolicy::class);
+        Gate::define('create-blog', function ($user, ...$arguments) {
+            return app(BlogPolicy::class)->create($user, ...$arguments);
+        });
+        Gate::define('update-blog', function ($user, ...$arguments) {
+            return app(BlogPolicy::class)->update($user, ...$arguments);
+        });
+        Gate::define('delete-blog', function ($user, ...$arguments) {
+            return app(BlogPolicy::class)->delete($user, ...$arguments);
+        });
 
         // Development helpers
         if ($this->app->environment('local', 'testing')) {
@@ -85,7 +92,7 @@ Gate::policy(\App\Models\Blog::class, \App\Policies\BlogPolicy::class);
             "url" => url('/'),
             "logo" => asset('images/vumbi-ventures-logo.png'),
             "sameAs" => [
-                "https://twitter.com/vumbiventures",
+                "https://www.facebook.com/share/g/1MVnVFXkMQ/",
                 "https://linkedin.com/company/vumbi-ventures",
                 "https://instagram.com/vumbiventures"
             ]
@@ -103,6 +110,8 @@ Gate::policy(\App\Models\Blog::class, \App\Policies\BlogPolicy::class);
             ]
         ]);
     });
+
+    View::composer('*', SeoComposer::class);
     }
 
     /**

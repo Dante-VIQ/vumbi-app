@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'About Vumbi Ventures - Our Story, Philosophy & Mission')
-@section('description', 'Learn about Vumbi Ventures - our name meaning "dust", our inspiration from Africa, and our mission to build remarkable solutions from overlooked places.')
-@section('keywords', 'about Vumbi Ventures, our story, African innovation, dust philosophy, mission, vision')
-
+@php
+    $seo_title = 'About Vumbi Ventures – A Digital Innovation Company Built from Africa';
+    $seo_description = "Vumbi means dust — the overlooked places we build for. Meet the team turning African stories, culture and ingenuity into travel platforms and digital products.";
+    $seo_og_title = 'Our Name. Our Meaning. Our Identity.';
+    $seo_og_description = 'Vumbi Ventures builds remarkable digital solutions inspired by the spirit of Africa — for the places and people the world overlooks.';
+@endphp
 @push('styles')
 <style>
     .dust-bg {
