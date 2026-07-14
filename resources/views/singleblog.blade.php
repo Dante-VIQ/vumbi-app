@@ -5,20 +5,20 @@
     // $post is whatever your controller passes in for this route
     // (e.g. Route::get('/blog/{post}', ...) with route model binding).
  
-    $seo_title = $post->title . ' | Vumbi Ventures Field Notes';
+    $seo_title = $blog->title . ' | Vumbi Ventures Field Notes';
  
     // Prefer a dedicated excerpt/meta_description column if you have one;
     // fall back to a trimmed version of the body so this never renders blank.
-    $seo_description = $post->meta_description
-        ?? \Illuminate\Support\Str::limit(strip_tags($post->body), 155);
+    $seo_description = $blog->meta_description
+        ?? \Illuminate\Support\Str::limit(strip_tags($blog->body), 155);
  
-    $seo_og_title = $post->title;
+    $seo_og_title = $blog->title;
     $seo_og_description = $seo_description;
  
     // Falls back to the sitewide default og image (set in SeoComposer)
     // if the post has no header image of its own.
-    if (!empty($post->header_image)) {
-        $seo_og_image = asset($post->header_image);
+    if (!empty($blog->header_image)) {
+        $seo_og_image = asset($blog->header_image);
     }
 @endphp
 

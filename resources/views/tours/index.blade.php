@@ -118,7 +118,7 @@
         </aside>
 
         <!-- Listings -->
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-4">
             <form id="filter-form" method="GET" action="{{ route('tours.index') }}" class="hidden"></form>
 
             <!-- Sort -->
