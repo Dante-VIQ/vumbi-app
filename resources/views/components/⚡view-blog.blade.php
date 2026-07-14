@@ -401,14 +401,9 @@ private function shouldInsertWidget($blockIndex): bool
             {{-- ===================== SIDEBAR ===================== --}}
             <aside class="lg:col-span-4 space-y-8">
                 {{-- Primary CTA: Travel Booking --}}
-                <div class="bg-gradient-to-br from-[#8B5A2B] to-[#5C3A1E] p-6 rounded-2xl text-white shadow-lg">
-                    <h3 class="text-xl font-semibold mb-2">Discover {{ $detectedLocation ?? 'Africa' }}</h3>
-                    <p class="text-white/80 text-sm mb-4">Book handpicked hotels, safaris & experiences.</p>
-                    <a href="{{ url('/discover?search='.urlencode($detectedLocation ?? '')) }}"
-                       class="inline-block w-full bg-white text-[#8B5A2B] text-center py-3 rounded-xl font-medium hover:bg-[#F5EFE6] transition">
-                        Explore Destinations →
-                    </a>
-                </div>
+@if($article->region)
+    @livewire('related-tours', ['location' => $article->region])
+@endif
 
                 {{-- Affiliate Offers Widget --}}
                 @if(!empty($affiliateResults['sidebar']) || $recommendedAffiliates->count())
