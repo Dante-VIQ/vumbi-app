@@ -43,10 +43,10 @@ Route::get('/', function () {
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
 
-Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.index');
+Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.give');
 Route::get('/cultures/{culture:slug}', [CulturalController::class, 'show'])->name('pages.culture');
 
-Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.index');
+Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.give');
 Route::get('/destinations/{destination:slug}', [PlaceController::class, 'show'])->name('pages.destination');
 
 // /doctor/123 → /destinations/maasai-mara

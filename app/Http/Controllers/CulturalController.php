@@ -24,7 +24,7 @@ class CulturalController extends Controller
             ->paginate(10)
             ->withQueryString();   // Important: preserves search term in pagination links
 
-        return view('cultures.index', compact('cultures'));
+        return view('cultures.give', compact('cultures'));
     }
 
         public function show(Culture $culture)
