@@ -159,9 +159,15 @@
 
             <div class="mt-8">{{ $packages->links() }}</div>
 
-            <livewire:culture-page />
+<livewire:culture-page
+    :location="request('location')"
+    :limit="$cultureLimit"
+    :teaser="true" />
 
-            <livewire:destination-page />
+<livewire:destination-page
+    :location="request('location')"
+    :limit="$cultureLimit"
+    :teaser="true" />
         </div>
     </div>
 </div>

@@ -48,12 +48,13 @@ class TourController extends Controller
 
         $packages = $query->paginate(12);
 
+
         // Filter options
         $types       = PartnerPackage::active()->distinct()->pluck('type');
         $difficulties = PartnerPackage::active()->whereNotNull('difficulty')->distinct()->pluck('difficulty');
         $locations    = PartnerPackage::active()->distinct()->pluck('location');
-
-        return view('tours.index', compact('packages', 'types', 'difficulties', 'locations'));
+        $cultureLimit = $packages->total() <= 2 ? 8 : 4; // pad harder when tour inventory is thin
+        return view('tours.index', compact('packages', 'types', 'difficulties', 'locations', 'cultureLimit'));
     }
 
     public function show(PartnerPackage $package)
