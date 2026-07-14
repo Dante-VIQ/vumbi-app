@@ -92,8 +92,8 @@ new class extends Component {
         @endforeach
     </div>
 
-    <div class="mt-8">
+    {{-- <div class="mt-8">
         {{ $this->getCultures()->links() }}
-    </div>
+    </div> --}}
 
 </div>
