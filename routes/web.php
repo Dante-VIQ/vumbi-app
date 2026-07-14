@@ -43,7 +43,7 @@ Route::get('/', function () {
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
 
-Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.index');   
+Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.index');
 Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.index');
 
 // /doctor/123 → /destinations/maasai-mara
