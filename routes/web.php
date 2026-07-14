@@ -1,20 +1,28 @@
 <?php
 
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\PartnerLeadController;
 use App\Http\Controllers\Admin\PartnerPackageController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CulturalController;
 use App\Http\Controllers\CultureController;
 use App\Http\Controllers\DiscoveryController;
-use App\Http\Controllers\Admin\PartnerLeadController;
+use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TourController;
 use App\Models\Blog;
 use App\Models\Culture;
 use App\Models\Destination;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TourController;
+use App\Models\HeaderMedia;
 use App\Models\PartnerPackage;
+use Illuminate\Support\Facades\Route;
+
+
+
+
 
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
@@ -39,6 +47,9 @@ Route::get('/', function () {
 
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
+
+Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.index');   
+Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.index');
 
 // /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
