@@ -13,18 +13,14 @@ return new class extends Migration
     {
 
 Schema::create('partner_leads', function (Blueprint $table) {
-    $table->id();
-    $table->string('customer_name');
-    $table->string('customer_phone');
-    $table->string('customer_email')->nullable();
-    $table->foreignId('partner_package_id')->constrained()->cascadeOnDelete();
-    $table->string('package_title');      // snapshot at time of booking
-    $table->string('location');           // snapshot
-    $table->decimal('estimated_price', 10, 2);
-    $table->decimal('commission_percent', 5, 2)->default(30.00);
-    $table->string('status')->default('pending'); // pending, confirmed, completed, cancelled
-    $table->text('notes')->nullable();
-    $table->timestamps();
+                $table->id();
+            $table->foreignId('partner_package_id')->constrained()->cascadeOnDelete();
+            $table->string('first_name');
+            $table->string('phone');
+            $table->string('email')->nullable();
+            $table->date('start_date')->nullable();
+            $table->string('status')->default('new'); // new | contacted | confirmed | lost
+            $table->timestamps();
 });
     }
 
