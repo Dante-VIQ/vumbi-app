@@ -401,8 +401,8 @@ private function shouldInsertWidget($blockIndex): bool
             {{-- ===================== SIDEBAR ===================== --}}
             <aside class="lg:col-span-4 space-y-8">
                 {{-- Primary CTA: Travel Booking --}}
-@if($article->region)
-    @livewire('related-tours', ['location' => $article->region])
+@if($blog->location)
+    @livewire('related-tours', ['location' => $blog->location])
 @endif
 
                 {{-- Affiliate Offers Widget --}}
