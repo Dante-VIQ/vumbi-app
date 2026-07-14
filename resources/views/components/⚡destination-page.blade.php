@@ -37,7 +37,7 @@ new class extends Component
         }
     }
 
-    public function geDestinations()
+    public function getDestinations()
     {
         $query = Destination::query()->latest();
 
