@@ -160,6 +160,8 @@
             <div class="mt-8">{{ $packages->links() }}</div>
 
             <livewire:culture-page />
+
+            <livewire:destination-page />
         </div>
     </div>
 </div>
