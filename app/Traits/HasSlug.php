@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
  *
  * Override the source field per-model if needed:
  *   protected string $slugSourceField = 'name';
+ *
+ * @mixin \Illuminate\Database\Eloquent\Model
  */
 trait HasSlug
 {
