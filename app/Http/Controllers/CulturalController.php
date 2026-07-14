@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Culture;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 
 class CulturalController extends Controller
 {
@@ -26,4 +27,13 @@ class CulturalController extends Controller
         return view('cultures.index', compact('cultures'));
     }
 
+        public function show(Culture $culture)
+    {
+        return view('pages.culture', [
+            'culture' => $culture,
+            'seo_title' => $culture->name . ' — Cultural Story | Vumbi Ventures',
+            'seo_description' => Str::limit(strip_tags($culture->detail), 155),
+            'seo_canonical' => url()->current(),
+        ]);
+    }
 }

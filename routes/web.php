@@ -24,18 +24,18 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 // Route::view('/', 'home');
 
 Route::get('/', function () {
-    $blogs = App\Models\Blog::latest()
-                ->with('author')
-                ->take(3)
-                ->get();
+    $blogs = Blog::latest()
+        ->with('author')
+        ->take(3)
+        ->get();
 
-    $featuredBlog = App\Models\Blog::where('is_featured', true)
-                ->latest()
-                ->first();
+    $featuredBlog = Blog::where('is_featured', true)
+        ->latest()
+        ->first();
 
-    $headerMedia = App\Models\HeaderMedia::latest()
-                ->take(6)
-                ->get();
+    $headerMedia = HeaderMedia::latest()
+        ->take(6)
+        ->get();
 
     return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
 });
@@ -44,14 +44,17 @@ Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
 
 Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.index');
+Route::get('/cultures/{culture:slug}', [CulturalController::class, 'show'])->name('pages.culture');
+
 Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.index');
+Route::get('/destinations/{destination:slug}', [PlaceController::class, 'show'])->name('pages.destination');
 
 // /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->firstOrFail();
 
-    return redirect()->route('destination.show', [
-        'slug' => $destination->slug,
+    return redirect()->route('pages.destination', [
+        'destination' => $destination->slug,
     ], 301);
 })->whereNumber('id');
 
@@ -75,7 +78,6 @@ Route::view('/header', 'pages.header-media');
 Route::get('/booking/{partnerPackage:slug}', function (PartnerPackage $partnerPackage) {
     return view('booking', compact('partnerPackage'));
 })->name('booking');
-
 
 Route::post('/contact', [ContactController::class, 'submit'])
     ->name('contact.submit');
@@ -112,13 +114,13 @@ Route::prefix('tours')->name('tours.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/destinations/{slug}', function ($slug) {
-    return view('pages.destination', compact('slug'));
-})->name('destination.show');
+// Route::get('/destinations/{slug}', function ($slug) {
+//     return view('pages.destination', compact('slug'));
+// })->name('destination.show');
 
-Route::get('/cultures/{slug}', function ($slug) {
-    return view('pages.culture', compact('slug'));
-})->name('culture.show');
+// Route::get('/cultures/{slug}', function ($slug) {
+//     return view('pages.culture', compact('slug'));
+// })->name('culture.show');
 
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,10');
 

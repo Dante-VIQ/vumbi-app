@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<livewire:culture-show />
+<livewire:culture-show  :culture="$culture"/>
 @endsection

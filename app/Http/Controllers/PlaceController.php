@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 
 class PlaceController extends Controller
 {
@@ -23,6 +24,16 @@ class PlaceController extends Controller
             ->paginate(10)
             ->withQueryString();   // Important: preserves search term in pagination links
 
-        return view('destinations.index', compact('cultures'));
+        return view('destinations.index', compact('destinations'));
+    }
+
+    public function show(Destination $destination)
+    {
+        return view('pages.destination', [
+            'destination' => $destination,
+            'seo_title' => $destination->name . ' — Destination Story | Vumbi Ventures',
+            'seo_description' => Str::limit(strip_tags($destination->detail), 155),
+            'seo_canonical' => url()->current(),
+        ]);
     }
 }
