@@ -28,11 +28,9 @@ new class extends Component {
 
 public function mount(Blog $blog)
 {
+    // Route model binding already 404s automatically if the blog
+    // isn't found, so $blog is guaranteed non-null here.
     $this->blog = $blog->load('author');
-
-    if (!$this->blog) {
-        abort(404);
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -135,28 +133,41 @@ public function mount(Blog $blog)
     }
 
     // ==================== Actions ====================
+    // Each share action dispatches a 'share' event that the root x-init
+    // listener below turns into a real popup share window — these methods
+    // just decide *what* to share, the browser (Alpine) decides *how*.
     public function shareOnTwitter()
     {
         $this->dispatch('share', [
             'platform' => 'twitter',
             'url' => url()->current(),
-            'title' => $this->blog->title
+            'title' => $this->blog->title,
         ]);
     }
 
     public function shareOnLinkedIn()
     {
-        $this->dispatch('share', ['platform' => 'linkedin', 'url' => url()->current()]);
+        $this->dispatch('share', [
+            'platform' => 'linkedin',
+            'url' => url()->current(),
+            'title' => $this->blog->title,
+        ]);
     }
 
     public function shareOnFacebook()
     {
-        $this->dispatch('share', ['platform' => 'facebook', 'url' => url()->current()]);
+        $this->dispatch('share', [
+            'platform' => 'facebook',
+            'url' => url()->current(),
+            'title' => $this->blog->title,
+        ]);
     }
 
     public function copyToClipboard()
     {
-        $this->dispatch('copy-link');
+        // Actual clipboard write happens client-side (browsers don't let
+        // PHP touch the clipboard) — this just tells Alpine to do it.
+        $this->dispatch('copy-link', ['url' => url()->current()]);
     }
 
     public function submitComment()
@@ -246,7 +257,49 @@ private function shouldInsertWidget($blockIndex): bool
 
 ?>
 
-<div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]">
+<div class="min-h-screen bg-[#FCFAF7] text-[#1A1A1A]"
+     x-data="{
+        copyMessage: false,
+        shareMessage: false,
+        shareMessageText: '',
+        toast(text) {
+            this.shareMessageText = text;
+            this.shareMessage = true;
+            setTimeout(() => { this.shareMessage = false }, 3000);
+        }
+     }"
+     x-init="
+        $wire.on('copy-link', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+            navigator.clipboard.writeText(data?.url ?? window.location.href);
+            copyMessage = true;
+            setTimeout(() => { copyMessage = false }, 3000);
+        });
+
+        $wire.on('share', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+            const shareUrl = data.url ?? window.location.href;
+            const shareLinks = {
+                twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(data.title ?? '')}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+            };
+            if (shareLinks[data.platform]) {
+                window.open(shareLinks[data.platform], '_blank', 'noopener,width=600,height=500');
+            }
+        });
+
+        $wire.on('subscribed', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+            toast(data.message ?? 'Thank you for subscribing!');
+        });
+
+        $wire.on('comment-submitted', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+            toast(data.message ?? 'Comment submitted.');
+        });
+     "
+>
 
     {{-- ===================== HERO HEADER ===================== --}}
     <section class="relative overflow-hidden pt-24 pb-8 md:pt-32 md:pb-12">
