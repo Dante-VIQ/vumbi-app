@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<livewire:destination-show />
+<livewire:destination-show  :destination="$destination"/>
 @endsection

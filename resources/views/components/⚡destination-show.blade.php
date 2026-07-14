@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use App\Models\Doctor;
+use App\Models\Destination;
 use App\Models\Blog;
 use App\Models\Culture;
 use App\Services\AffiliateMatcher;
@@ -17,9 +18,12 @@ new class extends Component
     public $affiliateOffers = [];
     public $hotelDeals = [];
     public $tourDeals = [];
+    public $destination; // For backward compatibility with existing views
 
-    public function mount($id = null, $slug = null)
+    public function mount(Destination $destination, $id = null, $slug = null)
     {
+
+        $this->destination = $destination;
         // Load doctor (supports ID or slug-based routing)
         if ($id) {
             $this->destination = Doctor::findOrFail($id);

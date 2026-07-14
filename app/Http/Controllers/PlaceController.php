@@ -24,7 +24,7 @@ class PlaceController extends Controller
             ->paginate(10)
             ->withQueryString();   // Important: preserves search term in pagination links
 
-        return view('destinations.index', compact('destinations'));
+        return view('destinations.give', compact('destinations'));
     }
 
     public function show(Destination $destination)
