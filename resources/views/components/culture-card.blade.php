@@ -1,5 +1,4 @@
-
-                <a href="{{ route('culture.show', $culture) }}"
+<a href="{{ route('culture.show', $culture) }}"
                     class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1">
                     <div class="h-48 bg-cover bg-center"
                         style="background-image: url('{{ $culture->image ?: 'https://picsum.photos/400/250?random=' . $culture->id }}')">

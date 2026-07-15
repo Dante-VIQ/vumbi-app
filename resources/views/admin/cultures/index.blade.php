@@ -50,7 +50,7 @@
                 </button>
 
                 @if(request('search'))
-                    <a href="{{ route('admin.cultures.index') }}" 
+                    <a href="{{ route('cultures.index') }}" 
                        class="text-gray-500 hover:text-gray-700 font-medium">
                         Clear
                     </a>
@@ -110,12 +110,12 @@
                                 <!-- Actions -->
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center gap-4">
-                                        <a href="{{ route('cultures.edit', $culture) }}" 
+                                        <a href="{{ route('cultures.edit', $culture->id) }}" 
                                            class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
                                             <span>✏️</span> Edit
                                         </a>
                                         
-                                        <form action="{{ route('cultures.destroy', $culture) }}" 
+                                        <form action="{{ route('cultures.destroy', $culture->id) }}" 
                                               method="POST" 
                                               onsubmit="return confirm('Are you sure you want to delete this culture?')">
                                             @csrf
