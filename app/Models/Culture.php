@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Comment;
-use App\Models\User;
 use App\TrackableViews;
-use Laravel\Scout\Searchable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasSlug;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Culture extends Model
 {
@@ -35,5 +33,23 @@ class Culture extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';  // or any column other than 'id'
+    }
+
+    public function getExcerptAttribute($length = 150)
+    {
+        return Str::limit(strip_tags((string) $this->detail), $length);
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($culture) {
+            $culture->detail = clean($culture->detail ?? '');
+        });
+
     }
 }

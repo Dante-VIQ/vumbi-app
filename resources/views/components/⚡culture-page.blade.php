@@ -73,7 +73,7 @@ new class extends Component {
     @endif
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         @foreach ($this->getCultures() as $culture)
-            <a href="{{ route('pages.culture', $culture) }}"
+            <a href="{{ route('pages.culture', $culture->id) }}"
                 class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1">
                 <div class="h-48 bg-cover bg-center"
                     style="background-image: url('{{ $culture->image ?: 'https://picsum.photos/400/250?random=' . $culture->id }}')">

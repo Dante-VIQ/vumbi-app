@@ -214,7 +214,8 @@
             <label class="block text-sunflare text-sm uppercase tracking-wider mb-2">Content</label>
             <textarea name="description"
                       rows="12"
-                      class="w-full bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none font-mono @error('description') border-red-500 @enderror"
+                      class="w-full bg-transparent border border-dust-mite p-4 text-raw-linen focus:border-sunflare focus:outline-none font-mono 
+                      @error('description') border-red-500 @enderror"
                       placeholder="Write your blog post content here... (HTML supported)">{{ old('description') }}</textarea>
             <p class="text-sm text-[#C4B9A6] mt-2">HTML is supported for rich formatting.</p>
             @error('description')
