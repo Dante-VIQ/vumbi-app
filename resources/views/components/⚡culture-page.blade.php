@@ -68,7 +68,7 @@ new class extends Component {
             <h3 class="text-lg font-semibold text-white">
                 {{ $location ? "Culture & Stories from {$location}" : 'African Culture & Stories' }}
             </h3>
-            <a href="{{ route('cultures.index') }}" class="text-sm text-green-400 hover:text-green-300">View all →</a>
+            <a href="{{ route('cultures.give') }}" class="text-sm text-green-400 hover:text-green-300">View all →</a>
         </div>
     @endif
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
