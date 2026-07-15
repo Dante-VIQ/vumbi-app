@@ -200,7 +200,7 @@ new class extends Component {
                             @foreach ($nearbyDestinations as $dest)
                                 <a href="{{ route('pages.destination', $dest->id) }}" class="flex gap-3 group">
                                     @if ($dest->media_path)
-                                        <img src="{{ Storage::url($dest->media_path) }}"
+                                        <img src="{{ asset($dest->media_path) }}"
                                             class="w-16 h-16 rounded-lg object-cover">
                                     @endif
                                     <div>
