@@ -522,7 +522,7 @@ private function looksLikeFakeHeading(\DOMNode $node): bool
             <aside class="lg:col-span-4 space-y-8">
                 {{-- Primary CTA: Travel Booking --}}
                 @if ($blog->title)
-                    @livewire('related-tours', ['title' => $blog->title])
+                    @livewire('related-tours', ['blogTitle' => $blog->title, 'location' => $blog->location])
                 @endif
 
                 {{-- Affiliate Offers Widget --}}
