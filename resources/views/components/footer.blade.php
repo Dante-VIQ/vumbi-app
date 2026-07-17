@@ -37,24 +37,23 @@
             <div>
                 <h4 class="font-semibold mb-4 text-white">Quick Links</h4>
                 <ul class="space-y-2 text-[#C7B5A6]">
-                    <li><a href="/" class="hover:text-white transition">About Us</a></li>
-                    <li><a href="/" class="hover:text-white transition">Services</a></li>
-                    <li><a href="/" class="hover:text-white transition">Our Ecosystem</a></li>
-                    <li><a href="/" class="hover:text-white transition">Field Notes</a></li>
-                    <li><a href="/" class="hover:text-white transition">Contact</a></li>
-                    <li><a href="/" class="hover:text-white transition">Careers</a></li>
+                    <li><a href="/about" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="/services" class="hover:text-white transition">Services</a></li>
+                    <li><a href="/cultures" class="hover:text-white transition">People & Culture</a></li>
+                    <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
+                    <li><a href="/contact" class="hover:text-white transition">Contact</a></li>
                 </ul>
             </div>
 
             {{-- Our Platforms --}}
             <div>
-                <h4 class="font-semibold mb-4 text-white">Our Platforms</h4>
+                <h4 class="font-semibold mb-4 text-white">Explore</h4>
                 <ul class="space-y-2 text-[#C7B5A6]">
                     <li><a href="https://skilldna.vumbiventures.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition flex items-center gap-1">SkillDNA <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a></li>
                     <li><a href="https://discoverafrica.vumbiventures.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition flex items-center gap-1">Discover Africa <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a></li>
-                    <li><a href="/" class="hover:text-white transition">Field Notes</a></li>
-                    <li><a href="/" class="hover:text-white transition">Partner Program</a></li>
-                    <li><a href="/" class="hover:text-white transition">Talent Pipeline</a></li>
+                    <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
+                    <li><a href="/tours" class="hover:text-white transition">Plan Trip</a></li>
+                    <li><a href="/destinations" class="hover:text-white transition">Explore Destinations</a></li>
                 </ul>
             </div>
 
