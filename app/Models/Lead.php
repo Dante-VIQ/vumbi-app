@@ -8,46 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Lead extends Model
 {
     use HasFactory;
-
-    protected $table = 'leads';
-    
     protected $fillable = [
-        'partner_package_id',
-        'partner_id',
-        'source',
-        'start_date',
-        'end_date',
-        'adults',
-        'children',
-        'special_occasion',
-        'first_name',
-        'last_name',
-        'email',
-        'phone',
-        'country',
-        'message',
-        'whatsapp_opt_in',
+        'customer_name', 'customer_phone', 'customer_email',
+        'partner_package_id', 'package_title', 'location',
+        'estimated_price', 'commission_percent', 'status', 'notes',
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'whatsapp_opt_in' => 'boolean',
+        'estimated_price' => 'decimal:2',
+        'commission_percent' => 'decimal:2',
     ];
 
-    public function partnerPackage()
+    public function package()
     {
-        return $this->belongsTo(PartnerPackage::class);
+        return $this->belongsTo(PartnerPackage::class, 'partner_package_id');
     }
-
-    // public function partner()
-    // {
-    //     return $this->belongsTo(Partner::class);
-
-    // }
-
-    //     public function tour()
-    // {
-    //     return $this->belongsTo(Tour::class);
-    // }
 }

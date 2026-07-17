@@ -37,7 +37,7 @@ new class extends Component
             return;
         }
 
-        $query = PartnerPackage::query()->where('is_active', true);
+        $query = PartnerPackage::query()->where('active', true);
 
         if ($this->excludeTourId) {
             $query->where('id', '!=', $this->excludeTourId);
@@ -74,7 +74,7 @@ new class extends Component
 
         $this->tours = $query
             ->orderByDesc('match_score')
-            ->orderByDesc('popularity_score')
+            ->orderByDesc('location')
             ->take($this->limit)
             ->get();
     }
@@ -112,7 +112,7 @@ new class extends Component
     <h3 class="text-xl font-semibold text-white mb-1">Turn This Story Into a Trip</h3>
     <p class="text-zinc-500 text-sm mb-6">Trips related to this story.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-5">
         @foreach($tours as $tour)
             <div class="tour-card bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col">
                 @if($tour->image_url)

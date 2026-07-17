@@ -13,21 +13,12 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('partner_package_id')->constrained('partner_packages');
-            // $table->foreignId('partner_id')->constrained('partners');
-            $table->string('source')->default('direct');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
-            $table->unsignedInteger('adults')->default(2);
-            $table->unsignedInteger('children')->default(0);
-            $table->string('special_occasion')->nullable();
+            $table->foreignId('partner_package_id')->constrained()->cascadeOnDelete();
             $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email');
             $table->string('phone');
-            $table->string('country', 2);
-            $table->text('message')->nullable();
-            $table->boolean('whatsapp_opt_in')->default(true);
+            $table->string('email')->nullable();
+            $table->date('start_date')->nullable();
+            $table->string('status')->default('new'); // new | contacted | confirmed | lost
             $table->timestamps();
         });
     }

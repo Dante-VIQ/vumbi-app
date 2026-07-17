@@ -76,7 +76,7 @@ new class extends Component {
             class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white mt-4">
         @error('form.start_date') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
 
-        <button wire:click="submit" wire:loading.attr="disabled"
+        <button wire:click.prevent="submit" wire:loading.attr="disabled"
             class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl transition">
             <span wire:loading.remove>Send Booking Request</span>
             <span wire:loading>Sending...</span>
