@@ -4,13 +4,13 @@ use Livewire\Component;
 
 new class extends Component
 {
-    public string $location;
+    public string $title;
     public int $limit = 3;
     public ?int $excludeTourId = null; // avoid showing a tour on its own page if reused there
 
     public function mount()
     {
-        $tours = App\Models\PartnerPackage::where('region', $this->location)
+        $tours = App\Models\PartnerPackage::where('region', $this->title)
             ->where('is_active', true)
             ->when($this->excludeTourId, fn ($q) => $q->where('id', '!=', $this->excludeTourId))
             ->orderByDesc('popularity_score')
@@ -23,7 +23,7 @@ new class extends Component
 @if($tours->isNotEmpty())
 <div class="related-tours-block my-12">
     <h3 class="text-xl font-semibold text-white mb-1">
-        Visit {{ ucfirst($location) }} — See These Trips
+        Visit {{ ucfirst($title) }} — See These Trips
     </h3>
     <p class="text-zinc-500 text-sm mb-6">Turn this story into a trip.</p>
 
