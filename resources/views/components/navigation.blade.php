@@ -9,7 +9,7 @@
             <div class="relative">
                 <div class="absolute inset-0 bg-[#8B5A2B]/20 rounded-xl blur-md group-hover:bg-[#8B5A2B]/30 transition-all duration-300"></div>
                 <div class="relative w-10 h-10 bg-[#8B5A2B] rounded-full flex items-center justify-center transition group-hover:scale-110">
-                <img src="/images/logo.png" alt="GB Handyman Logo"
+                <img src="/images/logo.png" alt="Vumbi Ventures logo"
                     class="relative h-10 md:h-12 w-auto object-contain transform group-hover:scale-105 transition-all duration-300"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 </div>
