@@ -487,26 +487,44 @@ new class extends Component {
                 @endif
 
                 {{-- Table of Contents (if headings exist) --}}
-                <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm" x-data="{ tocItems: [] }"
-                    x-init="setTimeout(() => {
-                        const headings = document.querySelectorAll('.prose h2, .prose h3');
-                        headings.forEach((h, i) => {
-                            h.id = h.id || `heading-${i}`;
-                            tocItems.push({ text: h.textContent, level: h.tagName, id: h.id });
-                        });
-                    }, 200)">
-                    <h3 class="font-semibold text-lg mb-3">On This Page</h3>
-                    <ul class="space-y-1 text-sm">
-                        <template x-for="item in tocItems">
-                            <li>
-                                <a :href="'#' + item.id" x-text="item.text"
-                                    :class="item.level === 'H3' ? 'pl-4 text-[#5C5C5C]' : 'font-medium'"
-                                    class="block py-1 hover:text-[#8B5A2B] transition"></a>
-                            </li>
-                        </template>
-                    </ul>
-                    <p x-show="tocItems.length === 0" class="text-sm text-[#5C5C5C]">No headings</p>
-                </div>
+{{-- Table of Contents (if headings exist) --}}
+<div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm"
+    x-data="{ tocItems: [] }"
+    x-init="
+        const buildToc = () => {
+            const headings = document.querySelectorAll('.prose h2, .prose h3');
+            const items = [];
+            headings.forEach((h, i) => {
+                h.id = h.id || `heading-${i}`;
+                items.push({ text: h.textContent, level: h.tagName, id: h.id });
+            });
+            tocItems = items;
+        };
+
+        // Build once content is actually in the DOM
+        document.addEventListener('livewire:navigated', buildToc);
+        document.addEventListener('livewire:load', buildToc);
+
+        // Livewire has finished its initial render + all morphs for this component
+        Livewire.hook('morph.updated', ({ component }) => buildToc());
+
+        // Fallback: try shortly after mount, then again after a longer pause
+        // in case content rendered slowly (long articles, slow connections)
+        setTimeout(buildToc, 300);
+        setTimeout(buildToc, 1200);
+    ">
+    <h3 class="font-semibold text-lg mb-3">On This Page</h3>
+    <ul class="space-y-1 text-sm">
+        <template x-for="item in tocItems" :key="item.id">
+            <li>
+                <a :href="'#' + item.id" x-text="item.text"
+                    :class="item.level === 'H3' ? 'pl-4 text-[#5C5C5C]' : 'font-medium'"
+                    class="block py-1 hover:text-[#8B5A2B] transition"></a>
+            </li>
+        </template>
+    </ul>
+    <p x-show="tocItems.length === 0" class="text-sm text-[#5C5C5C]">No headings</p>
+</div>
 
                 {{-- Newsletter --}}
                 <div class="bg-[#F5EFE6] p-6 rounded-2xl border border-[#8B5A2B]/10">

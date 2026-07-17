@@ -55,4 +55,13 @@ class Culture extends Model
         });
 
     }
+
+        public function getMediaUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/'.$this->image);
+        }
+
+        return null;
+    }
 }
