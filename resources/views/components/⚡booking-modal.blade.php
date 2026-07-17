@@ -53,7 +53,7 @@ new class extends Component {
         </div>
     @else
         <h3 class="text-xl font-semibold mb-1">Book {{ $partnerPackage->title }}</h3>
-        <p class="text-zinc-500 text-sm mb-6">We'll confirm with our local partner and get back to you fast.</p>
+        <p class="text-slate-200 text-sm mb-6">We'll confirm with our local partner and get back to you fast.</p>
 
         <div class="grid grid-cols-2 gap-4">
             <div>
