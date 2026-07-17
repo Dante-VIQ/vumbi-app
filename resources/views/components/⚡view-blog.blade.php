@@ -192,20 +192,16 @@ new class extends Component {
 
     private function splitContentIntoBlocks(): array
     {
-        if (!$this->blog || !$this->blog->description) {
-            return [];
-        }
+            if (!$this->blog || !$this->blog->description) {
+        return [];
+    }
 
-        $html = $this->blog->description;
+    $html = $this->normalizeHeadings($this->blog->description);
 
-        libxml_use_internal_errors(true);
-
-        $dom = new \DOMDocument();
-
-        // ✅ Proper UTF-8 handling (Livewire safe)
-        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
-
-        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_use_internal_errors(true);
+    $dom = new \DOMDocument();
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+    $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         $blocks = [];
         $currentBlock = '';
