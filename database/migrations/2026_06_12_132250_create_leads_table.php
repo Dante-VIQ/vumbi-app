@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->foreignId('partner_package_id')->constrained()->cascadeOnDelete();
+            
             $table->string('first_name');
             $table->string('phone');
             $table->string('email')->nullable();

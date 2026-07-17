@@ -52,6 +52,8 @@ new class extends Component {
             </p>
         </div>
     @else
+    <form wire:submit.prevent="submit" >
+        @csrf
         <h3 class="text-xl font-semibold mb-1">Book {{ $partnerPackage->title }}</h3>
         <p class="text-slate-200 text-sm mb-6">We'll confirm with our local partner and get back to you fast.</p>
 
@@ -82,5 +84,6 @@ new class extends Component {
             <span wire:loading>Sending...</span>
         </button>
         <p class="text-zinc-600 text-xs text-center mt-3">No payment required now — we confirm availability first.</p>
+    </form>
     @endif
 </div>

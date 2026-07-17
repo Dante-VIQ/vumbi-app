@@ -9,14 +9,14 @@ class Lead extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'customer_name', 'customer_phone', 'customer_email',
-        'partner_package_id', 'package_title', 'location',
-        'estimated_price', 'commission_percent', 'status', 'notes',
+        'first_name', 'phone', 'email',
+        'partner_package_id', 'start_date',
+        'status',
     ];
 
     protected $casts = [
-        'estimated_price' => 'decimal:2',
-        'commission_percent' => 'decimal:2',
+        'start_date' => 'date',
+        'status' => 'string',
     ];
 
     public function package()

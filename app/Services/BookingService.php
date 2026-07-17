@@ -9,7 +9,7 @@ class BookingService
     public function createLead(array $data, string $source = null): Lead
     {
         return Lead::create([
-            'tour_id' => $data['tour_id'],
+            'partner_package_id' => $data['partner_package_id'],
             'first_name' => $data['first_name'],
             'phone' => $data['phone'],
             'email' => $data['email'] ?: null,
