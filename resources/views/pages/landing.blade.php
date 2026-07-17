@@ -366,9 +366,9 @@
             Browse our curated collection of destinations, hotels, safaris and cultural experiences across the continent.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <a href="{{ url('/discover') }}"
+            <a href="/tours"
                class="inline-flex items-center gap-2 bg-[#8B5A2B] hover:bg-[#A87A4D] px-8 py-4 rounded-xl text-lg font-medium transition-all duration-300 shadow-lg shadow-[#8B5A2B]/20 hover:shadow-[#8B5A2B]/40 transform hover:-translate-y-1">
-                Start Discovering
+                Explore Tours
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 0 0 20 15 15 0 0 0 0-20z"/><path d="M2 12h20"/></svg>
             </a>
             <a href="{{ url('/blog') }}"
