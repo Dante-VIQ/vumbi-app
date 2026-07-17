@@ -192,16 +192,16 @@ new class extends Component {
 
     private function splitContentIntoBlocks(): array
     {
-            if (!$this->blog || !$this->blog->description) {
-        return [];
-    }
+        if (!$this->blog || !$this->blog->description) {
+            return [];
+        }
 
-    $html = $this->normalizeHeadings($this->blog->description);
+        $html = $this->normalizeHeadings($this->blog->description);
 
-    libxml_use_internal_errors(true);
-    $dom = new \DOMDocument();
-    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
-    $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument();
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         $blocks = [];
         $currentBlock = '';
@@ -229,6 +229,75 @@ new class extends Component {
 
         return $blocks;
     }
+/**
+ * Some articles were authored with bold paragraphs standing in for
+ * section headings (<p><strong>Title</strong></p>) instead of real
+ * <h2> tags. Promote those so the TOC and inline-widget splitting
+ * both work off real headings.
+ */
+private function normalizeHeadings(string $html): string
+{
+    if (trim($html) === '') {
+        return $html;
+    }
+
+    libxml_use_internal_errors(true);
+    $dom = new \DOMDocument();
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+    $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+
+    $body = $dom->documentElement;
+    $nodes = iterator_to_array($body->childNodes); // snapshot, we'll mutate the tree
+
+    foreach ($nodes as $node) {
+        if (!$this->looksLikeFakeHeading($node)) {
+            continue;
+        }
+
+        $heading = $dom->createElement('h2', htmlspecialchars(trim($node->textContent)));
+        $body->replaceChild($heading, $node);
+    }
+
+    return $dom->saveHTML($body);
+}
+
+private function looksLikeFakeHeading(\DOMNode $node): bool
+{
+    if (!($node instanceof \DOMElement) || strtolower($node->nodeName) !== 'p') {
+        return false;
+    }
+
+    $text = trim($node->textContent);
+
+    // Real section titles are short. Long bold paragraphs are just
+    // emphasis inside body copy, not a heading.
+    if ($text === '' || str_word_count($text) > 12) {
+        return false;
+    }
+
+    // Every child must be part of a bold run — no stray text, no links,
+    // no other inline tags — and the bold text must equal the *whole*
+    // paragraph (otherwise it's just a bolded phrase mid-sentence).
+    $boldText = '';
+    foreach ($node->childNodes as $child) {
+        if ($child instanceof \DOMText) {
+            if (trim($child->textContent) !== '') {
+                return false;
+            }
+            continue;
+        }
+
+        if ($child instanceof \DOMElement && in_array(strtolower($child->nodeName), ['strong', 'b'], true)) {
+            $boldText .= $child->textContent;
+            continue;
+        }
+
+        return false;
+    }
+
+    return $text !== '' && trim($boldText) === $text;
+}
 
     private function shouldInsertWidget($blockIndex): bool
     {
@@ -483,44 +552,41 @@ new class extends Component {
                 @endif
 
                 {{-- Table of Contents (if headings exist) --}}
-{{-- Table of Contents (if headings exist) --}}
-<div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm"
-    x-data="{ tocItems: [] }"
-    x-init="
-        const buildToc = () => {
-            const headings = document.querySelectorAll('.prose h2, .prose h3');
-            const items = [];
-            headings.forEach((h, i) => {
-                h.id = h.id || `heading-${i}`;
-                items.push({ text: h.textContent, level: h.tagName, id: h.id });
-            });
-            tocItems = items;
-        };
-
-        // Build once content is actually in the DOM
-        document.addEventListener('livewire:navigated', buildToc);
-        document.addEventListener('livewire:load', buildToc);
-
-        // Livewire has finished its initial render + all morphs for this component
-        Livewire.hook('morph.updated', ({ component }) => buildToc());
-
-        // Fallback: try shortly after mount, then again after a longer pause
-        // in case content rendered slowly (long articles, slow connections)
-        setTimeout(buildToc, 300);
-        setTimeout(buildToc, 1200);
-    ">
-    <h3 class="font-semibold text-lg mb-3">On This Page</h3>
-    <ul class="space-y-1 text-sm">
-        <template x-for="item in tocItems" :key="item.id">
-            <li>
-                <a :href="'#' + item.id" x-text="item.text"
-                    :class="item.level === 'H3' ? 'pl-4 text-[#5C5C5C]' : 'font-medium'"
-                    class="block py-1 hover:text-[#8B5A2B] transition"></a>
-            </li>
-        </template>
-    </ul>
-    <p x-show="tocItems.length === 0" class="text-sm text-[#5C5C5C]">No headings</p>
-</div>
+                {{-- Table of Contents (if headings exist) --}}
+                <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm" x-data="{ tocItems: [] }"
+                    x-init="const buildToc = () => {
+                        const headings = document.querySelectorAll('.prose h2, .prose h3');
+                        const items = [];
+                        headings.forEach((h, i) => {
+                            h.id = h.id || `heading-${i}`;
+                            items.push({ text: h.textContent, level: h.tagName, id: h.id });
+                        });
+                        tocItems = items;
+                    };
+                    
+                    // Build once content is actually in the DOM
+                    document.addEventListener('livewire:navigated', buildToc);
+                    document.addEventListener('livewire:load', buildToc);
+                    
+                    // Livewire has finished its initial render + all morphs for this component
+                    Livewire.hook('morph.updated', ({ component }) => buildToc());
+                    
+                    // Fallback: try shortly after mount, then again after a longer pause
+                    // in case content rendered slowly (long articles, slow connections)
+                    setTimeout(buildToc, 300);
+                    setTimeout(buildToc, 1200);">
+                    <h3 class="font-semibold text-lg mb-3">On This Page</h3>
+                    <ul class="space-y-1 text-sm">
+                        <template x-for="item in tocItems" :key="item.id">
+                            <li>
+                                <a :href="'#' + item.id" x-text="item.text"
+                                    :class="item.level === 'H3' ? 'pl-4 text-[#5C5C5C]' : 'font-medium'"
+                                    class="block py-1 hover:text-[#8B5A2B] transition"></a>
+                            </li>
+                        </template>
+                    </ul>
+                    <p x-show="tocItems.length === 0" class="text-sm text-[#5C5C5C]">No headings</p>
+                </div>
 
                 {{-- Newsletter --}}
                 <div class="bg-[#F5EFE6] p-6 rounded-2xl border border-[#8B5A2B]/10">
