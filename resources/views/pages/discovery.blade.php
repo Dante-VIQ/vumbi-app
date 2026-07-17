@@ -111,7 +111,7 @@
                                 <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
                                 <p class="text-sm text-zinc-400 mt-1 line-clamp-2">{{ $pkg->description }}</p>
                                 <div class="flex items-center justify-between mt-4">
-                                    <span class="text-2xl font-bold text-green-400">KSh
+                                    <span class="text-2xl font-bold text-green-400">$
                                         {{ number_format($pkg->price) }}</span>
                                     <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
