@@ -1,17 +1,25 @@
 @extends('layouts.app')
-
-@php
-    $seo_title = 'Discover Africa – Destinations, Safaris & Travel Deals by Region';
-    $seo_description = 'Search 200+ handpicked African destinations — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.';
-    $seo_og_title = 'Find Your Perfect Trip';
-    $seo_og_description = "Real insights, real deals, real intelligence — search Africa's top beach, safari, city and island destinations in one place.";
  
-    // This page has ?search= query params for destination filtering.
-    // Force canonical to the base path so filtered views don't fragment indexing.
-    $seo_canonical = url('/discover');
+@section('title', 'Discover Africa – Destinations, Safaris & Travel Deals by Region')
+@section('description', 'Search 200+ handpicked African destinations — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
+
+@push('schema')
+    @php
+    $pageSchemas = [];
+
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "CollectionPage",
+        "name" => "African Travel Experiences | Vumbi Ventures",
+        "description" => "Explore authentic African safaris, cultural immersions, and hidden gems.",
+        "url" => url()->current(),
+        "about" => [
+            "@type" => "Thing",
+            "name" => "African Travel Experiences"
+        ],
+    ];
 @endphp
- 
-
+@endpush
 @section('content')
     <div class="min-h-screen bg-zinc-950 text-white" x-data="discoveryPage()">
 

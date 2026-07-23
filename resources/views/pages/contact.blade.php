@@ -1,55 +1,41 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = 'Contact Vumbi Ventures – Travel Bookings & Web Development Inquiries';
-    $seo_description = 'Reach Vumbi Ventures for African travel bookings, web development quotes or partnerships. Based in Nakuru, Kenya — we respond within 24 hours.';
-    $seo_og_title = 'Ready to Start?';
-    $seo_og_description = "Whether you're planning an African adventure or need a website that drives results, we're here to help.";
-@endphp
+
+@section('title', 'Contact Vumbi Ventures | Start Your African Journey Today')
+@section('description', 'Have questions about traveling in Africa? Ready to book your safari? Reach out to our team of local experts for a free, no-obligation consultation.')
+@section('keywords', 'contact Vumbi Ventures, African travel inquiry, book a safari, travel consultation Africa, reach out, get in touch')
+
+{{-- Optional: Override robots if this is a landing page, but usually "index, follow" is fine --}}
+@section('robots', 'index, follow')
+
+
+
 @section('content')
 
-@push('meta')
-    <meta name="description" content="Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities. We respond within 24 hours.">
-    <meta name="keywords" content="contact Vumbi Ventures, Africa travel inquiry, web development quote, partnership Africa">
-    <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Contact Vumbi Ventures — Book Travel or Discuss a Project">
-    <meta property="og:description" content="Get in touch with Vumbi Ventures. Inquire about African travel bookings, web development services, or partnership opportunities.">
-    <meta property="og:image" content="{{ asset('images/vumbi-contact-og.jpg') }}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Contact Vumbi Ventures">
-    <meta name="twitter:description" content="Get in touch with Vumbi Ventures for travel bookings or web development.">
-    <meta name="twitter:image" content="{{ asset('images/vumbi-contact-og.jpg') }}">
-@endpush
-
-@push('structured-data')
+@push('schema')
 
 @php
-        $contactpageSchema = [
-      "@context" => "https://schema.org",
-      "@type" => "ContactPage",
-      "name" => "Contact Vumbi Ventures",
-      "description" => "Contact Vumbi Ventures for African travel bookings, web development inquiries, or partnerships.",
-      "url" => "{{ url()->current() }}",
-      "mainEntity" => [
-        "@type" => "Organization",
-        "name" => "Vumbi Ventures",
-        "email" => "hello@vumbiventures.com",
-        "telephone" => "+254-XXX-XXX-XXX",
-        "address" => [
-          "@type" => "PostalAddress",
-          "addressLocality" => "Nairobi",
-          "addressCountry" => "Kenya"
-      ],
-      ]
-        ];
+    $pageSchemas = [];
 
-    @endphp
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "ContactPage",
+        "name" => "Contact Vumbi Ventures",
+        "description" => "Get in touch with our travel experts. Ask about safaris, tours, or general inquiries.",
+        "url" => url()->current(),
+        "mainEntity" => [
+            "@type" => "ContactPoint",
+            "contactType" => "Customer Service",
+            "telephone" => "+254-734-591543",
+            "email" => "info@vumbiventures.com",
+            "availableLanguage" => ["English", "Swahili"]
+        ]
+    ];
 
-    <script type="application/ld+json">
-    {!! json_encode($contactpageSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
-    </script>
+    // You can also add an FAQPage if your contact page has an FAQ section
+    // (only if the FAQ is visible on the page)
+    // Example: if ($hasFaqs) { ... }
+@endphp
 @endpush
 
 @push('styles')

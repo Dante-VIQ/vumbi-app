@@ -1,11 +1,10 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = 'About Vumbi Ventures – A Digital Innovation Company Built from Africa';
-    $seo_description = "Vumbi means dust — the overlooked places we build for. Meet the team turning African stories, culture and ingenuity into travel platforms and digital products.";
-    $seo_og_title = 'Our Name. Our Meaning. Our Identity.';
-    $seo_og_description = 'Vumbi Ventures builds remarkable digital solutions inspired by the spirit of Africa — for the places and people the world overlooks.';
-@endphp
+@section('title', 'Our Story: The Meaning Behind Vumbi Ventures')
+@section('description', 'Vumbi means dust. We find potential in what the world overlooks. Learn about our mission to build remarkable solutions for overlooked places across Africa.')
+@section('keywords', 'about Vumbi Ventures, African travel company, sustainable tourism Africa, authentic travel, our mission')
+@section('og_image', asset('images/about-og.jpg')) 
+
 @push('styles')
 <style>
     .dust-bg {
@@ -30,55 +29,18 @@
 @endpush
 
 @push('schema')
-    @php
-        $aboutSchema = [
-            "@context" => "https://schema.org",
-            "@type" => "AboutPage",
-            "@id" => url('/about') . "#about",
-            "name" => "About Vumbi Ventures",
-            "description" => "Learn about Vumbi Ventures - our name meaning dust, our inspiration from Africa, and our mission to build remarkable solutions from overlooked places.",
-            "url" => url('/about'),
-            "mainEntity" => [
-                "@id" => url('/') . "#organization"
-            ],
-            "breadcrumb" => [
-                "@type" => "BreadcrumbList",
-                "itemListElement" => [
-                    [
-                        "@type" => "ListItem",
-                        "position" => 1,
-                        "name" => "Home",
-                        "item" => url('/')
-                    ],
-                    [
-                        "@type" => "ListItem",
-                        "position" => 2,
-                        "name" => "About",
-                        "item" => url('/about')
-                    ]
-                ]
-            ]
-        ];
+@php
+    $pageSchemas = [];
 
-        $founderSchema = [
-            "@context" => "https://schema.org",
-            "@type" => "Person",
-            "@id" => url('/') . "#founder",
-            "name" => "Founder of Vumbi Ventures",
-            "description" => "Founder of Vumbi Ventures with deep roots in African innovation and technology",
-            "worksFor" => [
-                "@id" => url('/') . "#organization"
-            ],
-            "jobTitle" => "Founder",
-            "knowsAbout" => ["African Innovation", "Technology", "Digital Solutions", "Skill Development", "Tourism"]
-        ];
-    @endphp
-    <script type="application/ld+json">
-    {!! json_encode($aboutSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
-    </script>
-    <script type="application/ld+json">
-    {!! json_encode($founderSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
-    </script>
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "AboutPage",
+        "name" => "About Vumbi Ventures",
+        "description" => "Learn about the team behind Vumbi Ventures and our mission to showcase authentic African travel experiences.",
+        "url" => url()->current()
+    ];
+@endphp
+
 @endpush
 
 @section('content')

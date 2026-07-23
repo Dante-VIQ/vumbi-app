@@ -68,8 +68,8 @@
                 <div class="overflow-hidden rounded-3xl shadow-2xl" id="slides-container">
                     <div class="flex transition-transform duration-700 ease-out" id="slider-track">
 
-                        @php
-                            $headerMedia = App\Models\HeaderMedia::latest()->take(6)->get();
+                        {{-- @php
+                            $headerMedia = App\Models\HeaderMedia::latest()->take(10)->get();
                         @endphp
 
                         @if($headerMedia->isNotEmpty())
@@ -79,24 +79,11 @@
                                         <img src="{{ asset($media->media_path) }}" alt="{{ $media->title }}"
                                             class="w-full aspect-[4/3] lg:aspect-[5/4] object-cover" loading="eager">
 
-                                        {{-- <div class="p-8">
-                                            <h3 class="font-semibold text-2xl text-[#1A1A1A] leading-tight">
-                                                {{ $media->title }}
-                                            </h3>
-                                            <p class="text-gray-600 mt-2 line-clamp-2">
-                                                {{ $media->subtitle ?? 'Authentic African experience awaits' }}
-                                            </p>
-                                            <a href="/discover?search={{ urlencode($media->title) }}"
-                                                class="inline-flex items-center gap-2 mt-6 text-[#8B5A2B] hover:text-[#6B3E1A] font-medium">
-                                                Discover this place
-                                                <span class="text-xl leading-none">→</span>
-                                            </a>
-                                        </div> --}}
                                     </div>
                                 </div>
                             @endforeach
                         @else
-                            <!-- Fallback -->
+                            
                             <div class="w-full flex-shrink-0 px-3">
                                 <div
                                     class="bg-gradient-to-br from-[#8B5A2B] to-[#D98C5F] rounded-3xl aspect-[5/4] flex items-center justify-center text-white text-center p-10">
@@ -106,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
 

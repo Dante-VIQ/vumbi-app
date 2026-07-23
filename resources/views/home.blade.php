@@ -1,21 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Vumbi Ventures — Discover Africa | Travel Guides, Safaris & Stories')
-@section('meta_description', 'Discover Africa through curated travel guides, destination insights, safari planning and untold stories from the continent. Your Africa journey starts here.')
-
-@push('meta')
-    <meta name="keywords" content="africa travel, east africa safari, zanzibar, maasai mara, africa destinations, africa travel guide, kenya travel, tanzania safari, african history">
-    <link rel="canonical" href="{{ url('/') }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:title" content="Vumbi Ventures — Discover Africa | Travel Guides, Safaris & Stories">
-    <meta property="og:description" content="Discover Africa through curated travel guides, destination insights, safari planning and untold stories from the continent.">
-    <meta property="og:image" content="{{ asset('images/discover-africa-og.jpg') }}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Vumbi Ventures — Discover Africa">
-    <meta name="twitter:description" content="Curated travel guides, safari planning and untold stories from Africa.">
-    <meta name="twitter:image" content="{{ asset('images/discover-africa-og.jpg') }}">
-@endpush
+@section('meta_description', 'Real stories, live prices, and authentic experiences from Kenya to Cape Town. Explore African travel guides, culture, and history from those who know it best.')
+@section('keywords', 'Africa travel, authentic African experiences, Kenya travel, Tanzania safari, African culture, travel stories, Vumbi Ventures')
 
 @push('structured-data')
 @php

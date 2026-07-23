@@ -1,21 +1,58 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = $package->title . ' | Vumbi Ventures Safari Marketplace';
-    $seo_description = \Illuminate\Support\Str::limit(strip_tags($package->description), 155);
-    $seo_og_title = $package->title;
-    $seo_og_description = $seo_description;
- 
-    if (!empty($package->image)) {
-        $seo_og_image = $package->image;
-    }
-@endphp
+@section('title', $pkg->title . ' | Safari & Tour | Vumbi Ventures')
+@section('description', Str::limit($pkg->short_description, 160))
  
 @push('schema')
-    {{-- Product drives the actual Google rich result (price/availability/rating).
-         TouristTrip adds itinerary/context for AI answer engines. Both describe
-         the same bookable package — this is the one call you need per tour page. --}}
-    {!! \App\Helpers\SchemaBuilder::tourPage($package) !!}
+@php
+    $pageSchemas = [];
+
+    // TouristTrip
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "TouristTrip",
+        "name" => $pkg->title,
+        "description" => Str::limit($tour->description, 160),
+        "image" => $pkg->featured_image ? asset('storage/' . $pkg->featured_image) : asset('images/og-default.jpg'),
+        "itinerary" => [
+            "@type" => "ItemList",
+            "itemListElement" => $pkg->itinerary_items->map(function ($item, $index) {
+                return [
+                    "@type" => "ListItem",
+                    "position" => $index + 1,
+                    "name" => $item->name
+                ];
+            })->toArray()
+        ],
+        "touristType" => implode(', ', $pkg->tourist_types ?? ['Adventure', 'Culture', 'Wildlife']),
+        "offers" => [
+            "@type" => "Offer",
+            "price" => $pkg->price,
+            "priceCurrency" => "USD",
+            "availability" => $pkg->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            "url" => url()->current(),
+            "validFrom" => now()->toIso8601String(),
+            "priceValidUntil" => now()->addYear()->toIso8601String()
+        ],
+        "@id" => url()->current(),
+        "url" => url()->current()
+    ];
+
+    // Product with AggregateRating (if reviews exist)
+    if ($pkg->reviews_count > 0) {
+        $pageSchemas[] = [
+            "@context" => "https://schema.org",
+            "@type" => "Product",
+            "name" => $tour->title,
+            "aggregateRating" => [
+                "@type" => "AggregateRating",
+                "ratingValue" => $pkg->average_rating,
+                "reviewCount" => $pkg->reviews_count,
+                "bestRating" => "5"
+            ]
+        ];
+    }
+@endphp
 @endpush
  
 @section('content')

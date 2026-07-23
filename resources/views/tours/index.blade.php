@@ -1,19 +1,36 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = 'East Africa Safari Marketplace – Book Kenya & Tanzania Tours';
-    $seo_description =
-        'Browse vetted safari packages across Kenya, Tanzania and East Africa. Filter by destination, difficulty and price, and book directly with trusted local partners.';
-    $seo_og_title = 'East Africa Safari Marketplace';
-    $seo_og_description =
-        'Find your perfect adventure in Kenya, Tanzania & beyond — compare safari packages by destination, type and price.';
-
-    $seo_canonical = url('/tours');
-@endphp
+@section('title', 'East Africa Safari & Tour Marketplace | Find Your Perfect Adventure')
+@section('description', 'Find and book your perfect adventure in Kenya, Tanzania & beyond. Compare tours, safaris, and cultural experiences across East Africa.')
+@section('keywords', 'East Africa safari, Kenya tours, Tanzania safari, book African safari, African tour operator, adventure travel Africa')
 
 {{-- @push('structured_data')
 {!! \App\Helpers\SchemaBuilder::tourPackage($package) !!}
 @endpush --}}
+@push('schema')
+@php
+    $pageSchemas = [];
+
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "ItemList",
+        "name" => "East Africa Safari & Tour Packages",
+        "description" => "Browse our curated list of authentic African safaris and cultural experiences.",
+        "url" => url()->current(),
+        "numberOfItems" => $packages->count(),
+        "itemListElement" => $packages->map(function ($pkg, $index) {
+            return [
+                "@type" => "ListItem",
+                "position" => $index + 1,
+                "url" => route('tours.show', $pkg),
+                "name" => $pkg->name,
+                "image" => $pkg->featured_image ? asset('storage/' . $pkg->featured_image) : asset('images/og-default.jpg'),
+                "description" => Str::limit($pkg->short_description, 120)
+            ];
+        })->toArray()
+    ];
+@endphp
+@endpush
 
 @section('content')
     <div class="min-h-screen bg-zinc-950 text-white">

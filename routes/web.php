@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CulturalController;
 use App\Http\Controllers\CultureController;
 use App\Http\Controllers\DiscoveryController;
+use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedirectController;
@@ -19,6 +20,7 @@ use App\Models\Destination;
 use App\Models\HeaderMedia;
 use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 // Route::view('/', 'home');
@@ -39,6 +41,8 @@ Route::get('/', function () {
 
     return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
 });
+
+Route::get('/', [HomePageController::class, 'home'])->name('home');
 
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
@@ -138,8 +142,8 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 Route::get('/blog', function () {
     $blogs = Blog::latest()->paginate(12);
 
-    return view('partials.field-notes', compact('blogs'));
-})->name('blog.index');
+    return view('blog', compact('blogs'));
+})->name('blog');
 
 // Blog post by ID
 Route::get('/blog/{blog}', function (Blog $blog) {

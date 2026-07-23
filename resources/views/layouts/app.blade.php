@@ -6,80 +6,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- ============================================================
-         SEO — single source of truth via $seo (see SeoComposer).
-         Pages set $seo_title / $seo_description / (optionally)
-         $seo_og_title / $seo_og_description / $seo_canonical / $seo_keywords
-         as @php vars before @section('content') opens.
-         OG + Twitter derive from title/description automatically
-         unless a page explicitly overrides them.
-         ============================================================ --}}
-    <title>{{ $seo['title'] }}</title>
-    <meta name="description" content="{{ $seo['description'] }}">
-    @if(!empty($seo['keywords']))
-        <meta name="keywords" content="{{ $seo['keywords'] }}">
-    @endif
-    <link rel="canonical" href="{{ $seo['canonical'] }}">
-    <meta name="robots" content="{{ $seo['robots'] }}">
-    <meta name="theme-color" content="#ffffff">
+    {{-- SEO Meta Tags --}}
+    <title>@yield('title', config('app.name', 'Vumbi Ventures'))</title>
+    <meta name="description" content="@yield('description', 'Discover Africa. Before You Travel. Real stories, live prices, hidden gems, and authentic experiences from Kenya to Cape Town.')">
+    {{-- Meta Keywords (optional) --}}
+    <meta name="keywords" content="@yield('keywords', 'Africa travel, Vumbi Ventures, authentic experiences')">
 
-    {{-- Open Graph — derived from $seo, not independently yielded --}}
+    {{-- Open Graph --}}
+    <meta property="og:title" content="@yield('og_title', $__env->yieldContent('title') ?: config('app.name'))">
+    <meta property="og:description" content="@yield('og_description', $__env->yieldContent('description') ?: 'Discover Africa. Before You Travel.')">
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Vumbi Ventures">
-    <meta property="og:url" content="{{ $seo['canonical'] }}">
-    <meta property="og:title" content="{{ $seo['og_title'] }}">
-    <meta property="og:description" content="{{ $seo['og_description'] }}">
-    <meta property="og:image" content="{{ $seo['og_image'] }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
 
-    {{-- Twitter — derived from $seo, not independently yielded --}}
+    {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $seo['og_title'] }}">
-    <meta name="twitter:description" content="{{ $seo['og_description'] }}">
-    <meta name="twitter:image" content="{{ $seo['og_image'] }}">
+    <meta name="twitter:title" content="@yield('twitter_title', $__env->yieldContent('title') ?: config('app.name'))">
+    <meta name="twitter:description" content="@yield('twitter_description', $__env->yieldContent('description') ?: 'Discover Africa. Before You Travel.')">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
-    {{-- Favicons --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo1.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo1.png') }}">
+    {{-- Canonical URL --}}
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    {{-- Robots --}}
+    <meta name="robots" content="@yield('robots', 'index, follow')">
 
     {{-- Performance hints --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     {{-- Structured Data (site-wide) --}}
+    {{-- In your layout <head> --}}
+
     @php
-        $organizationSchema = [
-            "@context" => "https://schema.org",
-            "@type" => "Organization",
-            "name" => "Vumbi Ventures",
-            "url" => url('/'),
-            "logo" => asset('images/vumbi-ventures-logo.png'),
-            "sameAs" => [
-                "https://twitter.com/vumbiventures",
-                "https://linkedin.com/company/vumbi-ventures",
-                "https://instagram.com/vumbiventures",
+
+        $schemas = [];
+        // Organization (TravelAgency)
+        $schemas[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'TravelAgency',
+            'name' => 'Vumbi Ventures',
+            'url' => url()->current(),
+            'logo' => asset('images/logo1.png'),
+            'description' =>
+                'Custom African safaris, cultural tours, and authentic travel experiences across East Africa.',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Nakuru',
+                'addressCountry' => 'KE',
+            ],
+            'telephone' => '+254-734-591543',
+            'email' => 'info@vumbiventures.com',
+            'priceRange' => "$$",
+            'openingHours' => 'Mo-Fr 09:00-17:00',
+            'sameAs' => [
+                'https://twitter.com/vumbiventures',
+                'https://linkedin.com/company/vumbi-ventures',
+                'https://instagram.com/vumbiventures',
+            ],
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'contactType' => 'Customer Service',
+                'availableLanguage' => ['English', 'Swahili'],
+            ],
+            'potentialAction' => [
+                [
+                    '@type' => 'SearchAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => url('/tours') . '?q={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+                [
+                    '@type' => 'ReserveAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => url('/tours'),
+                        'actionPlatform' => [
+                            'http://schema.org/DesktopWebPlatform',
+                            'http://schema.org/MobileWebPlatform',
+                        ],
+                    ],
+                    'description' => 'Book an authentic African safari or cultural tour.',
+                ],
             ],
         ];
 
-        $websiteSchema = [
-            "@context" => "https://schema.org",
-            "@type" => "WebSite",
-            "name" => "Vumbi Ventures",
-            "url" => url('/'),
-            "potentialAction" => [
-                "@type" => "SearchAction",
-                "target" => url('/discover') . "?q={search_term_string}",
-                "query-input" => "required name=search_term_string",
+        // WebSite schema
+        $schemas[] = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'Vumbi Ventures',
+            'url' => url()->current(),
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => [
+                    '@type' => 'EntryPoint',
+                    'urlTemplate' => url('/tours') . '?q={search_term_string}',
+                ],
+                'query-input' => 'required name=search_term_string',
             ],
         ];
+
+        // Child views can add more schemas by defining $pageSchemas
+        // and we merge them here.
+        if (isset($pageSchemas) && is_array($pageSchemas)) {
+            $schemas = array_merge($schemas, $pageSchemas);
+        }
+
+    
+
+    $breadcrumbItems = [
+        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => url('/')]
+    ];
+
+    // Add based on route
+    if (request()->routeIs('singleblog')) {
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Blog", "item" => route('blog')];
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $blog->title, "item" => url()->current()];
+    } elseif (request()->routeIs('tours.show')) {
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Tours", "item" => route('tours.index')];
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $pkg->title, "item" => url()->current()];
+    } elseif (request()->routeIs('destinations.show')) {
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Destinations", "item" => route('destinations.index')];
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $destination->name, "item" => url()->current()];
+    } elseif (request()->routeIs('blog.index')) {
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Blog", "item" => url()->current()];
+    } elseif (request()->routeIs('tours.index')) {
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Tours", "item" => url()->current()];
+    } else {
+        // Fallback: use page title
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => $pageName ?? 'Page', "item" => url()->current()];
+    }
+
+    $schemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "BreadcrumbList",
+        "itemListElement" => $breadcrumbItems
+    ];
+
     @endphp
-    <script type="application/ld+json">
-        {!! json_encode($organizationSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
-    </script>
-    <script type="application/ld+json">
-        {!! json_encode($websiteSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
-    </script>
 
+
+        
+    {{-- Render all schemas --}}
+    @foreach ($schemas as $schema)
+        <script type="application/ld+json">
+    @json($schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+</script>
+    @endforeach
     {{-- Page-specific schema (e.g. Article, TouristTrip, FAQPage) --}}
     @stack('schema')
 
@@ -102,11 +178,13 @@
         auditing how it got into the layout in the first place.
     --}}
 
+    {{-- {!! seo() !!} --}}
     {{-- Styles --}}
     @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
+
 <body class="font-sans antialiased text-[#1A1A1A] bg-white">
 
     {{-- Livewire Loading Overlay --}}
@@ -114,7 +192,8 @@
         <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3">
             <svg class="animate-spin h-8 w-8 text-[#8B5A2B]" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                </circle>
                 <path class="opacity-75" fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
@@ -195,11 +274,15 @@
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-JDQTSGVSYS"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
             gtag('js', new Date());
             gtag('config', 'G-JDQTSGVSYS');
         </script>
     @endproduction
 
 </body>
+
 </html>

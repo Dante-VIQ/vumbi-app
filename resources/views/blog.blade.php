@@ -1,59 +1,43 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = 'Field Notes – African Travel Stories, Culture & History';
-    $seo_description = 'Real field notes from across Africa — untold history, culture deep-dives and honest travel stories, written by people who\'ve actually been there.';
-    $seo_og_title = 'Field Notes';
-    $seo_og_description = 'Travel stories, African history and cultural deep-dives from across the continent.';
-@endphp
+@section('title', 'Field Notes: Travel Stories & African History | Vumbi Ventures')
+@section('description', 'Untold travel narratives, cultural encounters, and deep dives into African history from places that rarely make headlines.')
+@section('keywords', 'African history, travel stories, cultural deep-dives, East Africa travel, African civilizations, off-the-beaten-path')
 
 
 @push('schema')
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    "name": "Field Notes by Vumbi Ventures",
-    "description": "Travel narratives, untold African history, and cultural stories from places that rarely make headlines.",
-    "url": "{{ url('/blog') }}",
-    "publisher": {
-        "@type": "Organization",
-        "name": "Vumbi Ventures",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "{{ asset('images/vumbi-ventures-logo.png') }}"
-        }
-    },
-    "inLanguage": "en",
-    "about": [
-        { "@type": "Thing", "name": "Africa Travel" },
-        { "@type": "Thing", "name": "African History" },
-        { "@type": "Thing", "name": "East Africa" },
-        { "@type": "Thing", "name": "African Culture" }
-    ]
-}
-</script>
 
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-        {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "{{ url('/') }}"
-        },
-        {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Field Notes",
-            "item": "{{ url('/blog') }}"
-        }
-    ]
-}
-</script>
+@php
+    $pageSchemas = [];
+
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "CollectionPage",
+        "name" => "Vumbi Ventures Field Notes",
+        "description" => "Untold travel narratives, cultural encounters, and deep dives into African history.",
+        "url" => url()->current(),
+        "about" => [
+            "@type" => "Thing",
+            "name" => "African Travel Stories & History"
+        ],
+        "mainEntity" => [
+            "@type" => "ItemList",
+            "itemListElement" => $blogs->map(function ($blog, $index) {
+                return [
+                    "@type" => "ListItem",
+                    "position" => $index + 1,
+                    "url" => route('singleblog', $blog),
+                    "name" => $blog->title,
+                    "description" => Str::limit($blog->excerpt, 120),
+                    "image" => $blog->featured_image ? asset('storage/' . $blog->featured_image) : null
+                ];
+            })->toArray()
+        ]
+    ];
+@endphp
+
+@extends('layouts.app')
+
 @endpush
 
 @section('content')

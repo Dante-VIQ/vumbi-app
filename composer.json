@@ -17,6 +17,7 @@
         "mews/purifier": "^3.4",
         "openai-php/laravel": "*",
         "predis/predis": "^3.4",
+        "ralphjsmit/laravel-seo": "^1.8",
         "spatie/laravel-permission": "^6.25",
         "spatie/laravel-sitemap": "^8.0"
     },

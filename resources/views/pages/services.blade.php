@@ -1,21 +1,12 @@
 @extends('layouts.app')
 
-@php
-    $seo_title = 'Web Development & Digital Growth Services – Vumbi Ventures';
-    $seo_description = "Custom websites, branding and marketing that grow your business — built by the team behind Vumbi Ventures' Africa travel platform. Packages from $700.";
-    $seo_og_title = 'Two Ways to Grow With Us';
-    $seo_og_description = 'Travel discovery for explorers. Web development, branding and marketing for businesses ready to scale.';
-@endphp
  
+@section('title', 'African Safari & Travel Planning Services | Custom Itineraries | Vumbi Ventures')
+@section('description', 'From private safaris in Kenya to cultural tours in Tanzania. We craft custom, authentic African travel experiences. Itineraries built for you.')
+@section('keywords', 'African travel services, custom safari planning, Kenya tour operator, Tanzania travel agency, adventure travel Africa, group travel services, bespoke itineraries, Vumbi Ventures services')
+
 @section('content')
 
-{{-- @push('meta')
-    <meta name="description" content="{{ $seo_description }}">
-    <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $seo_og_title }}">
-    <meta property="og:description" content="{{ $seo_og_description }}">
-    <meta property="og:type" content="website">
-@endpush --}}
 
 @push('styles')
 <style>
