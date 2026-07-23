@@ -107,43 +107,46 @@ new class extends Component
 };
 ?>
 
-@if($tours->isNotEmpty())
-<div class="related-tours-block my-12">
-    <h3 class="text-xl font-semibold text-white mb-1">Turn This Story Into a Trip</h3>
-    <p class="text-zinc-500 text-sm mb-6">Trips related to this story.</p>
+<div class="related-tours-block my-12" @if($tours->isEmpty()) style="display:none;" @endif>
+    @if($tours->isNotEmpty())
+        <h3 class="text-xl font-semibold text-white mb-1">Turn This Story Into a Trip</h3>
+        <p class="text-zinc-500 text-sm mb-6">Trips related to this story.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-1 gap-5">
-        @foreach($tours as $tour)
-            <div class="tour-card bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col">
-                @if($tour->image_url)
-                    <img src="{{ $tour->image_url }}" alt="{{ $tour->title }}" class="w-full h-40 object-cover">
-                @endif
-
-                <div class="p-4 flex flex-col flex-1">
-                    <h4 class="text-white font-medium mb-1">{{ $tour->title }}</h4>
-
-                    @if($tour->price_from)
-                        <p class="text-green-400 text-sm mb-3">From {{ $tour->price_from }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-5">
+            @foreach($tours as $tour)
+                <div class="tour-card bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col">
+                    @if($tour->image_url)
+                        <img src="{{ $tour->image_url }}" alt="{{ $tour->title }}" class="w-full h-40 object-cover">
                     @endif
 
-                    <div class="mt-auto">
-                        @if($tour->isAffiliate())
-                            <a href="{{ route('affiliate.redirect', [$tour->affiliate_source, $tour->id]) }}"
-                               target="_blank"
-                               class="block text-center bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 rounded-xl transition">
-                                Book This Trip →
-                            </a>
-                        @else
-                            <button
-                                onclick="window.dispatchEvent(new CustomEvent('open-booking-modal', { detail: { tourId: {{ $tour->id }} } }))"
-                                class="block w-full text-center bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium py-2 rounded-xl transition">
-                                Request to Book →
-                            </button>
+                    <div class="p-4 flex flex-col flex-1">
+                        <h4 class="text-white font-medium mb-1">{{ $tour->title }}</h4>
+
+                        @if($tour->price_from)
+                            <p class="text-green-400 text-sm mb-3">From {{ $tour->price_from }}</p>
                         @endif
+
+                        <div class="mt-auto">
+                            @if($tour->isAffiliate())
+                                <a href="{{ route('affiliate.redirect', [$tour->affiliate_source, $tour->id]) }}"
+                                   target="_blank"
+                                   class="block text-center bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 rounded-xl transition">
+                                    Book This Trip →
+                                </a>
+                            @else
+                                <button
+                                    onclick="window.dispatchEvent(new CustomEvent('open-booking-modal', { detail: { tourId: {{ $tour->id }} } }))"
+                                    class="block w-full text-center bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium py-2 rounded-xl transition">
+                                    Request to Book →
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
+    @else
+        {{-- Optionally show a subtle message instead of hiding completely --}}
+        {{-- <p class="text-zinc-500 text-sm">No specific tours match this story, but check out our <a href="{{ route('tours.index') }}" class="text-green-400 hover:underline">full collection</a>.</p> --}}
+    @endif
 </div>
-@endif
