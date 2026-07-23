@@ -34,9 +34,9 @@
         ];
     @endphp
 @endpush
-@section('title', $blog->title . ' | Vumbi Ventures')
-@section('description', Str::limit($blog->excerpt, 160))
 
+@section('title', $blog->title . ' | Vumbi Ventures')
+@section('description', Str::limit($blog->meta_description ?? $blog->description, 160))
 
 @push('styles')
     <style>

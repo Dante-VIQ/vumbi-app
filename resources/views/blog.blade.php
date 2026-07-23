@@ -4,7 +4,6 @@
 @section('description', 'Untold travel narratives, cultural encounters, and deep dives into African history from places that rarely make headlines.')
 @section('keywords', 'African history, travel stories, cultural deep-dives, East Africa travel, African civilizations, off-the-beaten-path')
 
-
 @push('schema')
 
 @php
