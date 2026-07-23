@@ -1,42 +1,61 @@
 @extends('layouts.app')
 
 @push('schema')
-    @php
-        $pageSchemas = [];
+@php
+    $pageSchemas = [];
 
-        $pageSchemas[] = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Article',
-            'headline' => $blog->meta_title ?? $blog->title,
-            'description' => $blog->meta_description ?? ($blog->excerpt ?? strip_tags(substr($blog->content, 0, 160))),
+    // Article schema (always)
+    $pageSchemas[] = [
+        "@context" => "https://schema.org",
+        "@type" => "Article",
+        "headline" => $blog->title,
+        "description" => $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160),
+        "image" => $blog->featured_image ? asset('storage/' . $blog->featured_image) : asset('images/og-default.jpg'),
+        "author" => [
+            "@type" => "Person",
+            "name" => $blog->author->name ?? 'Vumbi Ventures'
+        ],
+        "publisher" => [
+            "@type" => "Organization",
+            "name" => "Vumbi Ventures",
+            "logo" => [
+                "@type" => "ImageObject",
+                "url" => asset('images/logo1.png')
+            ]
+        ],
+        "datePublished" => $blog->created_at->toIso8601String(),
+        "dateModified" => $blog->updated_at->toIso8601String(),
+        "mainEntityOfPage" => [
+            "@type" => "WebPage",
+            "@id" => url()->current()
+        ]
+    ];
 
-            'image' => $blog->featured_image
-                ? asset('storage/' . $blog->featured_image)
-                : asset('images/og-default.jpg'),
-            'author' => [
-                '@type' => 'Person',
-                'name' => $blog->author->name ?? 'Vumbi Ventures',
-            ],
-            'publisher' => [
-                '@type' => 'Organization',
-                'name' => 'Vumbi Ventures',
-                'logo' => [
-                    '@type' => 'ImageObject',
-                    'url' => asset('images/logo1.png'),
-                ],
-            ],
-            'datePublished' => $blog->created_at->toIso8601String(),
-            'dateModified' => $blog->updated_at->toIso8601String(),
-            'mainEntityOfPage' => [
-                '@type' => 'WebPage',
-                '@id' => url()->current(),
-            ],
-        ];
-    @endphp
+    // Optional: If you have comments or ratings, add AggregateRating
+    // if ($blog->comments_count > 0) { ... }
+
+    // You can also add BreadcrumbList here if not handled globally
+@endphp
+
 @endpush
 
-@section('title', $blog->title . ' | Vumbi Ventures')
-@section('description', Str::limit($blog->meta_description ?? $blog->description, 160))
+@section('title', $blog->meta_title ?: $blog->title . ' | Vumbi Ventures')
+
+@section('description', $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160))
+
+{{-- Use the blog's meta_keywords, fallback to a default list --}}
+@section('keywords', $blog->meta_keywords ?: 'Africa travel, travel stories, Vumbi Ventures, African culture')
+
+{{-- You can also override OG tags if needed --}}
+@section('og_title', $blog->meta_title ?: $blog->title)
+@section('og_description', $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160))
+@section('og_image', $blog->featured_image ? asset('storage/' . $blog->featured_image) : asset('images/og-default.jpg'))
+
+{{-- Set canonical to the current URL --}}
+@section('canonical', url()->current())
+
+{{-- Robots: index, follow by default --}}
+@section('robots', 'index, follow')
 
 @push('styles')
     <style>
