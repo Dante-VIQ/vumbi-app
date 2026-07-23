@@ -26,7 +26,7 @@
                 return [
                     "@type" => "ListItem",
                     "position" => $index + 1,
-                    "url" => route('singleblog', $blog),
+                    "url" => route('blog.show', $blog),
                     "name" => $blog->title,
                     "description" => Str::limit($blog->excerpt, 120),
                     "image" => $blog->featured_image ? asset('storage/' . $blog->featured_image) : null
@@ -36,7 +36,6 @@
     ];
 @endphp
 
-@extends('layouts.app')
 
 @endpush
 
