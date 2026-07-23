@@ -27,9 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // If you want to apply middleware to specific route groups
-        // $middleware->web(append: [
-        //     \App\Http\Middleware\YourMiddleware::class,
-        // ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\ForceHttpsAndWww::class
+        ]);
 
 
 
