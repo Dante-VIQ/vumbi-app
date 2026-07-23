@@ -358,7 +358,7 @@ private function looksLikeFakeHeading(\DOMNode $node): bool
             <nav class="flex items-center gap-2 text-sm text-[#5C5C5C] mb-6">
                 <a href="{{ url('/') }}" class="hover:text-[#8B5A2B]">Home</a>
                 <span>/</span>
-                <a href="{{ url('/field-notes') }}" class="hover:text-[#8B5A2B]">Field Notes</a>
+                <a href="{{ url('/blog') }}" class="hover:text-[#8B5A2B]">Field Notes</a>
                 <span>/</span>
                 <span class="text-[#8B5A2B] truncate">{{ $blog->category ?? 'Story' }}</span>
             </nav>
