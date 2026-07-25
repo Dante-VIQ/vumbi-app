@@ -127,7 +127,7 @@
         $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $blog->title, "item" => url()->current()];
     } elseif (request()->routeIs('tours.show')) {
         $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Tours", "item" => route('tours.index')];
-        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $pkg->title, "item" => url()->current()];
+        $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $package->title, "item" => url()->current()];
     } elseif (request()->routeIs('destinations.show')) {
         $breadcrumbItems[] = ["@type" => "ListItem", "position" => 2, "name" => "Destinations", "item" => route('destinations.index')];
         $breadcrumbItems[] = ["@type" => "ListItem", "position" => 3, "name" => $destination->name, "item" => url()->current()];

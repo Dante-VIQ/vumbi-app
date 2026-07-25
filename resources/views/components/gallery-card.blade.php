@@ -68,7 +68,7 @@
                 <div class="overflow-hidden rounded-3xl shadow-2xl" id="slides-container">
                     <div class="flex transition-transform duration-700 ease-out" id="slider-track">
 
-                        {{-- @php
+                        @php
                             $headerMedia = App\Models\HeaderMedia::latest()->take(10)->get();
                         @endphp
 
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif --}}
+                        @endif
                     </div>
                 </div>
 
@@ -109,7 +109,7 @@
                 </button>
 
                 <!-- Dots -->
-                <div class="flex justify-center gap-3 mt-8" id="dots-container"></div>
+                {{-- <div class="flex justify-center gap-3 mt-8" id="dots-container"></div> --}}
             </div>
         </div>
     </div>

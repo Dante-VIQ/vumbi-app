@@ -7,29 +7,36 @@
 @php
     $pageSchemas = [];
 
-    // TouristTrip
+    // Get itinerary as array (if cast is set, it's already an array)
+    $itinerary = $package->itinerary ?? [];
+    // If it's still a string (in case cast not applied), decode it
+    if (is_string($itinerary)) {
+        $itinerary = json_decode($itinerary, true) ?? [];
+    }
+
     $pageSchemas[] = [
         "@context" => "https://schema.org",
         "@type" => "TouristTrip",
-        "name" => $pkg->title,
-        "description" => Str::limit($tour->description, 160),
-        "image" => $pkg->featured_image ? asset('storage/' . $pkg->featured_image) : asset('images/og-default.jpg'),
+        "name" => $package->title,
+        "description" => Str::limit($package->description, 160),
+        "image" => $package->featured_image ? asset('storage/' . $package->featured_image) : asset('images/og-default.jpg'),
         "itinerary" => [
             "@type" => "ItemList",
-            "itemListElement" => $pkg->itinerary_items->map(function ($item, $index) {
+            "itemListElement" => collect($itinerary)->map(function ($item, $index) {
                 return [
                     "@type" => "ListItem",
                     "position" => $index + 1,
-                    "name" => $item->name
+                    "name" => $item['title'] ?? 'Day ' . ($index + 1),
+                    "description" => $item['description'] ?? ''
                 ];
             })->toArray()
         ],
-        "touristType" => implode(', ', $pkg->tourist_types ?? ['Adventure', 'Culture', 'Wildlife']),
+        "touristType" => implode(', ', $package->tourist_types ?? ['Adventure', 'Culture', 'Wildlife']),
         "offers" => [
             "@type" => "Offer",
-            "price" => $pkg->price,
+            "price" => $package->price,
             "priceCurrency" => "USD",
-            "availability" => $pkg->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            "availability" => $package->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             "url" => url()->current(),
             "validFrom" => now()->toIso8601String(),
             "priceValidUntil" => now()->addYear()->toIso8601String()
@@ -39,15 +46,15 @@
     ];
 
     // Product with AggregateRating (if reviews exist)
-    if ($pkg->reviews_count > 0) {
+    if ($package->reviews_count > 0) {
         $pageSchemas[] = [
             "@context" => "https://schema.org",
             "@type" => "Product",
-            "name" => $tour->title,
+            "name" => $package->title,
             "aggregateRating" => [
                 "@type" => "AggregateRating",
-                "ratingValue" => $pkg->average_rating,
-                "reviewCount" => $pkg->reviews_count,
+                "ratingValue" => $package->average_rating,
+                "reviewCount" => $package->reviews_count,
                 "bestRating" => "5"
             ]
         ];
@@ -55,6 +62,17 @@
 @endphp
 @endpush
  
+@section('title', $package->meta_title ?: $package->title . ' | Vumbi Ventures')
+@section('description', $package->meta_description ?: Str::limit($package->short_description ?? $package->description, 160))
+@section('keywords', $package->meta_keywords ?: 'safari, tour, Kenya, Tanzania, adventure')
+
+@section('og_title', $package->meta_title ?: $package->title)
+@section('og_description', $package->meta_description ?: Str::limit($package->short_description ?? $package->description, 160))
+@section('og_image', $package->featured_image ? asset('storage/' . $package->featured_image) : asset('images/og-default.jpg'))
+
+@section('canonical', url()->current())
+@section('robots', 'index, follow')
+
 @section('content')
     <div class="min-h-screen bg-zinc-950 text-white">
         <!-- Hero -->
@@ -141,7 +159,7 @@
                                     $description = trim($description);
                                 @endphp
                                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-                                    <div class="text-green-400 font-semibold mb-1">
+                                    <div class="text-zinc-400 font-semibold mb-1">
                                         {{ $title }}
                                     </div>
                                     @if ($description)

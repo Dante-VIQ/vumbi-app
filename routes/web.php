@@ -78,6 +78,8 @@ Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/ecosystem', 'pages.ecosystem');
 Route::view('/header', 'pages.header-media');
+Route::view('/studio', 'studio');
+Route::view('/demo', 'demo');
 
 Route::get('/booking/{partnerPackage:slug}', function (PartnerPackage $partnerPackage) {
     return view('booking', compact('partnerPackage'));
