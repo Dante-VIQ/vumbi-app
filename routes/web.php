@@ -47,8 +47,8 @@ Route::get('/', [HomePageController::class, 'home'])->name('home');
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
     ->name('affiliate.redirect');
 
-Route::get('/cultures', [CulturalController::class, 'index'])->name('cultures.give');
-Route::get('/cultures/{culture:id}', [CulturalController::class, 'show'])->name('pages.culture');
+Route::get('/culture', [CulturalController::class, 'index'])->name('cultures.give');
+Route::get('/culture/{culture:id}', [CulturalController::class, 'show'])->name('pages.culture');
 
 Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.give');
 Route::get('/destinations/{destination:id}', [PlaceController::class, 'show'])->name('pages.destination');
