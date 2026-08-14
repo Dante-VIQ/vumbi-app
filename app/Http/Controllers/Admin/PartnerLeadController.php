@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PartnerLeadController extends Controller
 {
-        public function index(Request $request)
+    public function index(Request $request)
     {
         $leads = PartnerLead::with('package')
                     ->when($request->status, fn($q) => $q->where('status', $request->status))
@@ -26,36 +26,33 @@ class PartnerLeadController extends Controller
         $lead->load('package');
         return view('admin.leads.show', compact('lead'));
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_name'  => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:30',
-            'customer_email' => 'nullable|email|max:255',
-            'package_id'     => 'required|exists:partner_packages,id',
-            'notes'          => 'nullable|string|max:500',
+            'first_name'         => 'required|string|max:255',
+            'phone'              => 'required|string|max:30',
+            'email'              => 'nullable|email|max:255',
+            'start_date'         => 'nullable|date',
+            'partner_package_id' => 'required|exists:partner_packages,id',
         ]);
 
-        $package = PartnerPackage::findOrFail($validated['package_id']);
+        $package = PartnerPackage::findOrFail($validated['partner_package_id']);
 
         $lead = PartnerLead::create([
-            'customer_name'     => $validated['customer_name'],
-            'customer_phone'    => $validated['customer_phone'],
-            'customer_email'    => $validated['customer_email'] ?? null,
-            'partner_package_id'=> $package->id,
-            'package_title'     => $package->title,
-            'location'          => $package->location,
-            'estimated_price'   => $package->price,
-            'commission_percent'=> 30.00, // default, adjustable
-            'status'            => 'pending',
-            'notes'             => $validated['notes'] ?? null,
+            'first_name'         => $validated['first_name'],
+            'phone'              => $validated['phone'],
+            'email'              => $validated['email'] ?? null,
+            'start_date'         => $validated['start_date'] ?? null,
+            'partner_package_id' => $package->id,
+            'package_title'      => $package->title,
+            'location'           => $package->location,
+            'estimated_price'    => $package->price,
+            'commission_percent' => 30.00,
+            'status'             => 'pending',
         ]);
 
-        // Notify partner — here we just log; you can later add mail/WhatsApp
         Log::info('New partner lead created', $lead->toArray());
-
-        // Optionally queue a notification email to the partner
-        // PartnerNotification::dispatch($lead);
 
         return response()->json([
             'message' => 'Thank you! We will contact you shortly to confirm your booking.',
@@ -63,7 +60,7 @@ class PartnerLeadController extends Controller
         ]);
     }
 
-        public function updateStatus(Request $request, PartnerLead $lead)
+    public function updateStatus(Request $request, PartnerLead $lead)
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,confirmed,completed,cancelled',
@@ -71,46 +68,63 @@ class PartnerLeadController extends Controller
 
         $lead->update(['status' => $validated['status']]);
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Status updated successfully']);
+        }
+
         return back()->with('success', 'Lead status updated.');
     }
 
+    public function export(Request $request)
+    {
+        $leads = PartnerLead::with('package')
+                    ->when($request->status, fn($q) => $q->where('status', $request->status))
+                    ->when($request->month, fn($q) => $q->whereMonth('created_at', $request->month))
+                    ->when($request->year, fn($q) => $q->whereYear('created_at', $request->year))
+                    ->latest()
+                    ->get();
 
-public function export(Request $request)
-{
-    $leads = PartnerLead::with('package')
-                ->when($request->status, fn($q) => $q->where('status', $request->status))
-                ->when($request->month, fn($q) => $q->whereMonth('created_at', $request->month))
-                ->when($request->year, fn($q) => $q->whereYear('created_at', $request->year))
-                ->latest()
-                ->get();
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="leads_'.now()->format('Y-m-d').'.csv"',
+        ];
 
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => 'attachment; filename="leads_'.now()->format('Y-m-d').'.csv"',
-    ];
-
-    $callback = function() use ($leads) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, ['ID', 'Customer Name', 'Phone', 'Email', 'Package', 'Location', 'Price', 'Commission %', 'Commission Amount', 'Status', 'Created At']);
-
-        foreach ($leads as $lead) {
+        $callback = function() use ($leads) {
+            $file = fopen('php://output', 'w');
             fputcsv($file, [
-                $lead->id,
-                $lead->customer_name,
-                $lead->customer_phone,
-                $lead->customer_email,
-                $lead->package_title,
-                $lead->location,
-                $lead->estimated_price,
-                $lead->commission_percent,
-                $lead->estimated_price * $lead->commission_percent / 100,
-                $lead->status,
-                $lead->created_at->format('Y-m-d H:i')
+                'ID',
+                'First Name',
+                'Phone',
+                'Email',
+                'Start Date',
+                'Package',
+                'Location',
+                'Price',
+                'Commission %',
+                'Commission Amount',
+                'Status',
+                'Created At',
             ]);
-        }
-        fclose($file);
-    };
 
-    return response()->stream($callback, 200, $headers);
-}
+            foreach ($leads as $lead) {
+                fputcsv($file, [
+                    $lead->id,
+                    $lead->first_name,
+                    $lead->phone,
+                    $lead->email,
+                    $lead->start_date ? $lead->start_date->format('Y-m-d') : '',
+                    $lead->package_title,
+                    $lead->location,
+                    $lead->estimated_price,
+                    $lead->commission_percent,
+                    $lead->estimated_price * $lead->commission_percent / 100,
+                    $lead->status,
+                    $lead->created_at->format('Y-m-d H:i'),
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
