@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Destination;
+use App\Models\Lead;
+use App\Models\PartnerPackage;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class PartnerPackage extends Model
@@ -88,5 +92,10 @@ protected static function booted(): void
     public function isManual(): bool
     {
         return $this->booking_type === 'manual';
+    }
+
+        public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Destination::class, 'destination_id');
     }
 }
