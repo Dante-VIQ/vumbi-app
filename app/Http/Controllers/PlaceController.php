@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 class PlaceController extends Controller
 {
-    
     public function index()
     {
         $search = request('search');
@@ -22,18 +21,21 @@ class PlaceController extends Controller
             })
             ->latest()
             ->paginate(10)
-            ->withQueryString();   // Important: preserves search term in pagination links
+            ->withQueryString();
 
         return view('destinations.give', compact('destinations'));
     }
 
     public function show(Destination $destination)
     {
+        // Eager load the tours relationship to prevent null errors
+        $destination->load('tours');
+
         return view('pages.destination', [
-            'destination' => $destination,
-            'seo_title' => $destination->name . ' — Destination Story | Vumbi Ventures',
-            'seo_description' => Str::limit(strip_tags($destination->detail), 155),
-            'seo_canonical' => url()->current(),
+            'destination'    => $destination,
+            'seo_title'      => $destination->name . ' — Destination Story | Vumbi Ventures',
+            'seo_description'=> Str::limit(strip_tags($destination->detail ?? ''), 155),
+            'seo_canonical'  => url()->current(),
         ]);
     }
 }

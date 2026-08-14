@@ -24,13 +24,13 @@
                 "addressCountry" => $destination->country
             ]
         ],
-        "mentions" => $destination->tours->map(function ($tour) {
-            return [
-                "@type" => "TouristTrip",
-                "name" => $tour->name,
-                "url" => route('tours.show', $tour)
-            ];
-        })->toArray()
+"mentions" => $destination->tours?->map(function ($tour) {
+    return [
+        "@type" => "TouristTrip",
+        "name" => $tour->name ?? $tour->title,
+        "url"  => route('tours.show', $tour)
+    ];
+})?->toArray() ?? []
     ];
 
     // Optional: If you have articles about this destination, add an ItemList

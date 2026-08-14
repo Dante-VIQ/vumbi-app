@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\PartnerLead;
+use App\Models\Lead;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,9 +13,9 @@ class AdminNewLeadNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public PartnerLead $lead;
+    public Lead $lead;
 
-    public function __construct(PartnerLead $lead)
+    public function __construct(Lead $lead)
     {
         $this->lead = $lead;
     }
