@@ -2,6 +2,6 @@
 
 @section('content')
     <div class="container mx-auto py-8">
-        <livewire:booking-modal :partner-package="$partnerPackage" />
+        <livewire:booking-modal :partner-package-id="$partnerPackage->id" />
     </div>
 @endsection
