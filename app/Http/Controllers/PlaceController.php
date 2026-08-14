@@ -28,14 +28,25 @@ class PlaceController extends Controller
 
     public function show(Destination $destination)
     {
-        // Eager load the tours relationship to prevent null errors
+        // Eager load relationships
         $destination->load('tours');
 
+        // Get related destinations
+        $relatedDestinations = Destination::where('id', '!=', $destination->id)
+            ->where(function ($query) use ($destination) {
+                $query->where('location', 'like', "%{$destination->location}%")
+                      ->orWhere('name', 'like', "%{$destination->location}%");
+            })
+            ->latest()
+            ->limit(3)
+            ->get();
+
         return view('pages.destination', [
-            'destination'    => $destination,
-            'seo_title'      => $destination->name . ' — Destination Story | Vumbi Ventures',
-            'seo_description'=> Str::limit(strip_tags($destination->detail ?? ''), 155),
-            'seo_canonical'  => url()->current(),
+            'destination'          => $destination,
+            'relatedDestinations'  => $relatedDestinations,
+            'seo_title'            => $destination->name . ' — Destination Story | Vumbi Ventures',
+            'seo_description'      => Str::limit(strip_tags($destination->detail ?? ''), 155),
+            'seo_canonical'        => url()->current(),
         ]);
     }
 }

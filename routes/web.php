@@ -51,8 +51,7 @@ Route::get('/culture', [CulturalController::class, 'index'])->name('cultures.giv
 Route::get('/culture/{culture:id}', [CulturalController::class, 'show'])->name('pages.culture');
 
 Route::get('/destinations', [PlaceController::class, 'index'])->name('destinations.give');
-Route::get('/destinations/{destination:id}', [PlaceController::class, 'show'])->name('pages.destination');
-
+Route::get('/destinations/{destination}', [PlaceController::class, 'show'])->name('pages.destination');
 // /doctor/123 → /destinations/maasai-mara
 Route::get('/doctor/{id}', function ($id) {
     $destination = Destination::where('legacy_doctor_id', $id)->firstOrFail();
