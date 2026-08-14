@@ -250,7 +250,8 @@
                                 x-cloak>
                                 <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
                                     x-on:click.self="open = false">
-                                    @livewire('booking-modal', ['package' => $package])
+                                    {{-- @livewire('booking-modal', ['package' => $package]) --}}
+                                    <livewire:booking-modal :partner-package-id="$partnerPackage->id" />
                                 </div>
                             </div>
                         @endif
