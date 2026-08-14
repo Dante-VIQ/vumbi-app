@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\PartnerLead;
+use App\Models\Lead;
 use App\Models\PartnerPackage;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,7 +13,7 @@ class PartnerLeadController extends Controller
 {
     public function index(Request $request)
     {
-        $leads = PartnerLead::with('package')
+        $leads = Lead::with('package')
                     ->when($request->status, fn($q) => $q->where('status', $request->status))
                     ->latest()
                     ->paginate(30);
@@ -21,7 +21,7 @@ class PartnerLeadController extends Controller
         return view('admin.leads.index', compact('leads'));
     }
 
-    public function show(PartnerLead $lead)
+    public function show(Lead $lead)
     {
         $lead->load('package');
         return view('admin.leads.show', compact('lead'));
@@ -39,7 +39,7 @@ class PartnerLeadController extends Controller
 
         $package = PartnerPackage::findOrFail($validated['partner_package_id']);
 
-        $lead = PartnerLead::create([
+        $lead = Lead::create([
             'first_name'         => $validated['first_name'],
             'phone'              => $validated['phone'],
             'email'              => $validated['email'] ?? null,
@@ -60,7 +60,7 @@ class PartnerLeadController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, PartnerLead $lead)
+    public function updateStatus(Request $request, Lead $lead)
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,confirmed,completed,cancelled',
@@ -77,7 +77,7 @@ class PartnerLeadController extends Controller
 
     public function export(Request $request)
     {
-        $leads = PartnerLead::with('package')
+        $leads = Lead::with('package')
                     ->when($request->status, fn($q) => $q->where('status', $request->status))
                     ->when($request->month, fn($q) => $q->whereMonth('created_at', $request->month))
                     ->when($request->year, fn($q) => $q->whereYear('created_at', $request->year))

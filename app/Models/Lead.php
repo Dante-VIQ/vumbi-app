@@ -23,4 +23,19 @@ class Lead extends Model
     {
         return $this->belongsTo(PartnerPackage::class, 'partner_package_id');
     }
+
+        public function getCustomerNameAttribute(): string
+    {
+        return $this->first_name ?? '';
+    }
+
+    public function getCustomerPhoneAttribute(): string
+    {
+        return $this->phone ?? '';
+    }
+
+    public function getCustomerEmailAttribute(): ?string
+    {
+        return $this->email;
+    }
 }
