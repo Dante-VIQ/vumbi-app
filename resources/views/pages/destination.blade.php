@@ -15,46 +15,43 @@
     <link rel="canonical" href="{{ url()->current() }}">
 @endpush
 
-@php
-    $structuredData = [
-        '@context' => 'https://schema.org',
-        '@type' => 'TouristDestination',
-        'name' => $destination->name,
-        'description' => Str::limit(strip_tags($destination->detail ?? ''), 155),
-        'address' => [
-            '@type' => 'PostalAddress',
-            'addressLocality' => $destination->location,
-            'addressCountry' => $destination->country ?? 'Kenya',
-        ],
-    ];
-
-    // Only add image if it exists
-    if ($destination->media_path) {
-        $structuredData['image'] = Storage::url($destination->media_path);
-    }
-
-    // Add geo coordinates if available
-    if (!empty($destination->latitude) && !empty($destination->longitude)) {
-        $structuredData['geo'] = [
-            '@type' => 'GeoCoordinates',
-            'latitude' => $destination->latitude,
-            'longitude' => $destination->longitude,
-        ];
-    }
-
-    // Add tours if relationship exists and has data
-    if (isset($destination->tours) && $destination->tours->count() > 0) {
-        $structuredData['mentions'] = $destination->tours->map(function ($tour) {
-            return [
-                '@type' => 'TouristTrip',
-                'name' => $tour->title ?? $tour->name,
-                'url' => route('tours.show', $tour),
-            ];
-        })->toArray();
-    }
-@endpush
-
 @push('structured-data')
+    @php
+        $structuredData = [
+            '@context' => 'https://schema.org',
+            '@type' => 'TouristDestination',
+            'name' => $destination->name,
+            'description' => Str::limit(strip_tags($destination->detail ?? ''), 155),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => $destination->location,
+                'addressCountry' => $destination->country ?? 'Kenya',
+            ],
+        ];
+
+        if ($destination->media_path) {
+            $structuredData['image'] = Storage::url($destination->media_path);
+        }
+
+        if (!empty($destination->latitude) && !empty($destination->longitude)) {
+            $structuredData['geo'] = [
+                '@type' => 'GeoCoordinates',
+                'latitude' => $destination->latitude,
+                'longitude' => $destination->longitude,
+            ];
+        }
+
+        if (isset($destination->tours) && $destination->tours->count() > 0) {
+            $structuredData['mentions'] = $destination->tours->map(function ($tour) {
+                return [
+                    '@type' => 'TouristTrip',
+                    'name' => $tour->title ?? $tour->name,
+                    'url' => route('tours.show', $tour),
+                ];
+            })->toArray();
+        }
+    @endphp
+
     <script type="application/ld+json">
         {!! json_encode($structuredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
