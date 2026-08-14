@@ -40,9 +40,9 @@
                         <span class="group-hover:rotate-45 transition-transform">→</span>
                     </a>
 
-                    <a href="#trending"
+                    <a href="/tours"
                         class="px-8 py-4 border border-gray-300 hover:border-gray-400 bg-white rounded-2xl font-medium transition-all">
-                        See Trending Destinations
+                        Plan A Trip
                     </a>
                 </div>
 
