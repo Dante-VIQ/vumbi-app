@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', $pkg->title . ' | Safari & Tour | Vumbi Ventures')
-@section('description', Str::limit($pkg->short_description, 160))
+@section('title', $package->title . ' | Safari & Tour | Vumbi Ventures')
+@section('description', Str::limit($package->short_description, 160))
  
 @push('schema')
 @php
