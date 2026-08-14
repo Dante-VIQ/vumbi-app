@@ -231,5 +231,6 @@ Route::middleware(['auth', 'role:master|engineer'])
         Route::get('leads/export', [PartnerLeadController::class, 'export'])->name('leads.export');
     });
 
+    
 require __DIR__.'/api.php';
 require __DIR__.'/auth.php';
