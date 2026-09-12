@@ -173,7 +173,7 @@ new class extends Component {
                 <div class="glass-panel rounded-3xl overflow-hidden border border-white/60 shadow-xl bg-white/70">
                     <div class="grid md:grid-cols-2 items-center">
                         <div class="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden bg-zinc-200">
-                            <img src="{{ $blog->media_path ? asset('storage/' . $blog->media_path) : 'https://picsum.photos/800/600?random=' . $blog->id }}"
+                            <img src="{{ $blog->media_path }}"
                                 alt="{{ $blog->title }}"
                                 class="w-full h-full object-cover">
                         </div>
