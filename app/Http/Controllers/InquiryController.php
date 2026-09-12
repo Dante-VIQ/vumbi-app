@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SafariQuote;
 use App\Mail\SafariQuoteReceived;
+use App\Models\SafariQuote;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class InquiryController extends Controller
 {

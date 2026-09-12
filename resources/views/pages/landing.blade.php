@@ -330,7 +330,12 @@
                 <a href="/blog" class="text-sm font-bold text-[#8B5A2B] hover:underline">Read All Articles →</a>
             </div>
             <div class="grid md:grid-cols-3 gap-6">
-                @foreach($blogs->take(3) as $blog)
+                @php
+                    $blogs = \App\Models\Blog::latest()->take(3)->get();
+                @endphp
+                
+
+                @foreach($blogs as $blog)
                     <article class="insight-card p-5 bg-white rounded-2xl shadow-sm border border-black/5">
                         <h3 class="font-bold text-lg text-slate-900 hover:text-[#8B5A2B]">
                             <a href="{{ route('blog.show', $blog->id) }}">{{ $blog->title }}</a>
