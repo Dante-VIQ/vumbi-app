@@ -172,7 +172,7 @@ new class extends Component
 
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument('1.0', 'UTF-8');
-        $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
+        $wrappedHtml = '<meta charset="utf-8"><div>' . $html . '</div>';
         @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
@@ -214,7 +214,7 @@ new class extends Component
 
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument('1.0', 'UTF-8');
-        $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
+       $wrappedHtml = '<meta charset="utf-8"><div>' . $html . '</div>';;
         @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
