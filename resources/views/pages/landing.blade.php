@@ -330,10 +330,6 @@
                 <a href="/blog" class="text-sm font-bold text-[#8B5A2B] hover:underline">Read All Articles →</a>
             </div>
             <div class="grid md:grid-cols-3 gap-6">
-                @php
-                    $blogs = \App\Models\Blog::latest()->take(3)->get();
-                @endphp
-                
 
                 @foreach($blogs as $blog)
                     <article class="insight-card p-5 bg-white rounded-2xl shadow-sm border border-black/5">
