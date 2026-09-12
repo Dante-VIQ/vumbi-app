@@ -397,7 +397,7 @@
                 <p class="text-xs text-slate-500">Inquiring for: <span class="font-bold text-slate-800" x-text="selectedDestination"></span></p>
             </div>
 
-            <form action="{{ route('contact.send') }}" method="POST" class="space-y-4">
+            <form action="{{ route('inquiry.send-quote') }}" method="POST" class="space-y-4">
                 @csrf
                 <input type="hidden" name="destination" x-model="selectedDestination">
                 

@@ -67,9 +67,9 @@ Route::get('/doctors/{id}', function ($id) {
 })->whereNumber('id');
 
 
-Route::post('/contact/send-quote', [InquiryController::class, 'sendQuote'])
+Route::post('/inquiry/send-quote', [InquiryController::class, 'sendQuote'])
     ->middleware('throttle:5,1') // Max 5 submissions per minute
-    ->name('contact.send');
+    ->name('inquiry.send-quote');
 
 /*
 |--------------------------------------------------------------------------
