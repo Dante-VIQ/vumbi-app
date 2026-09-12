@@ -161,123 +161,121 @@ class ViewBlog extends Component
         ];
     }
 
-    private function splitContentIntoBlocks(): array
-    {
-        $rawContent = trim($this->blog->description ?? $this->blog->content ?? '');
-        if (empty($rawContent)) {
-            return [];
-        }
-
-        $html = $this->normalizeHeadings($rawContent);
-
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-
-        // Wrap in a container div and add UTF-8 meta to guarantee a valid documentElement
-        $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
-        @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
-
-        if (!$dom->documentElement) {
-            return [$html]; // Fallback if parsing yields no root
-        }
-
-        // Extract nodes from inside the wrapper div
-        $wrapper = $dom->documentElement; // This is our <div>
-        $blocks = [];
-        $currentBlock = '';
-
-        foreach ($wrapper->childNodes as $node) {
-            $nodeHtml = $dom->saveHTML($node);
-
-            if ($node instanceof \DOMElement && strtolower($node->nodeName) === 'h2') {
-                if (trim($currentBlock) !== '') {
-                    $blocks[] = $currentBlock;
-                    $currentBlock = '';
-                }
-
-                $blocks[] = $nodeHtml;
-                continue;
-            }
-
-            $currentBlock .= $nodeHtml;
-        }
-
-        if (trim($currentBlock) !== '') {
-            $blocks[] = $currentBlock;
-        }
-
-        return $blocks;
+private function splitContentIntoBlocks(): array
+{
+    $rawContent = trim($this->blog->description ?? $this->blog->content ?? '');
+    if (empty($rawContent)) {
+        return [];
     }
 
-    private function normalizeHeadings(string $html): string
-    {
-        if (trim($html) === '') {
-            return $html;
-        }
+    $html = $this->normalizeHeadings($rawContent);
 
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
-        @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
+    libxml_use_internal_errors(true);
+    $dom = new \DOMDocument('1.0', 'UTF-8');
+    
+    // Wrap in container div with explicit UTF-8 encoding declaration
+    $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
+    @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
 
-        if (!$dom->documentElement) {
-            return $html;
-        }
-
-        $wrapper = $dom->documentElement;
-        $nodes = iterator_to_array($wrapper->childNodes);
-
-        foreach ($nodes as $node) {
-            if (!$this->looksLikeFakeHeading($node)) {
-                continue;
-            }
-
-            $heading = $dom->createElement('h2', htmlspecialchars(trim($node->textContent), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
-            $wrapper->replaceChild($heading, $node);
-        }
-
-        // Return the inner HTML of the wrapper <div>
-        $resultHtml = '';
-        foreach ($wrapper->childNodes as $child) {
-            $resultHtml .= $dom->saveHTML($child);
-        }
-
-        return $resultHtml;
+    if (!$dom->documentElement) {
+        return [$html];
     }
 
-    private function looksLikeFakeHeading(\DOMNode $node): bool
-    {
-        if (!($node instanceof \DOMElement) || strtolower($node->nodeName) !== 'p') {
-            return false;
-        }
+    $wrapper = $dom->documentElement;
+    $blocks = [];
+    $currentBlock = '';
 
-        $text = trim($node->textContent);
+    foreach ($wrapper->childNodes as $node) {
+        $nodeHtml = $dom->saveHTML($node);
 
-        if ($text === '' || str_word_count($text) > 12) {
-            return false;
-        }
-
-        $boldText = '';
-        foreach ($node->childNodes as $child) {
-            if ($child instanceof \DOMText) {
-                if (trim($child->textContent) !== '') {
-                    return false;
-                }
-                continue;
+        if ($node instanceof \DOMElement && strtolower($node->nodeName) === 'h2') {
+            if (trim($currentBlock) !== '') {
+                $blocks[] = $currentBlock;
+                $currentBlock = '';
             }
 
-            if ($child instanceof \DOMElement && in_array(strtolower($child->nodeName), ['strong', 'b'], true)) {
-                $boldText .= $child->textContent;
-                continue;
-            }
-
-            return false;
+            $blocks[] = $nodeHtml;
+            continue;
         }
 
-        return $text !== '' && trim($boldText) === $text;
+        $currentBlock .= $nodeHtml;
     }
+
+    if (trim($currentBlock) !== '') {
+        $blocks[] = $currentBlock;
+    }
+
+    return $blocks;
+}
+
+private function normalizeHeadings(string $html): string
+{
+    if (trim($html) === '') {
+        return $html;
+    }
+
+    libxml_use_internal_errors(true);
+    $dom = new \DOMDocument('1.0', 'UTF-8');
+    $wrappedHtml = '<?xml encoding="utf-8" ?><div>' . $html . '</div>';
+    @$dom->loadHTML($wrappedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+
+    if (!$dom->documentElement) {
+        return $html;
+    }
+
+    $wrapper = $dom->documentElement;
+    $nodes = iterator_to_array($wrapper->childNodes);
+
+    foreach ($nodes as $node) {
+        if (!$this->looksLikeFakeHeading($node)) {
+            continue;
+        }
+
+        $heading = $dom->createElement('h2', htmlspecialchars(trim($node->textContent), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+        $wrapper->replaceChild($heading, $node);
+    }
+
+    $resultHtml = '';
+    foreach ($wrapper->childNodes as $child) {
+        $resultHtml .= $dom->saveHTML($child);
+    }
+
+    return $resultHtml;
+}
+
+private function looksLikeFakeHeading(\DOMNode $node): bool
+{
+    if (!($node instanceof \DOMElement) || strtolower($node->nodeName) !== 'p') {
+        return false;
+    }
+
+    $text = trim($node->textContent);
+
+    if ($text === '' || str_word_count($text) > 12) {
+        return false;
+    }
+
+    $boldText = '';
+    foreach ($node->childNodes as $child) {
+        if ($child instanceof \DOMText) {
+            if (trim($child->textContent) !== '') {
+                return false;
+            }
+            continue;
+        }
+
+        if ($child instanceof \DOMElement && in_array(strtolower($child->nodeName), ['strong', 'b'], true)) {
+            $boldText .= $child->textContent;
+            continue;
+        }
+
+        return false;
+    }
+
+    return $text !== '' && trim($boldText) === $text;
+}
  
     public function render()
     {
