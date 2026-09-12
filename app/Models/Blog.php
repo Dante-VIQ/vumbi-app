@@ -31,21 +31,24 @@ class Blog extends Model
     // Accessors
     public function getExcerptAttribute($length = 150)
     {
-        return Str::limit(strip_tags((string) $this->description), $length);
+        $raw = $this->getRawOriginal('description') ?? $this->getOriginal('description') ?? '';
+
+        return Str::limit(strip_tags((string) $raw), $length);
     }
 
     public function getReadingTimeAttribute()
     {
-        $words = str_word_count(strip_tags((string) $this->description));
+        $raw = $this->getRawOriginal('description') ?? $this->getOriginal('description') ?? '';
+        $words = str_word_count(strip_tags((string) $raw));
         $minutes = ceil($words / 200);
 
-        return $minutes.' min read';
+        return $minutes . ' min read';
     }
 
     public function getMediaUrlAttribute()
     {
         if ($this->media_path) {
-            return asset('storage/'.$this->media_path);
+            return asset('storage/' . $this->media_path);
         }
 
         return null;
@@ -96,8 +99,5 @@ class Blog extends Model
         static::saving(function ($blog) {
             $blog->description = clean($blog->description ?? '');
         });
-
     }
-
-
 }
