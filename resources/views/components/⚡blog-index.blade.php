@@ -212,7 +212,7 @@ new class extends Component {
                     <article class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-xl hover:border-[#8B5A2B]/20 transition duration-300 flex flex-col justify-between">
                         <div>
                             <div class="h-52 overflow-hidden bg-zinc-100 relative">
-                                <img src="{{ $blog->media_path ? asset('storage/' . $blog->media_path) : 'https://picsum.photos/600/400?random=' . $blog->id }}"
+                                <img src="{{ $blog->media_path ? asset('uploads/' . $blog->media_path) : 'https://picsum.photos/600/400?random=' . $blog->id }}"
                                     alt="{{ $blog->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @if($blog->category)
