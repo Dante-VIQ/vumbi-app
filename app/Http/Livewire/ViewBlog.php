@@ -278,7 +278,7 @@ class ViewBlog extends Component
 
         return $text !== '' && trim($boldText) === $text;
     }
-
+ 
     public function render()
     {
         return view('livewire.view-blog');
