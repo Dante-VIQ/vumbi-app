@@ -9,6 +9,8 @@ use App\Http\Controllers\CulturalController;
 use App\Http\Controllers\CultureController;
 use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RedirectController;
@@ -20,27 +22,28 @@ use App\Models\Destination;
 use App\Models\HeaderMedia;
 use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InquiryController;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 // Route::view('/', 'home');
 
-Route::get('/', function () {
-    $blogs = Blog::latest()
-        ->with('author')
-        ->take(3)
-        ->get();
+// Route::get('/', function () {
+//     $blogs = Blog::latest()
+//         ->with('author')
+//         ->take(3)
+//         ->get();
 
-    $featuredBlog = Blog::where('is_featured', true)
-        ->latest()
-        ->first();
+//     $featuredBlog = Blog::where('is_featured', true)
+//         ->latest()
+//         ->first();
 
-    $headerMedia = HeaderMedia::latest()
-        ->take(6)
-        ->get();
+//     $headerMedia = HeaderMedia::latest()
+//         ->take(6)
+//         ->get();
 
-    return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
-});
+//     return view('home', compact('blogs', 'featuredBlog', 'headerMedia'));
+// });
+
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
 Route::get('/', [HomePageController::class, 'home'])->name('home');
 
