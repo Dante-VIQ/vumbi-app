@@ -20,7 +20,7 @@ use App\Models\Destination;
 use App\Models\HeaderMedia;
 use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\InquiryController;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 // Route::view('/', 'home');
@@ -65,6 +65,11 @@ Route::get('/doctor/{id}', function ($id) {
 Route::get('/doctors/{id}', function ($id) {
     return redirect("/doctor/$id", 301);
 })->whereNumber('id');
+
+
+Route::post('/contact/send-quote', [InquiryController::class, 'sendQuote'])
+    ->middleware('throttle:5,1') // Max 5 submissions per minute
+    ->name('contact.send');
 
 /*
 |--------------------------------------------------------------------------

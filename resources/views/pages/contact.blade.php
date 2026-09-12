@@ -100,7 +100,7 @@
 
 @section('content')
 
-{{-- ===================== HERO SECTION ===================== --}}
+{{-- Hero Section --}}
 <section class="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16">
     <div class="absolute inset-0 grain"></div>
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,90,43,0.05),transparent_50%)]"></div>
@@ -126,7 +126,7 @@
     </div>
 </section>
 
-{{-- ===================== CONSULTATION PATHS ===================== --}}
+{{-- Consultation Paths --}}
 <section class="container mx-auto px-6 py-8">
     <div class="text-center max-w-2xl mx-auto mb-12">
         <h2 class="text-2xl md:text-3xl font-semibold text-[#1A1A1A]">Choose Your Consultation Path</h2>
@@ -138,7 +138,7 @@
         <div class="service-card p-8 flex flex-col justify-between">
             <div>
                 <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[#8B5A2B]" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10ZM3.6 9h16.8M3.6 15h16.8" /></svg>
+                    <i class="fas fa-compass text-[#8B5A2B] text-xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold mb-2">1. Safari & Expeditions</h3>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Adventures & Private Retreats</p>
@@ -162,7 +162,7 @@
             <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8B5A2B] text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full tracking-wider">Most Popular</span>
             <div>
                 <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[#8B5A2B]" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 0 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+                    <i class="fas fa-chart-line text-[#8B5A2B] text-xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold mb-2">2. SEO & Growth Strategy</h3>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Tourism & Digital Enterprise</p>
@@ -185,7 +185,7 @@
         <div class="service-card p-8 flex flex-col justify-between">
             <div>
                 <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[#8B5A2B]" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
+                    <i class="fas fa-code text-[#8B5A2B] text-xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold mb-2">3. Software & Tech Solutions</h3>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Enterprise & Web Platforms</p>
@@ -206,7 +206,7 @@
     </div>
 </section>
 
-{{-- ===================== FORM + QUICK REACH ===================== --}}
+{{-- Form + Quick Contact Sidebar --}}
 <section id="contact-form" class="container mx-auto px-6 py-12 scroll-mt-12">
     <div class="grid lg:grid-cols-3 gap-8">
         
@@ -218,7 +218,7 @@
 
                 @if(session('success'))
                     <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm flex items-center gap-2">
-                        <span>✓</span> {{ session('success') }}
+                        <i class="fas fa-check-circle text-green-600"></i> {{ session('success') }}
                     </div>
                 @endif
 
@@ -228,46 +228,50 @@
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
                             <label for="name" class="block text-sm font-medium text-[#5C5C5C] mb-1">Full Name *</label>
-                            <input type="text" name="name" id="name" required class="input-field" placeholder="Jane Doe">
+                            <input type="text" name="name" id="name" value="{{ old('name') }}" required autocomplete="name" class="input-field" placeholder="Jane Doe">
+                            @error('name') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-[#5C5C5C] mb-1">Email Address *</label>
-                            <input type="email" name="email" id="email" required class="input-field" placeholder="jane@example.com">
+                            <input type="email" name="email" id="email" value="{{ old('email') }}" required autocomplete="email" class="input-field" placeholder="jane@example.com">
+                            @error('email') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
                             <label for="phone" class="block text-sm font-medium text-[#5C5C5C] mb-1">Phone Number (optional)</label>
-                            <input type="tel" name="phone" id="phone" class="input-field" placeholder="+254 XXX XXX XXX">
+                            <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" autocomplete="tel" class="input-field" placeholder="+254 XXX XXX XXX">
                         </div>
                         <div>
                             <label for="inquiry_type" class="block text-sm font-medium text-[#5C5C5C] mb-1">I'm interested in *</label>
                             <select name="inquiry_type" id="inquiry_type" required class="input-field">
                                 <option value="">-- Please select --</option>
-                                <option value="travel">Safari & Travel Expeditions</option>
-                                <option value="seo">SEO & Digital Growth Strategy</option>
-                                <option value="web_dev">Custom Software & Web Development</option>
-                                <option value="partnership">Partnership Opportunity</option>
-                                <option value="other">Other Inquiry</option>
+                                <option value="travel" {{ old('inquiry_type') == 'travel' ? 'selected' : '' }}>Safari & Travel Expeditions</option>
+                                <option value="seo" {{ old('inquiry_type') == 'seo' ? 'selected' : '' }}>SEO & Digital Growth Strategy</option>
+                                <option value="web_dev" {{ old('inquiry_type') == 'web_dev' ? 'selected' : '' }}>Custom Software & Web Development</option>
+                                <option value="partnership" {{ old('inquiry_type') == 'partnership' ? 'selected' : '' }}>Partnership Opportunity</option>
+                                <option value="other" {{ old('inquiry_type') == 'other' ? 'selected' : '' }}>Other Inquiry</option>
                             </select>
+                            @error('inquiry_type') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-5">
                         <div>
                             <label for="subject" class="block text-sm font-medium text-[#5C5C5C] mb-1">Subject</label>
-                            <input type="text" name="subject" id="subject" class="input-field" placeholder="How can we help?">
+                            <input type="text" name="subject" id="subject" value="{{ old('subject') }}" class="input-field" placeholder="How can we help?">
                         </div>
                         <div>
                             <label for="website" class="block text-sm font-medium text-[#5C5C5C] mb-1">Website URL (if applicable)</label>
-                            <input type="url" name="website" id="website" class="input-field" placeholder="https://yourbrand.com">
+                            <input type="url" name="website" id="website" value="{{ old('website') }}" class="input-field" placeholder="https://yourbrand.com">
                         </div>
                     </div>
 
                     <div>
                         <label for="message" class="block text-sm font-medium text-[#5C5C5C] mb-1">Message / Project Details *</label>
-                        <textarea name="message" id="message" rows="4" required class="input-field" placeholder="Tell us more about your goals, timing, or inquiry..."></textarea>
+                        <textarea name="message" id="message" rows="4" required class="input-field" placeholder="Tell us more about your goals, timing, or inquiry...">{{ old('message') }}</textarea>
+                        @error('message') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -277,7 +281,7 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-base">
+                    <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-base font-semibold">
                         Submit Inquiry
                     </button>
                 </form>
@@ -286,11 +290,11 @@
 
         {{-- Direct Contact Sidebar --}}
         <div class="space-y-6">
-            {{-- Direct Mobile (WhatsApp) --}}
+            {{-- Direct WhatsApp --}}
             <div class="service-card p-6 border-l-4 border-l-green-600">
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
-                        <svg class="w-5 h-5 fill-green-600" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.162.574 4.189 1.575 5.938L.033 23.967l6.273-1.497A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.965 0-3.807-.472-5.425-1.303l-3.865.922.957-3.735A9.953 9.953 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+                    <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600">
+                        <i class="fab fa-whatsapp text-xl"></i>
                     </div>
                     <div>
                         <h3 class="font-semibold text-base">Instant WhatsApp Chat</h3>
@@ -303,7 +307,7 @@
                 </a>
             </div>
 
-            {{-- Email Channels --}}
+            {{-- Direct Emails --}}
             <div class="service-card p-6">
                 <h3 class="font-semibold text-base mb-3">Direct Emails</h3>
                 <div class="space-y-3 text-sm">
@@ -322,8 +326,8 @@
             <div class="service-card p-6">
                 <h3 class="font-semibold text-base mb-1">Primary Operating Hubs</h3>
                 <p class="text-xs text-[#5C5C5C] mb-3">Kenya & Tanzania — Serving Global Clients</p>
-                <p class="text-xs text-[#5C5C5C] flex items-center gap-1">
-                    <svg class="w-4 h-4 text-[#8B5A2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                <p class="text-xs text-[#5C5C5C] flex items-center gap-1.5">
+                    <i class="fas fa-map-marker-alt text-[#8B5A2B]"></i>
                     Nakuru & Nairobi, Kenya
                 </p>
             </div>
@@ -331,50 +335,10 @@
     </div>
 </section>
 
-{{-- ===================== WHY PARTNER WITH US ===================== --}}
-<section class="bg-[#F5EFE6]/50 border-y border-black/5 py-12">
-    <div class="container mx-auto px-6">
-        <h2 class="text-2xl font-semibold text-center mb-8">Why Partner with Vumbi Ventures?</h2>
-        <div class="grid md:grid-cols-3 gap-6 text-center max-w-5xl mx-auto">
-            <div class="p-4">
-                <div class="font-semibold text-lg text-[#8B5A2B] mb-1">Local & Digital Authority</div>
-                <p class="text-xs text-[#5C5C5C]">Boots-on-the-ground African travel expertise backed by engineering capabilities.</p>
-            </div>
-            <div class="p-4">
-                <div class="font-semibold text-lg text-[#8B5A2B] mb-1">Data-Backed Results</div>
-                <p class="text-xs text-[#5C5C5C]">Search strategies that drive organic traffic growth for tourism and tech partners.</p>
-            </div>
-            <div class="p-4">
-                <div class="font-semibold text-lg text-[#8B5A2B] mb-1">Transparent Operations</div>
-                <p class="text-xs text-[#5C5C5C]">Clear parameters, zero hidden fees, and absolute commitment to client success.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ===================== FREQUENTLY ASKED QUESTIONS ===================== --}}
-<section class="container mx-auto px-6 py-16 max-w-4xl">
-    <h2 class="text-2xl font-semibold text-center mb-10">Frequently Asked Questions</h2>
-    <div class="space-y-6">
-        <div class="service-card p-6">
-            <h3 class="font-semibold text-base mb-2">Q: How far in advance should I book my safari consultation?</h3>
-            <p class="text-sm text-[#5C5C5C]">We recommend scheduling your consultation 3 to 6 months prior to your intended travel dates, especially if traveling during peak season (June to October).</p>
-        </div>
-        <div class="service-card p-6">
-            <h3 class="font-semibold text-base mb-2">Q: What do I need to prepare for an SEO Discovery Call?</h3>
-            <p class="text-sm text-[#5C5C5C]">Simply provide your main website domain and primary revenue goals. Our team handles preliminary audit preparation prior to the call.</p>
-        </div>
-        <div class="service-card p-6">
-            <h3 class="font-semibold text-base mb-2">Q: Where are your primary operating hubs located?</h3>
-            <p class="text-sm text-[#5C5C5C]">Our operations span directly across Kenya and Tanzania, supporting global travel clients, search brands, and software partners worldwide.</p>
-        </div>
-    </div>
-</section>
-
-{{-- ===================== MAP LOCATION ===================== --}}
+{{-- Map Location Section --}}
 <section class="container mx-auto px-6 pb-12">
     <div class="rounded-3xl overflow-hidden border border-black/5 shadow-lg h-72 md:h-96 bg-[#E8DFD5]">
-        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+        <iframe width="100%" height="100%" title="Vumbi Ventures Location Map" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
                 src="https://www.openstreetmap.org/export/embed.html?bbox=36.05%2C-0.35%2C36.10%2C-0.30&amp;layer=mapnik&amp;marker=-0.325%2C36.075"
                 style="border: 0;">
         </iframe>
@@ -392,7 +356,6 @@
 
 @push('scripts')
 <script>
-    // Dynamically select form inquiry type and update subject line when clicking cards
     function setInquiryType(value, subjectText) {
         const select = document.getElementById('inquiry_type');
         const subject = document.getElementById('subject');
