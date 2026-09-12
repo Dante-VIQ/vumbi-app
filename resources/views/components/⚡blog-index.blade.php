@@ -185,7 +185,10 @@ new class extends Component {
                                 {{ $blog->title }}
                             </h2>
                             <p class="text-[#5C5C5C] mt-4 leading-relaxed line-clamp-3">
-                                {{ Str::limit(strip_tags($blog->description ?? $blog->content ?? ''), 160) }}
+                                @php
+                                    $rawDesc = $blog->getRawOriginal('description') ?? $blog->getOriginal('description') ?? '';
+                                @endphp
+                                {{ Str::limit(strip_tags($rawDesc), 160) }}
                             </p>
                             <div class="mt-8 flex items-center justify-between">
                                 <span class="text-xs text-zinc-500 font-medium">
