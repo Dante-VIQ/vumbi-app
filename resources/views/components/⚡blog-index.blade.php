@@ -233,7 +233,10 @@ new class extends Component {
                                 </h3>
 
                                 <p class="text-sm text-[#5C5C5C] mt-3 line-clamp-3 leading-relaxed">
-                                    {{ Str::limit(strip_tags($blog->description ?? $blog->content ?? ''), 120) }}
+                                @php
+                                    $rawDesc = $blog->getRawOriginal('description') ?? $blog->getOriginal('description') ?? '';
+                                @endphp
+                                {{ Str::limit(strip_tags($rawDesc), 160) }}
                                 </p>
                             </div>
                         </div>
