@@ -17,6 +17,8 @@ return [
         'default' => [
             'HTML.Doctype' => 'HTML 4.01 Transitional',
 
+            // ✅ Table elements listed here — HTMLPurifier's built-in Tables module
+            //    will automatically allow colspan/rowspan with the correct 'Number' type.
             'HTML.Allowed' => 'h1,h2,h3,h4,h5,h6,div,b,strong,i,em,u,a[href|title|target|rel],ul,ol,li,p[style],br,span[style],img[width|height|alt|src|title|style],table[border|cellpadding|cellspacing|width|style|class|align|summary],thead,tbody,tfoot,tr[align|valign|style|class],th[colspan|rowspan|scope|align|valign|width|height|style|class],td[colspan|rowspan|align|valign|width|height|style|class],caption[align|style|class],colgroup[span|width|style|class],col[span|width|style|class],figure,figcaption,blockquote[cite],hr',
 
             'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,padding-right,padding-top,padding-bottom,color,background-color,text-align,vertical-align,border,border-collapse,border-spacing,width,height,min-width,max-width,margin,margin-left,margin-right,margin-top,margin-bottom,display,white-space,line-height',
@@ -41,6 +43,7 @@ return [
             'debug' => false,
 
             'elements' => [
+                // Sectioning
                 ['section', 'Block', 'Flow', 'Common'],
                 ['nav',     'Block', 'Flow', 'Common'],
                 ['article', 'Block', 'Flow', 'Common'],
@@ -50,9 +53,11 @@ return [
                 ['address', 'Block', 'Flow', 'Common'],
                 ['hgroup', 'Block', 'Required: h1 | h2 | h3 | h4 | h5 | h6', 'Common'],
 
+                // Grouping
                 ['figure', 'Block', 'Optional: (figcaption, Flow) | (Flow, figcaption) | Flow', 'Common'],
                 ['figcaption', 'Inline', 'Flow', 'Common'],
 
+                // Video
                 ['video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', [
                     'src' => 'URI',
                     'type' => 'Text',
@@ -67,6 +72,7 @@ return [
                     'type' => 'Text',
                 ]],
 
+                // Text-level semantics
                 ['s',    'Inline', 'Inline', 'Common'],
                 ['var',  'Inline', 'Inline', 'Common'],
                 ['sub',  'Inline', 'Inline', 'Common'],
@@ -74,69 +80,16 @@ return [
                 ['mark', 'Inline', 'Inline', 'Common'],
                 ['wbr',  'Inline', 'Empty', 'Core'],
 
+                // Edits
                 ['ins', 'Block', 'Flow', 'Common', ['cite' => 'URI', 'datetime' => 'CDATA']],
                 ['del', 'Block', 'Flow', 'Common', ['cite' => 'URI', 'datetime' => 'CDATA']],
             ],
 
+            // ❌ REMOVED all table-related attribute definitions.
+            //    HTMLPurifier's built-in Tables module handles colspan/rowspan correctly
+            //    using its internal 'Number' type, avoiding the Illuminate\Support\Number collision.
             'attributes' => [
                 ['iframe', 'allowfullscreen', 'Bool'],
-
-                // Table
-                ['table', 'height', 'Text'],
-                ['table', 'border', 'Text'],
-                ['table', 'cellpadding', 'Text'],
-                ['table', 'cellspacing', 'Text'],
-                ['table', 'align', 'Enum#left,center,right'],
-                ['table', 'summary', 'Text'],
-                ['table', 'class', 'Text'],
-
-                // td
-                ['td', 'border', 'Text'],
-                ['td', 'colspan', 'Integer'],      // ✅ was 'Number'
-                ['td', 'rowspan', 'Integer'],      // ✅ was 'Number'
-                ['td', 'align', 'Enum#left,center,right,justify'],
-                ['td', 'valign', 'Enum#top,middle,bottom,baseline'],
-                ['td', 'width', 'Length'],
-                ['td', 'height', 'Length'],
-                ['td', 'style', 'Text'],
-                ['td', 'class', 'Text'],
-
-                // th
-                ['th', 'border', 'Text'],
-                ['th', 'colspan', 'Integer'],      // ✅ was 'Number'
-                ['th', 'rowspan', 'Integer'],      // ✅ was 'Number'
-                ['th', 'scope', 'Enum#row,col,rowgroup,colgroup'],
-                ['th', 'align', 'Enum#left,center,right,justify'],
-                ['th', 'valign', 'Enum#top,middle,bottom,baseline'],
-                ['th', 'width', 'Length'],
-                ['th', 'height', 'Length'],
-                ['th', 'style', 'Text'],
-                ['th', 'class', 'Text'],
-
-                // tr
-                ['tr', 'width', 'Text'],
-                ['tr', 'height', 'Text'],
-                ['tr', 'border', 'Text'],
-                ['tr', 'align', 'Enum#left,center,right,justify'],
-                ['tr', 'valign', 'Enum#top,middle,bottom,baseline'],
-                ['tr', 'style', 'Text'],
-                ['tr', 'class', 'Text'],
-
-                // caption
-                ['caption', 'align', 'Enum#top,bottom,left,right'],
-                ['caption', 'style', 'Text'],
-                ['caption', 'class', 'Text'],
-
-                // colgroup / col
-                ['colgroup', 'span', 'Integer'],   // ✅ was 'Number'
-                ['colgroup', 'width', 'Length'],
-                ['colgroup', 'style', 'Text'],
-                ['colgroup', 'class', 'Text'],
-
-                ['col', 'span', 'Integer'],        // ✅ was 'Number'
-                ['col', 'width', 'Length'],
-                ['col', 'style', 'Text'],
-                ['col', 'class', 'Text'],
             ],
         ],
 
