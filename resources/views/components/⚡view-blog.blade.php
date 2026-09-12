@@ -541,7 +541,10 @@ new class extends Component {
                                     {{ $post->title }}
                                 </h3>
                                 <p class="text-xs text-[#5C5C5C] mt-2 line-clamp-2 leading-relaxed">
-                                    {{ Str::limit(strip_tags($post->description ?? $post->content ?? ''), 100) }}
+                                    @php
+                                        $rawDesc = $post->getRawOriginal('description') ?? $post->getRawOriginal('content') ?? $post->getOriginal('description') ?? $post->getOriginal('content') ?? '';
+                                    @endphp
+                                    {{ Str::limit(strip_tags($rawDesc), 100) }}
                                 </p>
                             </div>
                         </a>

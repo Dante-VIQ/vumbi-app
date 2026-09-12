@@ -80,8 +80,8 @@ new class extends Component {
             $searchTerm = '%' . trim($this->search) . '%';
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', $searchTerm)
-                  ->orWhere('description', 'like', $searchTerm)
-                  ->orWhere('category', 'like', $searchTerm);
+                    ->orWhere('description', 'like', $searchTerm)
+                    ->orWhere('category', 'like', $searchTerm);
             });
         }
 
@@ -105,10 +105,12 @@ new class extends Component {
     {{-- HERO HEADER --}}
     <section class="relative overflow-hidden pt-28 pb-16">
         <div class="absolute inset-0 grain opacity-[0.035] pointer-events-none"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(139,90,43,0.04),transparent_50%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(139,90,43,0.04),transparent_50%)]">
+        </div>
 
         <div class="relative container mx-auto px-6 text-center max-w-4xl">
-            <span class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-black/5 px-4 py-2 rounded-full shadow-sm text-zinc-700">
+            <span
+                class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-black/5 px-4 py-2 rounded-full shadow-sm text-zinc-700">
                 <span class="w-2 h-2 bg-[#8B5A2B] rounded-full animate-pulse"></span>
                 Field Notes Archive
             </span>
@@ -122,7 +124,8 @@ new class extends Component {
             </h1>
 
             <p class="mt-6 text-[#5C5C5C] text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                Travel narratives, cultural encounters, and deep human stories from places that rarely make headlines — but always leave a lasting mark.
+                Travel narratives, cultural encounters, and deep human stories from places that rarely make headlines —
+                but always leave a lasting mark.
             </p>
         </div>
     </section>
@@ -133,13 +136,13 @@ new class extends Component {
 
             {{-- Search Bar --}}
             <div class="w-full md:w-1/2 relative">
-                <input wire:model.live.debounce.350ms="search"
-                    type="text"
+                <input wire:model.live.debounce.350ms="search" type="text"
                     placeholder="Search stories, history, cultures..."
                     class="w-full bg-white border border-black/10 px-5 py-3 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#8B5A2B] focus:ring-2 focus:ring-[#8B5A2B]/20 transition shadow-sm placeholder:text-zinc-400">
-                
+
                 @if(!empty($search))
-                    <button wire:click="$set('search', '')" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 text-sm">
+                    <button wire:click="$set('search', '')"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 text-sm">
                         ✕
                     </button>
                 @endif
@@ -174,25 +177,28 @@ new class extends Component {
                     <div class="grid md:grid-cols-2 items-center">
                         <div class="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden bg-zinc-200">
                             <img src="{{ $blog->media_path ? asset('storage/' . $blog->media_path) : 'https://picsum.photos/800/600?random=' . $blog->id }}"
-                                alt="{{ $blog->title }}"
-                                class="w-full h-full object-cover">
+                                alt="{{ $blog->title }}" class="w-full h-full object-cover">
                         </div>
                         <div class="p-8 md:p-12">
-                            <span class="inline-block text-xs uppercase tracking-widest text-[#8B5A2B] font-semibold bg-[#8B5A2B]/10 px-3 py-1 rounded-full mb-3">
+                            <span
+                                class="inline-block text-xs uppercase tracking-widest text-[#8B5A2B] font-semibold bg-[#8B5A2B]/10 px-3 py-1 rounded-full mb-3">
                                 Featured Story
                             </span>
                             <h2 class="text-2xl md:text-4xl font-semibold leading-snug text-zinc-900">
                                 {{ $blog->title }}
                             </h2>
                             <p class="text-[#5C5C5C] mt-4 leading-relaxed line-clamp-3">
-                                {{ Str::limit(strip_tags($blog->description ?? $blog->content ?? ''), 160) }}
+                                @php
+                                    $rawDesc = $blog->getRawOriginal('description') ?? $blog->getRawOriginal('content') ?? $blog->getOriginal('description') ?? $blog->getOriginal('content') ?? '';
+                                @endphp
+                                {{ Str::limit(strip_tags($rawDesc), 160) }}
                             </p>
                             <div class="mt-8 flex items-center justify-between">
                                 <span class="text-xs text-zinc-500 font-medium">
                                     By {{ $blog->author->name ?? 'Vumbi Field Writer' }}
                                 </span>
-                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}" 
-                                   class="inline-flex items-center gap-2 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md hover:shadow-lg">
+                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}"
+                                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md hover:shadow-lg">
                                     <span>Read Story</span>
                                     <span>→</span>
                                 </a>
@@ -209,14 +215,16 @@ new class extends Component {
         @if($blogs->count())
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($blogs as $blog)
-                    <article class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-xl hover:border-[#8B5A2B]/20 transition duration-300 flex flex-col justify-between">
+                    <article
+                        class="group bg-white rounded-2xl overflow-hidden border border-black/5 shadow-sm hover:shadow-xl hover:border-[#8B5A2B]/20 transition duration-300 flex flex-col justify-between">
                         <div>
                             <div class="h-52 overflow-hidden bg-zinc-100 relative">
                                 <img src="{{ $blog->media_path ? asset('uploads/' . $blog->media_path) : 'https://picsum.photos/600/400?random=' . $blog->id }}"
                                     alt="{{ $blog->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @if($blog->category)
-                                    <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-[#8B5A2B] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md shadow-sm">
+                                    <span
+                                        class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-[#8B5A2B] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md shadow-sm">
                                         {{ $blog->category }}
                                     </span>
                                 @endif
@@ -228,12 +236,16 @@ new class extends Component {
                                     <span>{{ $blog->reading_time ?? '5 min read' }}</span>
                                 </div>
 
-                                <h3 class="text-xl font-semibold text-zinc-900 group-hover:text-[#8B5A2B] transition-colors leading-snug">
+                                <h3
+                                    class="text-xl font-semibold text-zinc-900 group-hover:text-[#8B5A2B] transition-colors leading-snug">
                                     <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}">{{ $blog->title }}</a>
                                 </h3>
 
                                 <p class="text-sm text-[#5C5C5C] mt-3 line-clamp-3 leading-relaxed">
-                                    {{ Str::limit(strip_tags($blog->description ?? $blog->content ?? ''), 120) }}
+                                    @php
+                                        $rawDesc = $blog->getRawOriginal('description') ?? $blog->getRawOriginal('content') ?? $blog->getOriginal('description') ?? $blog->getOriginal('content') ?? '';
+                                    @endphp
+                                    {{ Str::limit(strip_tags($rawDesc), 120) }}
                                 </p>
                             </div>
                         </div>
@@ -245,7 +257,7 @@ new class extends Component {
                                 </span>
 
                                 <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}"
-                                   class="text-sm font-semibold text-[#8B5A2B] hover:text-[#5C3A1E] transition flex items-center gap-1">
+                                    class="text-sm font-semibold text-[#8B5A2B] hover:text-[#5C3A1E] transition flex items-center gap-1">
                                     <span>Read</span>
                                     <span class="group-hover:translate-x-1 transition-transform">→</span>
                                 </a>
@@ -279,6 +291,7 @@ new class extends Component {
         .grain {
             background-image: url("https://grainy-gradients.vercel.app/noise.svg");
         }
+
         .glass-panel {
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);

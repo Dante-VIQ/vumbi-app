@@ -198,7 +198,10 @@
 
                                 {{-- Excerpt --}}
                                 <p class="text-sm text-[#C4B9A6] mb-4">
-                                    {{ Str::limit(strip_tags($blog->description), 120) }}
+                                    @php
+                                        $rawDesc = $blog->getRawOriginal('description') ?? $blog->getOriginal('description') ?? '';
+                                    @endphp
+                                    {{ Str::limit(strip_tags($rawDesc), 120) }}
                                 </p>
 
                                 {{-- Meta --}}
