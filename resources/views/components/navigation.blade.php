@@ -32,7 +32,7 @@
                 $navItems = [
                     ['name' => 'Safaris', 'route' => 'tours.index', 'url' => '/tours', 'icon' => 'fas fa-compass'],
                     ['name' => 'Destinations', 'route' => 'destinations.index', 'url' => '/destinations', 'icon' => 'fas fa-map-marked-alt'],
-                    ['name' => 'Cultures', 'route' => 'cultures.index', 'url' => '/cultures', 'icon' => 'fas fa-feather-alt'],
+                    ['name' => 'Cultures', 'route' => 'cultures.give', 'url' => '/cultures', 'icon' => 'fas fa-feather-alt'],
                     ['name' => 'Stories', 'route' => 'blog', 'url' => '/blog', 'icon' => 'fas fa-book-open'],
                     ['name' => 'Services', 'route' => 'pages.services', 'url' => '/services', 'icon' => 'fas fa-concierge-bell'],
                     ['name' => 'About Us', 'route' => 'about', 'url' => '/about', 'icon' => 'fas fa-info-circle'],
