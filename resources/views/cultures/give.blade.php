@@ -34,7 +34,7 @@
                             : 'https://picsum.photos/600/400?random=' . $culture->id;
                     @endphp
 
-                    <a href="{{ route('cultures.show', $culture->slug ?? $culture) }}"
+                    <a href="{{ route('pages.culture', $culture->slug ?? $culture) }}"
                         class="group flex flex-col justify-between bg-zinc-900/80 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-[#8B5A2B]/50 hover:shadow-2xl hover:shadow-[#8B5A2B]/10 transition-all duration-300 hover:-translate-y-1">
                         
                         <div>
