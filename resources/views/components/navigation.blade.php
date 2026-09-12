@@ -30,10 +30,10 @@
         <nav class="hidden lg:flex items-center gap-1">
             @php
                 $navItems = [
-                    ['name' => 'Safaris & Tours', 'route' => 'tours.index', 'url' => '/tours', 'icon' => 'fas fa-compass'],
+                    ['name' => 'Safaris', 'route' => 'tours.index', 'url' => '/tours', 'icon' => 'fas fa-compass'],
                     ['name' => 'Destinations', 'route' => 'destinations.index', 'url' => '/destinations', 'icon' => 'fas fa-map-marked-alt'],
-                    // ['name' => 'Culture & Stories', 'route' => 'cultures.index', 'url' => '/cultures', 'icon' => 'fas fa-feather-alt'],
-                    ['name' => 'Travel Stories', 'route' => 'blog', 'url' => '/blog', 'icon' => 'fas fa-book-open'],
+                    ['name' => 'Cultures', 'route' => 'cultures.index', 'url' => '/cultures', 'icon' => 'fas fa-feather-alt'],
+                    ['name' => 'Stories', 'route' => 'blog', 'url' => '/blog', 'icon' => 'fas fa-book-open'],
                     ['name' => 'Services', 'route' => 'pages.services', 'url' => '/services', 'icon' => 'fas fa-concierge-bell'],
                     ['name' => 'About Us', 'route' => 'about', 'url' => '/about', 'icon' => 'fas fa-info-circle'],
                     ['name' => 'Contact', 'route' => 'contact', 'url' => '/contact', 'icon' => 'fas fa-envelope'],

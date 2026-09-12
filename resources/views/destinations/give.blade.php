@@ -29,11 +29,11 @@
                         $imageSrc = $destination->image 
                             ? (Str::startsWith($destination->image, ['http://', 'https://']) 
                                 ? $destination->image 
-                                : asset('storage/' . $destination->image))
+                                : asset('uploads/' . $destination->image))
                             : 'https://picsum.photos/600/400?random=' . $destination->id;
                     @endphp
 
-                    <a href="{{ route('destination.show', $destination->slug ?? $destination) }}"
+                    <a href="{{ route('pages.destination', $destination->slug ?? $destination) }}"
                         class="group flex flex-col justify-between bg-zinc-900/80 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-[#8B5A2B]/50 hover:shadow-2xl hover:shadow-[#8B5A2B]/10 transition-all duration-300 hover:-translate-y-1">
                         
                         <div>
