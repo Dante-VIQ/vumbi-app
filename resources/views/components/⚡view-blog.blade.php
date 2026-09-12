@@ -12,7 +12,7 @@ use App\Services\AffiliateExecutionService;
 new class extends Component
 {
     public Blog $blog;                        // ✅ typed model property
-    public array $relatedPosts = [];
+    public $relatedPosts = [];
     public $recommendedAffiliates = [];
     public $dynamicHotels = [];
     public ?string $detectedLocation = null;
@@ -401,9 +401,9 @@ new class extends Component
             <aside class="lg:col-span-4 space-y-8">
                 
                 {{-- Travel Booking Widget --}}
-                {{-- @if ($blog->title)
+                @if ($blog->title)
                     @livewire('related-tours', ['blogTitle' => $blog->title, 'location' => $blog->location])
-                @endif --}}
+                @endif
 
                 {{-- Affiliate Offers Widget --}}
                 @if (!empty($affiliateResults['sidebar']) || (isset($recommendedAffiliates) && count($recommendedAffiliates)))
