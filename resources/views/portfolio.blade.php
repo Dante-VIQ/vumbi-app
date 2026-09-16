@@ -160,7 +160,7 @@
                 <span class="px-2 py-0.5 text-[10px] font-mono rounded-md bg-white/5 border border-white/10 text-slate-400">Real-time</span>
             </div>
             <div class="mt-4 flex items-center justify-between">
-                <span class="text-xs text-emerald-400 font-semibold">10+ trips dispatched</span>
+                <span class="text-xs text-emerald-400 font-semibold">In testing</span>
                 <a href="https://vumbidna.com" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">Visit →</a>
             </div>
         </div>
@@ -186,7 +186,7 @@
             </div>
             <div class="mt-4 flex items-center justify-between">
                 <span class="text-xs text-emerald-400 font-semibold">10+ trips dispatched</span>
-                <a href="https://mobilitysolutions.com" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">Visit →</a>
+                <a href="https://mobilityseattle.com" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors">Visit →</a>
             </div>
         </div>
 
@@ -419,7 +419,7 @@
             </p>
 
             <div class="mt-10 flex flex-wrap justify-center gap-3">
-                <a href="mailto:dante@vumbiventures.com"
+                <a href="mailto:vumbiventures@gmail.com"
                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-slate-950 font-semibold text-sm shadow-lg hover:bg-amber-300 transition-all">
                     ✉️ Email me
                 </a>

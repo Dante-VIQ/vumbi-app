@@ -98,9 +98,9 @@
             </div>
 
             <div class="flex items-center gap-6 text-xs text-slate-400">
-                <a href="https://vumbiventures.com" class="hover:text-amber-400 transition-colors">Vumbi Ventures Main Site</a>
+                <a href="https://www.vumbiventures.com" class="hover:text-amber-400 transition-colors">Vumbi Ventures Main Site</a>
                 <span>•</span>
-                <a href="mailto:studio@vumbiventures.com" class="hover:text-amber-400 transition-colors">studio@vumbiventures.com</a>
+                <a href="mailto:vumbiventures@gmail.com" class="hover:text-amber-400 transition-colors">vumbiventures@gmail.com</a>
             </div>
         </div>
         <div class="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-white/5 text-xs text-slate-600 flex flex-col sm:flex-row justify-between items-center gap-2">
