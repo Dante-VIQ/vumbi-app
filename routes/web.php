@@ -137,6 +137,10 @@ Route::prefix('tours')->name('tours.')->group(function () {
 
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit')->middleware('throttle:5,10');
 
+Route::get('/portfolio', function () {
+    return view('portfolio');
+})->name('portfolio');
+
 // ======================
 // BLOG ROUTES (Public)
 // ======================
