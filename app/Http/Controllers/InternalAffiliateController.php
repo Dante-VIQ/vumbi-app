@@ -16,35 +16,30 @@ class InternalAffiliateController extends Controller
         private readonly HotelService $hotels,
     ) {}
 
-    /**
-     * GET /internal/affiliate/flights
-     */
     public function searchFlights(Request $request)
     {
         $validated = $request->validate([
-            'destination' => 'required|string|max:100',
+            'destination' => 'nullable|string|max:100',  // kept for compatibility
             'origin'      => 'nullable|string|size:3',
-            'limit'       => 'nullable|integer|min:1|max:20',
+            'limit'       => 'nullable|integer|min:1|max:15',
         ]);
 
         try {
             $flights = $this->flights->searchFlights(
-                $validated['destination'],
-                $validated['origin'] ?? 'NBO',
-                $validated['limit'] ?? 8
+                'NBO',                                      // always to Nairobi
+                $validated['limit'] ?? 8,
+                isset($validated['origin']) ? [$validated['origin']] : []
             );
 
             return response()->json([
-                'success' => true,
-                'source'  => 'travelpayouts',
-                'destination' => $validated['destination'],
-                'count'   => count($flights),
-                'flights' => $this->normalizeFlights($flights, $validated['destination']),
+                'success'     => true,
+                'destination' => 'Nairobi (NBO)',
+                'count'       => count($flights),
+                'flights'     => $this->normalizeFlights($flights),
             ]);
         } catch (\Throwable $e) {
             Log::error('Internal affiliate: flight search failed', [
-                'destination' => $validated['destination'],
-                'error'       => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
             return response()->json([
                 'success' => false,
@@ -52,6 +47,8 @@ class InternalAffiliateController extends Controller
             ], 500);
         }
     }
+
+
 
     /**
      * GET /internal/affiliate/hotels
@@ -87,7 +84,7 @@ class InternalAffiliateController extends Controller
             return response()->json([
                 'success' => true,
                 'source'  => 'travelpayouts',
-                'location'=> $validated['location'] ?? null,
+                'location' => $validated['location'] ?? null,
                 'count'   => count($hotels),
                 'hotels'  => $this->normalizeHotels($hotels, $validated['location'] ?? null),
             ]);
@@ -154,25 +151,26 @@ class InternalAffiliateController extends Controller
             'success'         => true,
             'brand_id'        => $validated['brand_id'],
             'period_days'     => $days,
-            'total_commission'=> 0,
+            'total_commission' => 0,
             'total_bookings'  => 0,
-            'top_destinations'=> [],
+            'top_destinations' => [],
             'message'         => 'Commission tracking not yet connected.',
         ]);
     }
 
     // --- Normalizers ---
-
-    private function normalizeFlights(array $flights, string $destination): array
+    private function normalizeFlights(array $flights): array
     {
-        return collect($flights)->map(function ($f) use ($destination) {
+        return collect($flights)->map(function ($f) {
             return [
-                'airline'       => $f['airline'] ?? $f['title'] ?? 'Unknown',
-                'price'         => $f['price'] ?? null,
-                'currency'      => $f['currency'] ?? 'KES',
-                'departure'     => $f['departure_date'] ?? $f['departure'] ?? null,
-                'link'          => $f['link'] ?? $f['url'] ?? null,
-                'destination'   => $destination,
+                'origin'      => $f['origin'] ?? null,
+                'destination' => 'NBO',
+                'airline'     => $f['airline'] ?? 'Unknown',
+                'price'       => $f['price'] ?? null,
+                'currency'    => 'USD',
+                'departure'   => $f['departure_at'] ?? null,
+                'transfers'   => $f['transfers'] ?? 0,
+                'link'        => $f['link'] ?? null,
             ];
         })->values()->all();
     }

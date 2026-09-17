@@ -4,132 +4,133 @@ namespace App\Services\TravelPayouts;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class FlightService
 {
     private const BASE_URL = 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates';
 
     /**
-     * Search cheapest flights from origin to destination.
+     * Popular international origins for tourists flying to Nairobi.
+     * Ordered by search volume and conversion potential.
+     */
+    private const DEFAULT_ORIGINS = [
+        // USA
+        'JFK', 'IAD', 'ORD', 'LAX', 'SFO', 'DFW', 'BOS', 'ATL', 'SEA',
+        // UK
+        'LHR', 'LGW', 'MAN',
+        // Europe
+        'AMS', 'CDG', 'FRA',
+        // Middle East
+        'DXB', 'DOH', 'IST',
+        // Asia
+        'DEL', 'BOM', 'SIN',
+        // Australia
+        'SYD', 'MEL', 'BNE', 'PER',
+    ];
+
+    /**
+     * Search flights TO Nairobi from popular international origins.
      *
-     * @param string $destination City name or airport code
-     * @param string $origin      Departure airport code (default NBO)
-     * @param int    $limit       Max number of results
+     * @param string $destination  Ignored — kept for backward compatibility. Always uses NBO.
+     * @param int    $limit        Max results per origin
+     * @param array  $origins      Optional custom origin list
      * @return array
      */
-    public function searchFlights(string $destination, string $origin = 'NBO', int $limit = 10): array
+    public function searchFlights(string $destination = 'NBO', int $limit = 5, array $origins = []): array
     {
-        $destination = trim($destination);
-        if (empty($destination)) {
-            return [];
-        }
-
         $token = config('services.travelpayouts.token') ?? env('TRAVELPAYOUTS_TOKEN');
         if (empty($token)) {
             Log::error("TravelPayouts API Token is missing");
             return [];
         }
 
-        // Convert city name → IATA code
-        $destinationCode = $this->getAirportCode($destination);
-        if (empty($destinationCode)) {
-            Log::warning("No airport code found for destination", ['destination' => $destination]);
-            return [];
-        }
+        // Always search TO Nairobi (NBO)
+        $destinationCode = 'NBO';
 
-        try {
-            $response = Http::timeout(12)->get(self::BASE_URL, [
-                'origin'      => strtoupper($origin),
-                'destination' => $destinationCode,
-                'currency'    => 'KES',
-                'limit'       => min($limit, 15),
-                'token'       => $token,
-            ]);
+        // Use provided origins or defaults
+        $originsToSearch = !empty($origins) ? $origins : self::DEFAULT_ORIGINS;
 
-            if (!$response->successful()) {
-                Log::warning("TravelPayouts Flight API failed", [
-                    'destination' => $destination,
-                    'code'        => $destinationCode,
-                    'status'      => $response->status(),
-                    'body'        => $response->body(),
-                ]);
-                return [];
+        // Default departure: 30 days from now
+        $departDate = now()->addDays(30)->format('Y-m-d');
+
+        $allFlights = [];
+
+        foreach ($originsToSearch as $origin) {
+            $cacheKey = "flights_to_nbo_{$origin}_{$departDate}_{$limit}";
+
+            // Cache for 6 hours to avoid rate limits
+            $flights = Cache::remember($cacheKey, now()->addHours(6), function () use ($origin, $destinationCode, $limit, $token, $departDate) {
+                try {
+                    $response = Http::timeout(12)->get(self::BASE_URL, [
+                        'origin'      => strtoupper($origin),
+                        'destination' => $destinationCode,
+                        'currency'    => 'USD',
+                        'limit'       => min($limit, 10),
+                        'token'       => $token,
+                        'depart_date' => $departDate,   // ← REQUIRED for meaningful results
+                        'one_way'     => 'true',
+                    ]);
+
+                    if (!$response->successful()) {
+                        Log::warning("Flight search failed", [
+                            'origin'      => $origin,
+                            'destination' => $destinationCode,
+                            'status'      => $response->status(),
+                        ]);
+                        return [];
+                    }
+
+                    $data = $response->json();
+                    return $data['data'] ?? [];
+
+                } catch (\Exception $e) {
+                    Log::error("FlightService exception", [
+                        'origin' => $origin,
+                        'error'  => $e->getMessage(),
+                    ]);
+                    return [];
+                }
+            });
+
+            // Normalize each result
+            foreach ($flights as $flight) {
+                $flight['origin'] = $origin;
+                $allFlights[] = $flight;
             }
-
-            $data = $response->json();
-            return $data['data'] ?? $data ?? [];
-
-        } catch (\Exception $e) {
-            Log::error("FlightService exception", [
-                'destination' => $destination,
-                'error'       => $e->getMessage(),
-            ]);
-            return [];
         }
+
+        // Sort by price ascending
+        usort($allFlights, fn($a, $b) => ($a['price'] ?? 999999) <=> ($b['price'] ?? 999999));
+
+        return $allFlights;
     }
 
     /**
-     * Resolve a city name to its primary IATA airport code.
-     * Uses a static map for Kenyan destinations, with a fallback
-     * to coordinate‑based airport search (if available).
+     * Search flights from one specific origin to Nairobi.
+     * Use this for targeted content like "Flights from London to Nairobi".
      */
-    private function getAirportCode(string $cityOrCode): ?string
+    public function searchFromOrigin(string $origin, int $limit = 5): array
     {
-        $normalized = strtolower(trim($cityOrCode));
-
-        // Static mapping for Kenyan cities (extend as needed)
-        $map = [
-            'nairobi'       => 'NBO',
-            'mombasa'       => 'MBA',
-            'maasai mara'   => 'MRE',   // Mara Serena airstrip, typically used
-            'kisumu'        => 'KIS',
-            'eldoret'       => 'EDL',
-            'malindi'       => 'MYD',
-            'lamu'          => 'LAU',
-            'diani'         => 'UKA',   // Ukunda airstrip (Diani Beach)
-            'watamu'        => 'MYD',   // Malindi is closest
-        ];
-
-        if (isset($map[$normalized])) {
-            return $map[$normalized];
-        }
-
-        // If already a 3-letter uppercase code, use it directly
-        if (strlen($cityOrCode) === 3 && ctype_upper($cityOrCode)) {
-            return $cityOrCode;
-        }
-
-        // Fallback: try coordinate‑based airport lookup (requires geocoding)
-        // This will be called from the orchestrator with coordinates if available.
-        // For now, return null to avoid sending a bad code.
-        return null;
+        return $this->searchFlights('NBO', $limit, [$origin]);
     }
 
     /**
-     * Coordinate‑based airport search (optional, call from orchestrator if needed).
-     * This uses TravelPayouts' nearest_airports endpoint.
+     * Get the cheapest flight from each origin.
+     * Useful for the brief generator.
      */
-    public function findNearestAirport(float $lat, float $lon): ?string
+    public function getCheapestFromEachOrigin(int $perOrigin = 1): array
     {
-        $token = config('services.travelpayouts.token') ?? env('TRAVELPAYOUTS_TOKEN');
-        if (!$token) return null;
-
-        try {
-            $response = Http::timeout(10)->get('https://api.travelpayouts.com/aviasales_direct/api/search/nearest', [
-                'lat'   => $lat,
-                'lng'   => $lon,
-                'token' => $token,
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                // Return the code of the nearest airport
-                return $data['data'][0]['code'] ?? null;
+        $flights = $this->searchFlights('NBO', $perOrigin);
+        
+        $cheapest = [];
+        foreach ($flights as $flight) {
+            $origin = $flight['origin'] ?? 'unknown';
+            if (!isset($cheapest[$origin]) || $flight['price'] < $cheapest[$origin]['price']) {
+                $cheapest[$origin] = $flight;
             }
-        } catch (\Exception $e) {
-            Log::warning('Failed to find nearest airport', ['error' => $e->getMessage()]);
         }
-
-        return null;
+        
+        return array_values($cheapest);
     }
 }
