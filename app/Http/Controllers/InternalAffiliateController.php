@@ -16,41 +16,38 @@ class InternalAffiliateController extends Controller
         private readonly HotelService $hotels,
     ) {}
 
-    public function searchFlights(Request $request)
-    {
-        $validated = $request->validate([
-            'destination' => 'nullable|string|max:100',  // kept for compatibility
-            'origin'      => 'nullable|string|size:3',
-            'limit'       => 'nullable|integer|min:1|max:15',
+public function searchFlights(Request $request)
+{
+    $validated = $request->validate([
+        'destination' => 'nullable|string|max:100',  // kept for compatibility
+        'origin'      => 'nullable|string|size:3',
+        'limit'       => 'nullable|integer|min:1|max:15',
+    ]);
+
+    try {
+        $flights = $this->flights->searchFlights(
+            'NBO',                                      // always to Nairobi
+            $validated['limit'] ?? 8,
+            isset($validated['origin']) ? [$validated['origin']] : []
+        );
+
+        return response()->json([
+            'success'     => true,
+            'destination' => 'Nairobi (NBO)',
+            'count'       => count($flights),
+            'flights'     => $this->normalizeFlights($flights),
         ]);
-
-        try {
-            $flights = $this->flights->searchFlights(
-                'NBO',                                      // always to Nairobi
-                $validated['limit'] ?? 8,
-                isset($validated['origin']) ? [$validated['origin']] : []
-            );
-
-            return response()->json([
-                'success'     => true,
-                'destination' => 'Nairobi (NBO)',
-                'count'       => count($flights),
-                'flights'     => $this->normalizeFlights($flights),
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('Internal affiliate: flight search failed', [
-                'error' => $e->getMessage(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'error'   => 'Flight search failed',
-            ], 500);
-        }
+    } catch (\Throwable $e) {
+        Log::error('Internal affiliate: flight search failed', [
+            'error' => $e->getMessage(),
+        ]);
+        return response()->json([
+            'success' => false,
+            'error'   => 'Flight search failed',
+        ], 500);
     }
-
-
-
-    /**
+}
+   /**
      * GET /internal/affiliate/hotels
      */
     public function searchHotels(Request $request)
@@ -159,21 +156,34 @@ class InternalAffiliateController extends Controller
     }
 
     // --- Normalizers ---
-    private function normalizeFlights(array $flights): array
-    {
-        return collect($flights)->map(function ($f) {
-            return [
-                'origin'      => $f['origin'] ?? null,
-                'destination' => 'NBO',
-                'airline'     => $f['airline'] ?? 'Unknown',
-                'price'       => $f['price'] ?? null,
-                'currency'    => 'USD',
-                'departure'   => $f['departure_at'] ?? null,
-                'transfers'   => $f['transfers'] ?? 0,
-                'link'        => $f['link'] ?? null,
-            ];
-        })->values()->all();
-    }
+private function normalizeFlights(array $flights): array
+{
+    $marker = config('services.travelpayouts.marker') ?? env('TRAVELPAYOUTS_MARKER', '');
+
+    return collect($flights)->map(function ($f) use ($marker) {
+        // The 'link' field from API is a relative path like /search/JFK2609NBO1?t=...
+        $rawLink = $f['link'] ?? '';
+        $fullUrl = $rawLink ? 'https://www.aviasales.com' . $rawLink : null;
+
+        // Append affiliate marker if available
+        if ($fullUrl && $marker) {
+            $separator = str_contains($fullUrl, '?') ? '&' : '?';
+            $fullUrl .= $separator . 'marker=' . $marker;
+        }
+
+        return [
+            'origin'      => $f['origin'] ?? null,
+            'destination' => 'NBO',
+            'airline'     => $f['airline'] ?? 'Unknown',
+            'price'       => $f['price'] ?? null,
+            'currency'    => 'USD',
+            'departure'   => $f['departure_at'] ?? null,
+            'transfers'   => $f['transfers'] ?? 0,
+            'link'        => $fullUrl,
+            'gate'        => $f['gate'] ?? null,
+        ];
+    })->values()->all();
+}
 
     private function normalizeHotels(array $hotels, ?string $location): array
     {

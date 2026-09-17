@@ -154,6 +154,16 @@
         document.getElementsByTagName('head')[0].appendChild(ahrefs_analytics_script);
     </script>
 
+<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">
+  (function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.setAttribute("data-cmp-ab","2");
+      script.src = 'https://emrldtp.cc/NDY1NDg3.js?t=465487';
+      document.head.appendChild(script);
+  })();
+</script>
+
     {{-- Styles --}}
     @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -51,7 +51,7 @@ class FlightService
         // Use provided origins or defaults
         $originsToSearch = !empty($origins) ? $origins : self::DEFAULT_ORIGINS;
 
-        // Default departure: 30 days from now
+        // Default departure: 30 days from now (REQUIRED by API)
         $departDate = now()->addDays(30)->format('Y-m-d');
 
         $allFlights = [];
@@ -59,7 +59,7 @@ class FlightService
         foreach ($originsToSearch as $origin) {
             $cacheKey = "flights_to_nbo_{$origin}_{$departDate}_{$limit}";
 
-            // Cache for 6 hours to avoid rate limits
+            // Cache for 6 hours to avoid rate limits across 24 origins
             $flights = Cache::remember($cacheKey, now()->addHours(6), function () use ($origin, $destinationCode, $limit, $token, $departDate) {
                 try {
                     $response = Http::timeout(12)->get(self::BASE_URL, [
@@ -68,15 +68,14 @@ class FlightService
                         'currency'    => 'USD',
                         'limit'       => min($limit, 10),
                         'token'       => $token,
-                        'depart_date' => $departDate,   // ← REQUIRED for meaningful results
+                        'depart_date' => $departDate,   // ← THE FIX
                         'one_way'     => 'true',
                     ]);
 
                     if (!$response->successful()) {
                         Log::warning("Flight search failed", [
-                            'origin'      => $origin,
-                            'destination' => $destinationCode,
-                            'status'      => $response->status(),
+                            'origin' => $origin,
+                            'status' => $response->status(),
                         ]);
                         return [];
                     }
@@ -93,7 +92,7 @@ class FlightService
                 }
             });
 
-            // Normalize each result
+            // Normalize each result with origin info
             foreach ($flights as $flight) {
                 $flight['origin'] = $origin;
                 $allFlights[] = $flight;
