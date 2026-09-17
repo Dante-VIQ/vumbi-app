@@ -102,4 +102,9 @@ return [
 'unsplash' => [
     'access_key' => env('UNSPLASH_ACCESS_KEY'),
 ],
+
+'internal' => [
+    'api_key' => env('INTERNAL_API_KEY'),
+    'allowed_ips' => array_filter(
+        array_map('trim', explode(',', (string) env('INTERNAL_ALLOWED_IPS', '')))
 ];
