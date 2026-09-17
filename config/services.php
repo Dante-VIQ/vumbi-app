@@ -39,16 +39,16 @@ return [
         'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
-'travelpayouts' => [
-    'token'  => env('TRAVELPAYOUTS_TOKEN'),
-    'marker' => env('TRAVELPAYOUTS_MARKER'),
-    'base_url' => env('TRAVELPAYOUTS_BASE_URL', 'https://api.travelpayouts.com'),
-],
+    'travelpayouts' => [
+        'token'  => env('TRAVELPAYOUTS_TOKEN'),
+        'marker' => env('TRAVELPAYOUTS_MARKER'),
+        'base_url' => env('TRAVELPAYOUTS_BASE_URL', 'https://api.travelpayouts.com'),
+    ],
 
-        'awin' => [
+    'awin' => [
         'api_key' => env('AWIN_API_KEY'),
         'publisher_id' => env('AWIN_PUBLISHER_ID'),
-    'cache_ttl' => env('AWIN_CACHE_TTL', 21600),
+        'cache_ttl' => env('AWIN_CACHE_TTL', 21600),
     ],
 
     'bonusarrive' => [
@@ -58,10 +58,10 @@ return [
 
     ],
 
-'opentripmap' => [
-    'key' => env('OPENTRIPMAP_API_KEY'),
-    'base_url' => env('OPENTRIPMAP_BASE_URL', 'https://api.opentripmap.com/0.1/en/places'),
-],
+    'opentripmap' => [
+        'key' => env('OPENTRIPMAP_API_KEY'),
+        'base_url' => env('OPENTRIPMAP_BASE_URL', 'https://api.opentripmap.com/0.1/en/places'),
+    ],
     'travel_affiliates' => [
         'intents' => [
             'flights' => [
@@ -92,19 +92,21 @@ return [
     ],
 
     'rapidapi' => [
-    'key' => env('RAPIDAPI_KEY'),
-],
+        'key' => env('RAPIDAPI_KEY'),
+    ],
 
-'openstreetmap' => [
-    'maps_key' => env('OPENSTREETMAP_MAPS_KEY'),
-],
+    'openstreetmap' => [
+        'maps_key' => env('OPENSTREETMAP_MAPS_KEY'),
+    ],
 
-'unsplash' => [
-    'access_key' => env('UNSPLASH_ACCESS_KEY'),
-],
+    'unsplash' => [
+        'access_key' => env('UNSPLASH_ACCESS_KEY'),
+    ],
 
-'internal' => [
-    'api_key' => env('INTERNAL_API_KEY'),
-    'allowed_ips' => array_filter(
-        array_map('trim', explode(',', (string) env('INTERNAL_ALLOWED_IPS', '')))
+    'internal' => [
+        'api_key' => env('INTERNAL_API_KEY'),
+        'allowed_ips' => array_filter(
+            array_map('trim', explode(',', (string) env('INTERNAL_ALLOWED_IPS', '')))
+        )
+    ],
 ];
