@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\Api\DiscoveryController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\InternalAffiliateController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 
 Route::get('/search', SearchController::class);
@@ -16,3 +17,13 @@ Route::get('/packages/search', function (Request $request) {
     $service = new \App\Services\LocalPartnerService();
     return response()->json($service->getPackages($q, 10));
 });
+
+
+Route::prefix('internal/affiliate')
+    ->middleware(['internal.api'])
+    ->group(function () {
+        Route::get('/flights',      [InternalAffiliateController::class, 'searchFlights']);
+        Route::get('/hotels',       [InternalAffiliateController::class, 'searchHotels']);
+        Route::get('/link',         [InternalAffiliateController::class, 'buildLink']);
+        Route::get('/performance',  [InternalAffiliateController::class, 'performance']);
+    });

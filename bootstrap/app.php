@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             
             // Example of other common middlewares
             // 'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'internal.api' => \App\Http\Middleware\VerifyInternalApiKey::class,
         ]);
 
         // If you want to apply middleware to specific route groups
