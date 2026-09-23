@@ -281,6 +281,8 @@
         </script>
     @endproduction
 
+    @include('partials.analytics-events')
+
 </body>
 
 </html>

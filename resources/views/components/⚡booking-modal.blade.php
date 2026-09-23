@@ -37,7 +37,11 @@ new class extends Component {
 
         $this->submitted = true;
         $this->form->reset();
-        $this->dispatch('lead-captured');
+        $this->dispatch(
+            'lead-captured',
+            packageId: $partnerPackage->id,
+            packageTitle: $partnerPackage->title,
+        );
     }
 };
 ?>

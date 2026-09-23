@@ -341,9 +341,38 @@ new class extends Component
                     prose-ul:my-6 prose-li:text-[#3A3A3A]
                     prose-img:rounded-2xl prose-img:shadow-md">
 
+                    @php
+                        $h2Indices = collect($contentBlocks)
+                            ->filter(fn ($block) => str_starts_with(ltrim($block), '<h2'))
+                            ->keys()
+                            ->values();
+
+                        // Only insert once the post has enough structure (3+ sections) so short
+                        // posts aren't interrupted, and never as the very last block.
+                        $inlineCtaAfterIndex = null;
+                        if ($h2Indices->count() >= 3) {
+                            $afterSecondH2 = $h2Indices[1] + 1;
+                            if ($afterSecondH2 < count($contentBlocks) - 1) {
+                                $inlineCtaAfterIndex = $afterSecondH2;
+                            }
+                        }
+                    @endphp
+
                     @if (!empty($contentBlocks))
-                        @foreach ($contentBlocks as $block)
+                        @foreach ($contentBlocks as $index => $block)
                             {!! $block !!}
+
+                            @if ($index === $inlineCtaAfterIndex)
+                                <div class="not-prose my-10 bg-[#F5EFE6] border border-[#8B5A2B]/15 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-lg text-[#1A1A1A] mb-1">Enjoying this so far?</h3>
+                                        <p class="text-sm text-[#5C5C5C] leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox.</p>
+                                    </div>
+                                    <div class="w-full md:w-72 shrink-0">
+                                        <livewire:newsletter-subscribe variant="light" placement="inline" :key="'newsletter-inline-' . $blog->id" />
+                                    </div>
+                                </div>
+                            @endif
                         @endforeach
                     @else
                         {!! nl2br(e($blog->description ?? $blog->content ?? '')) !!}
@@ -393,7 +422,7 @@ new class extends Component
                     <h3 class="font-semibold text-xl text-white mb-2">Enjoyed this story?</h3>
                     <p class="text-sm text-[#B0B0B0] mb-5 max-w-md mx-auto leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox.</p>
                     <div class="max-w-sm mx-auto">
-                        <livewire:newsletter-subscribe variant="dark" :key="'newsletter-endpost-' . $blog->id" />
+                        <livewire:newsletter-subscribe variant="dark" placement="endpost" :key="'newsletter-endpost-' . $blog->id" />
                     </div>
                 </div>
             </div>
@@ -415,8 +444,13 @@ new class extends Component
                         <div class="space-y-4">
                             @php $sidebarOffers = $affiliateResults['sidebar'] ?? $recommendedAffiliates; @endphp
                             @foreach (collect($sidebarOffers)->take(3) as $offer)
+                                @php
+                                    $offerTitle = $offer['title'] ?? $offer->name ?? null;
+                                @endphp
                                 <a href="{{ $offer['url'] ?? $offer->url ?? '#' }}" target="_blank" rel="nofollow sponsored"
-                                    class="flex gap-3 group items-center">
+                                    class="flex gap-3 group items-center"
+                                    data-gtag-event="affiliate_click"
+                                    data-gtag-params="{{ json_encode(['placement' => 'blog_sidebar', 'offer' => $offerTitle, 'blog_id' => $blog->id]) }}">
                                     @if (!empty($offer['image'] ?? $offer->image ?? null))
                                         <img src="{{ $offer['image'] ?? $offer->image }}" class="w-14 h-14 rounded-xl object-cover shrink-0">
                                     @endif
@@ -467,7 +501,7 @@ new class extends Component
                     <h3 class="font-semibold text-lg text-[#1A1A1A] mb-1">Field Notes Dispatch</h3>
                     <p class="text-xs text-[#5C5C5C] mb-4 leading-relaxed">Receive untold travel stories and insider African history directly in your inbox.</p>
 
-                    <livewire:newsletter-subscribe variant="light" :key="'newsletter-sidebar-' . $blog->id" />
+                    <livewire:newsletter-subscribe variant="light" placement="sidebar" :key="'newsletter-sidebar-' . $blog->id" />
                 </div>
 
                 {{-- Related Posts (Sidebar fallback) --}}

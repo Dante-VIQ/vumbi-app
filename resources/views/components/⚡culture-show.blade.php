@@ -268,7 +268,9 @@ new class extends Component {
                         <div class="space-y-3">
                             @foreach ($affiliateOffers as $offer)
                                 <a href="{{ $offer['url'] ?? '#' }}" target="_blank" rel="nofollow sponsored"
-                                    class="block p-3.5 bg-[#FCFAF7] border border-black/5 rounded-2xl hover:border-[#8B5A2B] transition">
+                                    class="block p-3.5 bg-[#FCFAF7] border border-black/5 rounded-2xl hover:border-[#8B5A2B] transition"
+                                    data-gtag-event="affiliate_click"
+                                    data-gtag-params="{{ json_encode(['placement' => 'culture_sidebar', 'offer' => $offer['title'] ?? null]) }}">
                                     <p class="font-semibold text-sm text-[#1A1A1A]">{{ $offer['title'] ?? 'Special Offer' }}</p>
                                     <p class="text-xs text-[#8B5A2B] font-medium mt-1">{{ $offer['price'] ?? 'Check Availability' }}</p>
                                 </a>

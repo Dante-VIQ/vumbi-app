@@ -85,7 +85,7 @@
                 <h4 class="font-semibold mb-4 text-white">Stay Connected</h4>
                 <p class="text-[#C7B5A6] text-sm mb-4">Get Field Notes delivered to your inbox. Monthly stories from
                     overlooked places.</p>
-                @livewire('newsletter-subscribe')
+                @livewire('newsletter-subscribe', ['placement' => 'footer'])
                 <p class="text-xs text-[#C7B5A6] mt-3">
                     We respect your privacy. Unsubscribe at any time.
                 </p>

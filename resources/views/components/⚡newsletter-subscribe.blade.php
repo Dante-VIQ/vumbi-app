@@ -11,6 +11,10 @@ new class extends Component {
     // 'dark' (original footer/hero styling) or 'light' (for cards on a light background)
     public string $variant = 'dark';
 
+    // Which spot on the page this instance lives in — purely for analytics,
+    // e.g. 'footer', 'sidebar', 'inline', 'endpost'. Doesn't affect rendering.
+    public string $placement = 'unknown';
+
     protected $rules = [
         'email' => 'required|email|unique:newsletter_subscribers,email',
     ];
@@ -31,6 +35,8 @@ new class extends Component {
         $this->message = 'Thank you for subscribing! You\'ll receive our next Field Notes edition.';
         $this->messageType = 'success';
         $this->email = '';
+
+        $this->dispatch('newsletter-subscribed', placement: $this->placement);
 
         // You could also trigger an event to send a welcome email
         // event(new NewsletterSubscribed($this->email));
