@@ -41,7 +41,7 @@ class InquiryController extends Controller
             ]);
 
             // 3. Dispatch Email Notification to Operations Team
-            Mail::to(config('mail.from.address', 'info@vumbiventures.com'))
+            Mail::to(config('mail.from.address', 'vumbiventures@gmail.com'))
                 ->send(new SafariQuoteReceived($quote));
 
             return redirect()->back()->with('success', 'Your safari quote request has been sent! Our team will contact you shortly.');
