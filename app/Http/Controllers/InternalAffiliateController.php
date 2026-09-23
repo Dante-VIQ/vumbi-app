@@ -161,14 +161,21 @@ private function normalizeFlights(array $flights): array
     $marker = config('services.travelpayouts.marker') ?? env('TRAVELPAYOUTS_MARKER', '');
 
     return collect($flights)->map(function ($f) use ($marker) {
-        // The 'link' field from API is a relative path like /search/JFK2609NBO1?t=...
+        // Build full URL from relative path
         $rawLink = $f['link'] ?? '';
-        $fullUrl = $rawLink ? 'https://www.aviasales.com' . $rawLink : null;
+        $fullUrl = null;
+        
+        if (!empty($rawLink)) {
+            // If it's already absolute, use it. Otherwise prefix with aviasales.com
+            $fullUrl = str_starts_with($rawLink, 'http')
+                ? $rawLink
+                : 'https://www.aviasales.com' . $rawLink;
 
-        // Append affiliate marker if available
-        if ($fullUrl && $marker) {
-            $separator = str_contains($fullUrl, '?') ? '&' : '?';
-            $fullUrl .= $separator . 'marker=' . $marker;
+            // Append marker for affiliate tracking
+            if ($marker) {
+                $separator = str_contains($fullUrl, '?') ? '&' : '?';
+                $fullUrl .= $separator . 'marker=' . $marker;
+            }
         }
 
         return [

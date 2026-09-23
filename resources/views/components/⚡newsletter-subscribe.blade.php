@@ -8,6 +8,9 @@ new class extends Component {
     public $message;
     public $messageType;
 
+    // 'dark' (original footer/hero styling) or 'light' (for cards on a light background)
+    public string $variant = 'dark';
+
     protected $rules = [
         'email' => 'required|email|unique:newsletter_subscribers,email',
     ];
@@ -36,6 +39,14 @@ new class extends Component {
 ?>
 
 <div>
+    @php
+        $isLight = $variant === 'light';
+        $inputClasses = $isLight
+            ? 'flex-1 px-3 py-2 rounded-l-lg bg-white border border-black/10 focus:outline-none focus:border-[#8B5A2B] text-[#1A1A1A] placeholder-[#9A9A9A]'
+            : 'flex-1 px-3 py-2 rounded-l-lg bg-[#2A2A2A] border-0 focus:outline-none text-white placeholder-[#6B6B6B]';
+        $errorClasses = $isLight ? 'text-rose-500 text-xs mt-1 block' : 'text-red-400 text-xs mt-1 block';
+    @endphp
+
     @if($message)
         <div
             class="p-3 rounded-lg {{ $messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} mb-3">
@@ -45,7 +56,7 @@ new class extends Component {
 
     <form wire:submit.prevent="subscribe" class="flex">
         <input type="email" wire:model="email" placeholder="Your email"
-            class="flex-1 px-3 py-2 rounded-l-lg bg-[#2A2A2A] border-0 focus:outline-none text-white placeholder-[#6B6B6B]"
+            class="{{ $inputClasses }}"
             required>
         <button type="submit"
             class="bg-[#8B5A2B] px-4 py-2 rounded-r-lg hover:bg-[#6B421F] transition disabled:opacity-50"
@@ -54,5 +65,5 @@ new class extends Component {
             <span wire:loading class="inline-block animate-spin">⌛</span>
         </button>
     </form>
-    @error('email') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+    @error('email') <span class="{{ $errorClasses }}">{{ $message }}</span> @enderror
 </div>

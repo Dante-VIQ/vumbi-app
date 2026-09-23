@@ -21,7 +21,6 @@ new class extends Component
     public string $commentName = '';
     public string $commentEmail = '';
     public string $commentContent = '';
-    public string $email = '';
     public array $contentBlocks = [];
     public array $affiliateResults = [];
 
@@ -152,13 +151,6 @@ new class extends Component
 
         $this->dispatch('comment-submitted', ['message' => 'Your comment has been submitted for moderation.']);
         $this->reset(['commentName', 'commentEmail', 'commentContent']);
-    }
-
-    public function subscribeFromArticle()
-    {
-        $this->validate(['email' => 'required|email']);
-        $this->dispatch('subscribed', ['message' => 'Thank you for subscribing to Field Notes!']);
-        $this->email = '';
     }
 
     private function splitContentIntoBlocks(): array
@@ -395,6 +387,15 @@ new class extends Component
                         </button>
                     </div>
                 </div>
+
+                {{-- End-of-Post Newsletter CTA --}}
+                <div class="mt-10 bg-[#1A1A1A] p-8 rounded-2xl text-center">
+                    <h3 class="font-semibold text-xl text-white mb-2">Enjoyed this story?</h3>
+                    <p class="text-sm text-[#B0B0B0] mb-5 max-w-md mx-auto leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox.</p>
+                    <div class="max-w-sm mx-auto">
+                        <livewire:newsletter-subscribe variant="dark" :key="'newsletter-endpost-' . $blog->id" />
+                    </div>
+                </div>
             </div>
 
             {{-- ===================== SIDEBAR --}}
@@ -465,17 +466,8 @@ new class extends Component
                 <div class="bg-[#F5EFE6] p-6 rounded-2xl border border-[#8B5A2B]/15">
                     <h3 class="font-semibold text-lg text-[#1A1A1A] mb-1">Field Notes Dispatch</h3>
                     <p class="text-xs text-[#5C5C5C] mb-4 leading-relaxed">Receive untold travel stories and insider African history directly in your inbox.</p>
-                    
-                    <form wire:submit.prevent="subscribeFromArticle">
-                        <input type="email" wire:model="email" placeholder="Enter your email address"
-                            class="w-full px-4 py-3 rounded-xl border border-black/10 bg-white mb-3 text-sm focus:outline-none focus:border-[#8B5A2B] transition">
-                        @error('email') <span class="text-xs text-rose-500 mb-2 block">{{ $message }}</span> @enderror
-                        
-                        <button type="submit"
-                            class="w-full bg-[#8B5A2B] text-white py-3 rounded-xl font-medium text-sm hover:bg-[#5C3A1E] transition shadow-md">
-                            Subscribe
-                        </button>
-                    </form>
+
+                    <livewire:newsletter-subscribe variant="light" :key="'newsletter-sidebar-' . $blog->id" />
                 </div>
 
                 {{-- Related Posts (Sidebar fallback) --}}
@@ -599,13 +591,6 @@ new class extends Component
                 };
                 if (shareLinks[data.platform]) {
                     window.open(shareLinks[data.platform], '_blank', 'noopener,width=600,height=500');
-                }
-            });
-
-            Livewire.on('subscribed', (event) => {
-                const data = Array.isArray(event) ? event[0] : event;
-                if (window.Alpine && Alpine.store('shareToast')) {
-                    Alpine.store('shareToast').show(data.message ?? 'Thank you for subscribing!');
                 }
             });
 
