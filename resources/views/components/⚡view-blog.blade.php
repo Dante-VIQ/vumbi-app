@@ -317,7 +317,7 @@ new class extends Component
     @if ($blog->media_path)
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
-                <img src="{{ asset($blog->media_path) }}" alt="{{ $blog->title }}"
+                <img src="{{ $blog->media_path }}" alt="{{ $blog->title }}"
                     class="w-full rounded-3xl shadow-xl object-cover max-h-[600px] border border-black/5"
                     loading="eager">
             </div>
@@ -478,7 +478,7 @@ new class extends Component
                             @foreach ($relatedPosts as $post)
                                 <a href="{{ route('blog.show', $post->slug ?? $post->id) }}" class="flex gap-3 group items-center">
                                     @if ($post->media_path)
-                                        <img src="{{ asset('storage/' . $post->media_path) }}" class="w-14 h-14 rounded-xl object-cover shrink-0">
+                                        <img src="{{ asset($post->media_path) }}" class="w-14 h-14 rounded-xl object-cover shrink-0">
                                     @endif
                                     <div>
                                         <h4 class="font-medium text-[#1A1A1A] group-hover:text-[#8B5A2B] text-sm leading-snug line-clamp-2 transition">
