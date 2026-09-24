@@ -314,7 +314,7 @@ new class extends Component
     </section>
 
     {{-- ===================== FEATURED MEDIA ===================== --}}
-    @if ($blog->media_path)
+    {{-- @if ($blog->media_path) --}}
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
                 <img src="{{ $blog->media_path }}" alt="{{ $blog->title }}"
@@ -322,7 +322,7 @@ new class extends Component
                     loading="eager">
             </div>
         </div>
-    @endif
+    {{-- @endif --}}
 
     {{-- ===================== MAIN CONTENT + SIDEBAR ===================== --}}
     <div class="container mx-auto px-6 py-8">
