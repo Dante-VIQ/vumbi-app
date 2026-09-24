@@ -318,8 +318,7 @@ new class extends Component
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
                 <img src="{{ $blog->media_path }}" alt="{{ $blog->title }}"
-                    class="w-full rounded-3xl shadow-xl object-cover max-h-[600px] border border-black/5"
-                    loading="eager">
+                    class="w-full rounded-3xl shadow-xl object-cover max-h-[600px] border border-black/5">
             </div>
         </div>
     {{-- @endif --}}
