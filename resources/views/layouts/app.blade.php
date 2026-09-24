@@ -164,6 +164,7 @@
   })();
 </script>
 
+<script async defer src="https://widget.getyourguide.com/dist/pa.umd.production.min.js" data-gyg-partner-id="4W8QSG6"></script>
     {{-- Styles --}}
     @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])

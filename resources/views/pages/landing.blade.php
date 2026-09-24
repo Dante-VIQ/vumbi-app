@@ -197,49 +197,55 @@
                     'name' => 'Maasai Mara National Reserve',
                     'location' => 'Kenya',
                     'description' => 'Great Migration game drives, big cat tracking, and luxury partner tented camps.',
-                    'price' => 'From $650 / person',
+                    'price' => 'From $175 / person',
                     'image' => '/images/maasai-mara.jpg',
-                    'tag' => 'Migration Season'
+                    'tag' => 'Migration Season',
+                    'link' => 'https://gyg.me/S5UZDtXL'
                 ],
                 [
                     'name' => 'Lake Nakuru & Rift Valley',
                     'location' => 'Kenya',
                     'description' => 'Rhino sanctuaries, flamingo lakes, and 1 to 3 day safari getaways with local drivers.',
-                    'price' => 'From $280 / person',
+                    'price' => 'From $325 / person',
                     'image' => '/images/nakuru.jpg',
-                    'tag' => 'Local Favorite'
+                    'tag' => 'Local Favorite',
+                    'link' => 'https://gyg.me/Eb1rtcoB'
                 ],
                 [
                     'name' => 'Amboseli Kilimanjaro View',
                     'location' => 'Kenya',
                     'description' => 'Massive elephant herds set against the backdrop of Mount Kilimanjaro.',
-                    'price' => 'From $520 / person',
+                    'price' => 'From $422 / person',
                     'image' => 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=800&q=80',
-                    'tag' => 'Scenic Safari'
+                    'tag' => 'Scenic Safari',
+                    'link' => 'https://gyg.me/j5wO8dgG'
                 ],
                 [
                     'name' => 'Zanzibar Beach & Spice Tour',
                     'location' => 'Tanzania',
                     'description' => 'Combine mainland game drives with pristine white sand beach relaxation.',
-                    'price' => 'From $890 / person',
+                    'price' => 'From $105 / person',
                     'image' => '/images/zanzibar-beach.jpg',
-                    'tag' => 'Beach & Wildlife'
+                    'tag' => 'Beach & Wildlife',
+                    'link' => 'https://gyg.me/vgwIMtNN',
                 ],
                 [
                     'name' => 'Diani Beach Getaway',
                     'location' => 'Kenya Coast',
                     'description' => 'Turquoise Indian Ocean waters, water sports, and luxury beach resort affiliate deals.',
-                    'price' => 'From $350 / person',
+                    'price' => 'From $80 / person',
                     'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                    'tag' => 'Coastal Escape'
+                    'tag' => 'Coastal Escape',
+                    'link' => 'https://gyg.me/1NSGVltM'
                 ],
                 [
                     'name' => 'Serengeti & Ngorongoro Crater',
                     'location' => 'Tanzania',
                     'description' => 'Unmatched predator density and the world’s largest intact volcanic caldera.',
-                    'price' => 'From $950 / person',
-                    'image' => '/images/arusha.jpg',
-                    'tag' => 'Bucket List'
+                    'price' => 'From $791 / person',
+                    'image' => '/images/arusha.avif',
+                    'tag' => 'Bucket List',
+                    'link' => 'https://gyg.me/jTATNgL2'
                 ],
             ];
         @endphp
@@ -277,15 +283,15 @@
 
                     {{-- High-Converting Action Row --}}
                     <div class="p-6 pt-0 flex items-center gap-2">
-                        <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
+                        {{-- <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
                             class="w-full py-2.5 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-paper-plane"></i> Request Partner Quote
-                        </button>
-                        <a href="https://wa.me/254745781236?text=Hi%20Vumbi%20Ventures,%20I%20am%20interested%20in%20a%20partner%20safari%20to%20{{ urlencode($dest['name']) }}"
+                        </button> --}}
+                        <a href="{{ $dest['link'] }}"
                             target="_blank"
                             class="py-2.5 px-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center"
                             title="Chat on WhatsApp">
-                            <i class="fab fa-whatsapp text-lg"></i>
+                            Book Now
                         </a>
                     </div>
                 </div>
