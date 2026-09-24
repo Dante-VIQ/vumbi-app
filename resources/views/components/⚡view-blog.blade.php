@@ -314,14 +314,14 @@ new class extends Component
     </section>
 
     {{-- ===================== FEATURED MEDIA ===================== --}}
-    {{-- @if ($blog->media_path) --}}
+    @if ($blog->media_path)
         <div class="container mx-auto px-6 mb-12">
             <div class="max-w-5xl mx-auto">
                 <img src="{{ $blog->media_path }}" alt="{{ $blog->title }}"
                     class="w-full rounded-3xl shadow-xl object-cover max-h-[600px] border border-black/5">
             </div>
         </div>
-    {{-- @endif --}}
+    @endif
 
     {{-- ===================== MAIN CONTENT + SIDEBAR ===================== --}}
     <div class="container mx-auto px-6 py-8">
