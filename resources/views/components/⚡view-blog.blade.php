@@ -163,8 +163,8 @@ new class extends Component
                 'cta'         => 'Check Availability',
             ],
             'Chale Wote' => [
-                'title'       => 'Explore Kenya: Safari & Beach Experiences',
-                'description' => 'Discover the best of Kenya with curated safari and beach experiences. Book your adventure today.',
+                'title'       => 'Explore Ghana: Safari & Beach Experiences',
+                'description' => 'Discover the best of Ghana with curated safari and beach experiences. Book your adventure today.',
                 'url'         => 'https://getyourguide.tpo.lu/114rf6Cr',
                 'cta'         => 'Check Availability',
             ],
