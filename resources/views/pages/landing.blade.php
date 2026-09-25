@@ -55,7 +55,7 @@
                             Get Custom Partner Quote
                         </button>
 
-                        <a href="https://wa.me/254745781236?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
+                        <a href="https://wa.me/254745506182?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
                             target="_blank"
                             class="px-6 py-4 border border-emerald-600/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp text-lg text-emerald-600"></i>
@@ -281,17 +281,23 @@
                         </div>
                     </div>
 
-                    {{-- High-Converting Action Row --}}
-                    <div class="p-6 pt-0 flex items-center gap-2">
+                    {{-- Action Row: lead capture is the primary path (it keeps the visitor
+                         in our funnel and lets us follow up), the affiliate booking link is
+                         a clearly secondary, lower-emphasis option for visitors who already
+                         know they want to book instantly. --}}
+                    <div class="p-6 pt-0 flex flex-col gap-2">
                         <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
-                            class="w-full py-2.5 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+                            class="w-full py-3 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-paper-plane"></i> Request Partner Quote
                         </button>
                         <a href="{{ $dest['link'] }}"
                             target="_blank"
-                            class="py-2.5 px-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center"
-                            title="Chat on WhatsApp">
-                            Book Now
+                            rel="nofollow sponsored"
+                            title="Book directly on our affiliate partner's site"
+                            class="text-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline py-1 transition"
+                            data-gtag-event="affiliate_click"
+                            data-gtag-params="{{ json_encode(['placement' => 'homepage_destination_card', 'destination' => $dest['name'], 'partner_link' => $dest['link']]) }}">
+                            Or book directly with our partner →
                         </a>
                     </div>
                 </div>
@@ -320,7 +326,7 @@
                 <div class="p-6 rounded-2xl bg-[#FCFAF7] border border-amber-900/5">
                     <div
                         class="w-12 h-12 bg-[#8B5A2B]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#8B5A2B] text-xl">
-                        <i class="fas fa-[#8B5A2B] fa-tags"></i>
+                        <i class="fas fa-tags"></i>
                     </div>
                     <h3 class="font-bold text-[#1A1A1A]">Curated Affiliate Deals</h3>
                     <p class="text-xs text-[#5C5C5C] mt-2 leading-relaxed">Access direct partner pricing and exclusive
