@@ -127,11 +127,66 @@ new class extends Component
     {
         $offers = [
             'Maasai Mara' => [
-                'title'       => '3-Day, 2-Night Maasai Mara Group Safari from Nairobi',
+                'title'       => '7-Day, Big 5 Maasai Mara Group Safari from Nairobi',
                 'description' => 'Small-group safari departing Nairobi — game drives, meals and accommodation included. Our readers\' most-booked experience.',
-                'url'         => 'https://www.getyourguide.com/nairobi-l267/from-nairobi-3-days-2-nights-maasai-mara-group-safari-t248792/?ranking_uuid=2e914bbe-86c4-4347-a1fd-537862e64cef&q=kenya',
+                'url'         => 'https://getyourguide.tpo.lu/DD6zt2Ue',
                 'cta'         => 'Check Availability',
             ],
+            'Diani Beach' => [
+                'title'       => 'Diani Beach Day Trip from Mombasa',
+                'description' => 'Relax on the pristine sands of Diani Beach with this day trip from Mombasa. Includes transport and refreshments.',
+                'url'         => 'https://getyourguide.tpo.lu/efyOeZ5c',
+                'cta'         => 'Check Availability',
+            ],
+            'Nakuru' => [
+                'title'       => 'Lake Nakuru National Park Safari Tour',
+                'description' => 'Experience the beauty of Lake Nakuru and its flamingos on this guided safari tour. Includes park entry and game drives.',
+                'url'         => 'https://getyourguide.tpo.lu/YbZs1Hrf',
+                'cta'         => 'Check Availability',
+            ],
+            'Lamu' => [
+                'title'       => 'Lamu Island Cultural Tour',
+                'description' => 'Discover the rich culture and history of Lamu Island on this guided tour. Includes visits to local landmarks and markets.',
+                'url'         => 'https://getyourguide.tpo.lu/jv16iLb9',
+                'cta'         => 'Check Availability',
+            ],
+            'Kenya' => [
+                'title'       => '7-Day Kenya Safari Adventure',
+                'description' => 'Explore Kenya\'s top safari destinations over 7 days. Includes game drives, accommodations, and meals.',
+                'url'         => 'https://getyourguide.tpo.lu/5BZBe6PN',
+                'cta'         => 'Check Availability',
+            ],
+            'Chale Wote' => [
+                'title'       => 'Explore Kenya: Safari & Beach Experiences',
+                'description' => 'Discover the best of Kenya with curated safari and beach experiences. Book your adventure today.',
+                'url'         => 'https://getyourguide.tpo.lu/114rf6Cr',
+                'cta'         => 'Check Availability',
+            ],
+            'Rwanda' => [
+                'title'       => 'Rwanda Gorilla Trekking Adventure',
+                'description' => 'Experience the thrill of gorilla trekking in Rwanda. Includes permits, guides, and accommodations.',
+                'url'         => 'https://getyourguide.tpo.lu/jjPfS43C',
+                'cta'         => 'Check Availability',
+            ],
+            'Mount Kilimanjaro' => [
+                'title'       => 'Mount Kilimanjaro Climbing Expedition',
+                'description' => 'Join a guided expedition to summit Mount Kilimanjaro. Includes permits, guides, and accommodations.',
+                'url'         => 'https://getyourguide.tpo.lu/c5Dxg42S',
+                'cta'         => 'Check Availability',
+            ],
+            'Bwindi' => [
+                'title'       => 'Bwindi Impenetrable Forest Gorilla Trekking',
+                'description' => 'Trek through the Bwindi Impenetrable Forest and encounter mountain gorillas in their natural habitat. Includes permits and guides.',
+                'url'         => 'https://getyourguide.tpo.lu/jRw0aZsF',
+                'cta'         => 'Check Availability',
+            ],
+            'Zanzibar' => [
+                'title'       => 'Zanzibar Spice Farm & Stone Town Tour',
+                'description' => 'Explore the spice farms and historic Stone Town of Zanzibar on this guided tour. Includes transportation and tastings.',
+                'url'         => 'https://getyourguide.tpo.lu/LaezjUg4',
+                'cta'         => 'Check Availability',
+            ],
+
         ];
 
         return $offers[$this->detectedLocation] ?? [];
