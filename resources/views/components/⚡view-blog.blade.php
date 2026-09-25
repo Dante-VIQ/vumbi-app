@@ -105,6 +105,12 @@ new class extends Component
             'nakuru'      => 'Nakuru',
             'lamu'        => 'Lamu',
             'kenya'       => 'Kenya',
+            'chale wote'  =>  'Chale Wote',
+            'ghana'       =>  'Ghana',
+            'rwanda gorilla'      =>   'Rwanda Gorilla',
+            'mount kilimanjaro'  => 'Mount Kilimanjaro',
+            'bwindi'  => 'Bwindi Forest',
+            'zanzibar'    =>  'Zanzibar'
         ];
 
         foreach ($map as $key => $name) {
