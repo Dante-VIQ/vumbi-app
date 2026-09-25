@@ -24,12 +24,21 @@ new class extends Component
     public array $contentBlocks = [];
     public array $affiliateResults = [];
 
+    // NEW: the single highest-priority affiliate offer for this post,
+    // shown as a prominent card above the fold (before the article body).
+    public array $featuredAffiliate = [];
+
+    // NEW: guards so we only convert the FIRST mention of the location
+    // into a link — repeated links in body copy look spammy and hurt CTR.
+    private bool $locationLinkInserted = false;
+
     public function mount(Blog $blog)
     {
         $this->blog = $blog->load('author');
 
         $this->contentType      = $this->detectContentType($this->blog);
         $this->detectedLocation = $this->detectLocation($this->blog);
+        $this->featuredAffiliate = $this->resolveFeaturedAffiliate();
         $this->contentBlocks    = $this->splitContentIntoBlocks();
 
         $cacheKey = 'affiliate_results_' . $this->blog->id;
@@ -106,6 +115,61 @@ new class extends Component
         return $this->contentType === 'destination' ? 'Kenya' : null;
     }
 
+    /**
+     * NEW: Resolve the single best-converting affiliate offer for this post,
+     * keyed off the detected location. This is intentionally a curated map
+     * (not a DB query) so the highest-margin / best-converting partner link
+     * can be hand-picked per destination rather than left to a generic match.
+     *
+     * Extend this array as you add more affiliate deals per destination.
+     */
+    private function resolveFeaturedAffiliate(): array
+    {
+        $offers = [
+            'Maasai Mara' => [
+                'title'       => '3-Day, 2-Night Maasai Mara Group Safari from Nairobi',
+                'description' => 'Small-group safari departing Nairobi — game drives, meals and accommodation included. Our readers\' most-booked experience.',
+                'url'         => 'https://www.getyourguide.com/nairobi-l267/from-nairobi-3-days-2-nights-maasai-mara-group-safari-t248792/?ranking_uuid=2e914bbe-86c4-4347-a1fd-537862e64cef&q=kenya',
+                'cta'         => 'Check Availability',
+            ],
+        ];
+
+        return $offers[$this->detectedLocation] ?? [];
+    }
+
+    /**
+     * NEW: Converts the first plain-text mention of the detected location
+     * inside a content block into a link to the featured affiliate offer.
+     * Uses negative lookaheads so it never matches text already inside a
+     * tag or an existing <a>...</a>. Runs at most once across the whole post.
+     */
+    private function linkifyFirstLocationMention(string $html): string
+    {
+        if ($this->locationLinkInserted || empty($this->featuredAffiliate['url']) || empty($this->detectedLocation)) {
+            return $html;
+        }
+
+        $location = preg_quote($this->detectedLocation, '/');
+        $pattern  = '/\b(' . $location . ')\b(?![^<]*>)(?![^<]*<\/a>)/i';
+
+        $linked = preg_replace_callback($pattern, function ($matches) {
+            $this->locationLinkInserted = true;
+
+            $params = e(json_encode([
+                'placement' => 'inline_content',
+                'offer'     => $this->featuredAffiliate['title'] ?? null,
+                'blog_id'   => $this->blog->id,
+            ]));
+
+            return '<a href="' . e($this->featuredAffiliate['url']) . '" target="_blank" rel="nofollow sponsored" '
+                 . 'class="text-[#8B5A2B] font-semibold underline decoration-[#8B5A2B]/40 hover:decoration-[#8B5A2B]" '
+                 . 'data-gtag-event="affiliate_click" data-gtag-params="' . $params . '">'
+                 . $matches[1] . '</a>';
+        }, $html, 1);
+
+        return $linked ?? $html;
+    }
+
     // ==================== Actions ====================
     // ✅ Livewire 3: dispatch() replaces emit()
 
@@ -169,7 +233,7 @@ new class extends Component
         libxml_clear_errors();
 
         if (!$dom->documentElement) {
-            return [$html];
+            return [$this->linkifyFirstLocationMention($html)];
         }
 
         $wrapper = $dom->documentElement;
@@ -195,7 +259,9 @@ new class extends Component
             $blocks[] = $currentBlock;
         }
 
-        return $blocks;
+        // Convert the first location mention (in reading order) into an
+        // affiliate link, then leave every other block untouched.
+        return array_map(fn ($block) => $this->linkifyFirstLocationMention($block), $blocks);
     }
 
     private function normalizeHeadings(string $html): string
@@ -329,6 +395,39 @@ new class extends Component
             
             {{-- MAIN ARTICLE CONTENT --}}
             <div class="lg:col-span-8">
+
+                {{-- ===================== FEATURED AFFILIATE CARD =====================
+                     Placed above the fold, before the article body. This is the
+                     highest-converting slot: it reaches every reader who opens the
+                     post (not just those who scroll or finish reading), and it lands
+                     while intent is highest — right after the title/hero hooked them,
+                     before they've either gotten their answer or bounced. --}}
+                @if (!empty($featuredAffiliate))
+                    <div class="not-prose mb-10 relative overflow-hidden rounded-3xl border border-[#8B5A2B]/20 bg-gradient-to-br from-[#F5EFE6] to-[#FCFAF7] p-6 md:p-8 shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-center gap-6">
+                            <div class="flex-1">
+                                <span class="inline-block text-[10px] uppercase tracking-wider font-bold text-[#8B5A2B] bg-white/70 px-3 py-1 rounded-full mb-3">
+                                    Featured Experience
+                                </span>
+                                <h3 class="text-xl md:text-2xl font-semibold text-[#1A1A1A] mb-2 leading-snug">
+                                    {{ $featuredAffiliate['title'] }}
+                                </h3>
+                                <p class="text-sm text-[#5C5C5C] leading-relaxed">
+                                    {{ $featuredAffiliate['description'] }}
+                                </p>
+                            </div>
+                            <div class="shrink-0 w-full md:w-auto">
+                                <a href="{{ $featuredAffiliate['url'] }}" target="_blank" rel="nofollow sponsored"
+                                    class="inline-flex w-full md:w-auto items-center justify-center gap-2 bg-[#8B5A2B] hover:bg-[#6f4622] text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition shadow-sm"
+                                    data-gtag-event="affiliate_click"
+                                    data-gtag-params="{{ json_encode(['placement' => 'article_top_featured', 'offer' => $featuredAffiliate['title'], 'blog_id' => $blog->id]) }}">
+                                    {{ $featuredAffiliate['cta'] ?? 'Check Availability' }} →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <article class="prose prose-lg max-w-none
                     prose-headings:text-[#1A1A1A] prose-headings:font-semibold prose-headings:tracking-tight
                     prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
@@ -430,9 +529,20 @@ new class extends Component
             <aside class="lg:col-span-4 space-y-8">
                 
                 {{-- Travel Booking Widget --}}
-                @if ($blog->title)
+                {{-- @if ($blog->title)
                     @livewire('related-tours', ['blogTitle' => $blog->title, 'location' => $blog->location])
-                @endif
+                @endif --}}
+                    <div class="p-6 pt-0 flex items-center gap-2">
+                        <a href="https://getyourguide.tpo.lu/lHOqZ1Eo"
+                            target="_blank"
+                            rel="nofollow sponsored"
+                            class="py-2.5 px-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center"
+                            title="Book directly with our affiliate partners"
+                            data-gtag-event="affiliate_click"
+                            data-gtag-params="{{ json_encode(['placement' => 'sidebar_direct_book', 'blog_id' => $blog->id]) }}">
+                            Book Directly on Our Affiliate Partners
+                        </a>
+                    </div>
 
                 {{-- Affiliate Offers Widget --}}
                 @if (!empty($affiliateResults['sidebar']) || (isset($recommendedAffiliates) && count($recommendedAffiliates)))

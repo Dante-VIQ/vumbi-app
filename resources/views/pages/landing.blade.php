@@ -283,10 +283,10 @@
 
                     {{-- High-Converting Action Row --}}
                     <div class="p-6 pt-0 flex items-center gap-2">
-                        {{-- <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
+                        <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
                             class="w-full py-2.5 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-paper-plane"></i> Request Partner Quote
-                        </button> --}}
+                        </button>
                         <a href="{{ $dest['link'] }}"
                             target="_blank"
                             class="py-2.5 px-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center"
@@ -401,7 +401,7 @@
                     class="w-full sm:w-auto px-8 py-4 bg-[#8B5A2B] hover:bg-[#A87A4D] text-white font-bold rounded-xl transition shadow-lg shadow-[#8B5A2B]/30">
                     <i class="fas fa-calendar-alt mr-2"></i> Request Custom Itinerary Quote
                 </button>
-                <a href="https://wa.me/254745781236?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
+                <a href="https://wa.me/254745506182?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
                     target="_blank"
                     class="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
                     <i class="fab fa-whatsapp text-lg"></i> Chat Instantly on WhatsApp

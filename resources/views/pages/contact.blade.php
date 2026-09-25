@@ -313,12 +313,12 @@
                 <div class="space-y-3 text-sm">
                     <div>
                         <p class="text-xs text-[#5C5C5C]">General & Tech Inquiries:</p>
-                        <a href="mailto:africa@vumbiventures.com" class="text-[#8B5A2B] font-medium hover:underline">africa@vumbiventures.com</a>
+                        <a href="mailto:vumbiventures@gmail.com" class="text-[#8B5A2B] font-medium hover:underline">vumbiventures@gmail.com</a>
                     </div>
-                    <div>
+                    {{-- <div>
                         <p class="text-xs text-[#5C5C5C]">Safari & Travel Support:</p>
                         <a href="mailto:info@vumbiventures.com" class="text-[#8B5A2B] font-medium hover:underline">info@vumbiventures.com</a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
