@@ -107,7 +107,7 @@ new class extends Component
             'kenya'       => 'Kenya',
             'chale wote'  =>  'Chale Wote',
             'ghana'       =>  'Ghana',
-            'rwanda gorilla'      =>   'Rwanda Gorilla',
+            'rwanda'      =>   'Rwanda',
             'mount kilimanjaro'  => 'Mount Kilimanjaro',
             'bwindi'  => 'Bwindi Forest',
             'zanzibar'    =>  'Zanzibar'
