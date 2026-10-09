@@ -584,11 +584,17 @@ new class extends Component
                         <livewire:newsletter-subscribe variant="dark" placement="endpost" :key="'newsletter-endpost-' . $blog->id" />
                     </div>
                 </div>
+
+                {{-- End-of-Post WhatsApp CTA: the only conversion path readers on phones reach before the sidebar --}}
+                <x-whatsapp-cta class="mt-6" :title="$blog->title" placement="blog_endpost" :blog-id="$blog->id" />
             </div>
 
             {{-- ===================== SIDEBAR --}}
             <aside class="lg:col-span-4 space-y-8">
-                
+
+                {{-- Sidebar WhatsApp CTA (desktop) --}}
+                <x-whatsapp-cta :title="$blog->title" placement="blog_sidebar" :blog-id="$blog->id" />
+
                 {{-- Travel Booking Widget --}}
                 {{-- @if ($blog->title)
                     @livewire('related-tours', ['blogTitle' => $blog->title, 'location' => $blog->location])

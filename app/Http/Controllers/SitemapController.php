@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
-// use App\Models\Culture;
-// use App\Models\Doctor; // Destinations model
+use App\Models\Culture;
+use App\Models\Destination;
+use App\Models\PartnerPackage;
 use Illuminate\Routing\Controller;
 
 class SitemapController extends Controller
@@ -26,6 +27,8 @@ class SitemapController extends Controller
             (object) ['loc' => url('/blog'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
             (object) ['loc' => url('/tours'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
             (object) ['loc' => url('/about'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
+            (object) ['loc' => url('/destinations'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/culture'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
         ];
 
         $blogs = Blog::orderBy('updated_at', 'desc')
@@ -39,7 +42,39 @@ class SitemapController extends Controller
                 return $post;
             });
 
-        $all = collect($staticPages)->merge($blogs);
+        // Tour pages are the pages that convert, so they must be crawlable.
+        $tours = PartnerPackage::active()
+            ->whereNotNull('slug')
+            ->get()
+            ->map(fn ($package) => (object) [
+                'loc' => route('tours.show', $package->slug),
+                'lastmod' => ($package->updated_at ?? now())->toDateString(),
+                'priority' => '0.8',
+                'changefreq' => 'weekly',
+            ]);
+
+        $destinations = Destination::whereNotNull('slug')
+            ->get()
+            ->map(fn ($destination) => (object) [
+                'loc' => route('pages.destination', $destination->slug),
+                'lastmod' => ($destination->updated_at ?? now())->toDateString(),
+                'priority' => '0.7',
+                'changefreq' => 'monthly',
+            ]);
+
+        $cultures = Culture::all()
+            ->map(fn ($culture) => (object) [
+                'loc' => route('pages.culture', $culture->id),
+                'lastmod' => ($culture->updated_at ?? now())->toDateString(),
+                'priority' => '0.6',
+                'changefreq' => 'monthly',
+            ]);
+
+        $all = collect($staticPages)
+            ->merge($blogs)
+            ->merge($tours)
+            ->merge($destinations)
+            ->merge($cultures);
 
         $view = view('sitemap', ['pages' => $all])->render();
 

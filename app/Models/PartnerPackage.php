@@ -17,6 +17,8 @@ class PartnerPackage extends Model
     'duration_days', 'duration_nights',
     'itinerary', 'included', 'excluded',
     'difficulty', 'group_size_min', 'group_size_max',
+    'booking_type', 'affiliate_source', 'affiliate_url',
+    'region', 'destination_id',
     ];
     protected $casts = [
       'active'        => 'boolean',

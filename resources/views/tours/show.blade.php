@@ -218,8 +218,11 @@
 
                     <div x-data="{ openModal: false }" class="space-y-3">
                         @if (method_exists($package, 'isAffiliate') && $package->isAffiliate())
-                            <a href="{{ route('affiliate.redirect', [$package->affiliate_source, $package->id]) }}"
+                            <a href="{{ route('affiliate.redirect', [$package->affiliate_source ?: 'tour', $package->id]) }}"
                                 target="_blank"
+                                rel="nofollow sponsored noopener"
+                                data-gtag-event="affiliate_click"
+                                data-gtag-params="{{ json_encode(['placement' => 'tour_page_book', 'package_id' => $package->id]) }}"
                                 class="w-full bg-green-600 hover:bg-green-500 text-white py-3.5 px-4 rounded-xl font-bold transition flex justify-center items-center gap-2 shadow-lg shadow-green-900/20">
                                 Book This Trip Now →
                             </a>
