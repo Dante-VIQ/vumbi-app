@@ -48,6 +48,7 @@ Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/', [HomePageController::class, 'home'])->name('home');
 
 Route::get('/go/{source}/{tourId}', [RedirectController::class, 'affiliate'])
+    ->whereNumber('tourId')
     ->name('affiliate.redirect');
 
 Route::get('/culture', [CulturalController::class, 'index'])->name('cultures.give');

@@ -24,7 +24,30 @@ class Lead extends Model
         return $this->belongsTo(PartnerPackage::class, 'partner_package_id');
     }
 
-        public function getCustomerNameAttribute(): string
+    // The lead emails were written against PartnerLead's denormalised columns.
+    // Lead stores only the package id, so expose the same fields from the package.
+    public function getPackageTitleAttribute(): string
+    {
+        return $this->package?->title ?? 'your trip';
+    }
+
+    public function getLocationAttribute(): ?string
+    {
+        return $this->package?->location;
+    }
+
+    // Not tracked on Lead; null keeps the price/commission rows out of the email.
+    public function getEstimatedPriceAttribute(): ?float
+    {
+        return null;
+    }
+
+    public function getCommissionPercentAttribute(): ?float
+    {
+        return null;
+    }
+
+    public function getCustomerNameAttribute(): string
     {
         return $this->first_name ?? '';
     }

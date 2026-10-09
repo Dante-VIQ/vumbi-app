@@ -128,8 +128,11 @@ new class extends Component
 
                         <div class="mt-auto">
                             @if($tour->isAffiliate())
-                                <a href="{{ route('affiliate.redirect', [$tour->affiliate_source, $tour->id]) }}"
+                                <a href="{{ route('affiliate.redirect', [$tour->affiliate_source ?: 'tour', $tour->id]) }}"
                                    target="_blank"
+                                   rel="nofollow sponsored noopener"
+                                   data-gtag-event="affiliate_click"
+                                   data-gtag-params="{{ json_encode(['placement' => 'related_tours', 'package_id' => $tour->id]) }}"
                                    class="block text-center bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 rounded-xl transition">
                                     Book This Trip →
                                 </a>

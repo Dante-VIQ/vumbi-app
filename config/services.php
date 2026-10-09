@@ -103,6 +103,12 @@ return [
         'access_key' => env('UNSPLASH_ACCESS_KEY'),
     ],
 
+    // Business WhatsApp number (digits only, with country code). Used by the
+    // <x-whatsapp-cta> component. Override with WHATSAPP_NUMBER in .env.
+    'whatsapp' => [
+        'number' => env('WHATSAPP_NUMBER', '254745781236'),
+    ],
+
     'internal' => [
         'api_key' => env('INTERNAL_API_KEY'),
         'allowed_ips' => array_filter(
