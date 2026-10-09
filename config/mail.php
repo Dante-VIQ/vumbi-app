@@ -111,10 +111,10 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'africa@vumbidna.com'),
+        'name' => env('MAIL_FROM_NAME', 'Vumbi Ventures'),
     ],
 
-    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbiventures.com'),
+    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbidna.com'),
 
 ];
