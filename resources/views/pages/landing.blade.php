@@ -437,7 +437,7 @@
                         x-text="selectedDestination"></span></p>
             </div>
 
-            <form action="{{ route('inquiry.send-quote') }}" method="POST" class="space-y-4">
+            <form action="/inquiry/send-quote" method="POST" class="space-y-4">
                 @csrf
                 <input type="hidden" name="destination" x-model="selectedDestination">
 
