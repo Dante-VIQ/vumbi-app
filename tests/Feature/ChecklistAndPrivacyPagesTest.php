@@ -19,7 +19,7 @@ test('the privacy policy page loads and names what is collected', function () {
         ->assertOk()
         ->assertSee('Privacy Policy')
         ->assertSee('Newsletter')
-        ->assertSee('info@vumbiventures.com');
+        ->assertSee('africa@vumbiventures.com');
 });
 
 test('the footer and signup boxes link to the privacy policy', function () {

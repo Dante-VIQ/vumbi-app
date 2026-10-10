@@ -68,6 +68,15 @@ it('puts the checklist, articles and a signed unsubscribe link in the email', fu
         ->and($headers['List-Unsubscribe-Post'])->toBe('List-Unsubscribe=One-Click');
 });
 
+it('sends replies to the africa@ inbox', function () {
+    $subscriber = NewsletterSubscriber::create(['email' => 'reader@example.com', 'subscribed_at' => now()]);
+
+    Mail::fake();
+    Mail::to($subscriber->email)->send(new NewsletterWelcome($subscriber));
+
+    Mail::assertSent(NewsletterWelcome::class, fn ($mail) => $mail->hasReplyTo('africa@vumbiventures.com'));
+});
+
 it('refuses an unsigned unsubscribe link', function () {
     $subscriber = NewsletterSubscriber::create(['email' => 'reader@example.com', 'subscribed_at' => now()]);
 

@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\NewsletterSubscriber;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
@@ -21,7 +22,10 @@ class NewsletterWelcome extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Your Kenya first-safari checklist (and what to read first)');
+        return new Envelope(
+            replyTo: [new Address('africa@vumbiventures.com', 'Vumbi Ventures')],
+            subject: 'Your Kenya first-safari checklist (and what to read first)',
+        );
     }
 
     public function headers(): Headers

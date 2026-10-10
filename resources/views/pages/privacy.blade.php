@@ -12,7 +12,7 @@
             <p>This policy explains what personal information Vumbi Ventures collects on vumbiventures.com, why we collect it, who we share it with and what choices you have. We are based in Nakuru, Kenya, and we aim to handle your information in line with Kenya's Data Protection Act, 2019.</p>
 
             <h2>Who we are</h2>
-            <p>Vumbi Ventures is a Kenya-based travel and storytelling company. If you have a question about this policy or your information, email <a href="mailto:info@vumbiventures.com">info@vumbiventures.com</a> or use our <a href="{{ route('contact') }}">contact page</a>.</p>
+            <p>Vumbi Ventures is a Kenya-based travel and storytelling company. If you have a question about this policy or your information, email <a href="mailto:africa@vumbiventures.com">africa@vumbiventures.com</a> or use our <a href="{{ route('contact') }}">contact page</a>.</p>
 
             <h2>What we collect</h2>
             <ul>
@@ -56,7 +56,7 @@
                 <li>You can withdraw consent you gave us at any time.</li>
                 <li>You can block or delete cookies in your browser settings.</li>
             </ul>
-            <p>To use any of these rights, email <a href="mailto:info@vumbiventures.com">info@vumbiventures.com</a>. If you are unhappy with how we handle your information, you can also complain to Kenya's Office of the Data Protection Commissioner.</p>
+            <p>To use any of these rights, email <a href="mailto:africa@vumbiventures.com">africa@vumbiventures.com</a>. If you are unhappy with how we handle your information, you can also complain to Kenya's Office of the Data Protection Commissioner.</p>
 
             <h2>Children</h2>
             <p>This site is not aimed at children, and we do not knowingly collect their personal information.</p>
