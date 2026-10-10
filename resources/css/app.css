@@ -75,3 +75,19 @@
     transform: translateY(-2px);
     box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
 }
+
+/* Mobile overflow safety net: never let the page scroll sideways.
+   `clip` (unlike `hidden`) does not break position: sticky. */
+html,
+body {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+/* Embedded media inside article bodies must never exceed the column */
+.prose img,
+.prose video,
+.prose iframe {
+    max-width: 100%;
+    height: auto;
+}

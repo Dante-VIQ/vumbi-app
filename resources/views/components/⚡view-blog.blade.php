@@ -452,10 +452,10 @@ new class extends Component
 
     {{-- ===================== MAIN CONTENT + SIDEBAR ===================== --}}
     <div class="container mx-auto px-6 py-8">
-        <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             
             {{-- MAIN ARTICLE CONTENT --}}
-            <div class="lg:col-span-8">
+            <div class="lg:col-span-8 min-w-0">
 
                 {{-- ===================== FEATURED AFFILIATE CARD =====================
                      Placed above the fold, before the article body. This is the
@@ -489,7 +489,7 @@ new class extends Component
                     </div>
                 @endif
 
-                <article class="prose prose-lg max-w-none
+                <article class="prose prose-lg max-w-none break-words [&_table]:block [&_table]:overflow-x-auto [&_pre]:overflow-x-auto [&_iframe]:max-w-full
                     prose-headings:text-[#1A1A1A] prose-headings:font-semibold prose-headings:tracking-tight
                     prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
                     prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
@@ -590,7 +590,7 @@ new class extends Component
             </div>
 
             {{-- ===================== SIDEBAR --}}
-            <aside class="lg:col-span-4 space-y-8">
+            <aside class="lg:col-span-4 min-w-0 space-y-8">
 
                 {{-- Sidebar WhatsApp CTA (desktop) --}}
                 <x-whatsapp-cta :title="$blog->title" placement="blog_sidebar" :blog-id="$blog->id" />
