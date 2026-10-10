@@ -2,7 +2,9 @@
 
 use Livewire\Component;
 use App\Models\NewsletterSubscriber;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Mail\NewsletterWelcome;
 
 new class extends Component {
     public $email;
@@ -58,6 +60,13 @@ new class extends Component {
 
         if ($subscriber->wasRecentlyCreated) {
             $this->dispatch('newsletter-subscribed', placement: $this->placement);
+
+            // A mail problem must never cost us the signup: log it and carry on.
+            try {
+                Mail::to($subscriber->email)->send(new NewsletterWelcome($subscriber));
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         // You could also trigger an event to send a welcome email

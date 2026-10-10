@@ -33,6 +33,10 @@ return Application::configure(basePath: dirname(__DIR__))
                  //
         ]);
 
+        // Email clients' one-click unsubscribe (RFC 8058) POSTs without a CSRF token;
+        // the link is protected by its signature instead.
+        $middleware->validateCsrfTokens(except: ['newsletter/unsubscribe/*']);
+
 
 
     })
