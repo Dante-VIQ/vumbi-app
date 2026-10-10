@@ -29,6 +29,8 @@ class SitemapController extends Controller
             (object) ['loc' => url('/about'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
             (object) ['loc' => url('/destinations'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
             (object) ['loc' => url('/culture'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/safari-checklist'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
+            (object) ['loc' => url('/privacy-policy'), 'lastmod' => now()->toDateString(), 'priority' => '0.3', 'changefreq' => 'yearly'],
         ];
 
         $blogs = Blog::orderBy('updated_at', 'desc')

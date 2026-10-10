@@ -94,7 +94,7 @@
             class="border-t border-[#2A2A2A] mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-[#C7B5A6] text-sm">
             <p>&copy; {{ date('Y') }} Vumbi Ventures. All rights reserved. Built from the spirit of Africa.</p>
             <div class="flex gap-6 mt-4 md:mt-0">
-                <a href="/" class="hover:text-white transition">Privacy Policy</a>
+                <a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy Policy</a>
                 <a href="/" class="hover:text-white transition">Terms of Service</a>
                 <a href="/portfolio" class="hover:text-white transition">Portfolio</a>
                 <a href="/" class="hover:text-white transition">Sitemap</a>

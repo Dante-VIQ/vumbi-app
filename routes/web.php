@@ -84,6 +84,8 @@ Route::post('/inquiry/send-quote', [InquiryController::class, 'sendQuote'])
 Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact')->name('contact');
+Route::view('/privacy-policy', 'pages.privacy')->name('privacy');
+Route::view('/safari-checklist', 'pages.safari-checklist')->name('safari-checklist');
 Route::view('/ecosystem', 'pages.ecosystem');
 Route::view('/header', 'pages.header-media');
 Route::view('/studio', 'studio');
