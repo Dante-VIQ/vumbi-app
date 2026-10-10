@@ -185,12 +185,12 @@
     </div>
 
     {{-- Studio Bridge Top Bar for Enterprise & Web Development Traffic --}}
-    <div class="bg-slate-950 text-slate-400 text-xs py-2 px-4 border-b border-slate-800 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    <div class="bg-slate-950 text-slate-400 text-xs py-2 px-4 border-b border-slate-800 flex justify-between items-center gap-3">
+        <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-block w-2 h-2 shrink-0 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Looking for custom web app development, APIs & software engineering?</span>
         </div>
-        <a href="{{ url('/studio') }}" class="text-amber-400 hover:text-amber-300 font-semibold transition flex items-center gap-1">
+        <a href="{{ url('/studio') }}" class="text-amber-400 hover:text-amber-300 font-semibold transition flex items-center gap-1 shrink-0 whitespace-nowrap">
             Visit Vumbi Studio ➔
         </a>
     </div>
