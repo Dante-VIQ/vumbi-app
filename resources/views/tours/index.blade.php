@@ -272,4 +272,13 @@
             </div>
         </div>
     </div>
+
+    {{-- Newsletter signup --}}
+    <section class="border-t border-slate-800 bg-slate-950 py-14 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-xl mx-auto text-center">
+            <h2 class="text-2xl font-bold text-white mb-2">Not ready to book yet?</h2>
+            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Get our monthly Field Notes: safari planning tips, destination guides and stories from across Africa, straight to your inbox.</p>
+            <livewire:newsletter-subscribe variant="dark" placement="tours" />
+        </div>
+    </section>
 @endsection

@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use App\Models\NewsletterSubscriber;
+use Illuminate\Support\Facades\RateLimiter;
 
 new class extends Component {
     public $email;
@@ -15,28 +16,49 @@ new class extends Component {
     // e.g. 'footer', 'sidebar', 'inline', 'endpost'. Doesn't affect rendering.
     public string $placement = 'unknown';
 
-    protected $rules = [
-        'email' => 'required|email|unique:newsletter_subscribers,email',
-    ];
+    // Honeypot: hidden from people, filled in by bots.
+    public string $website = '';
 
     public function subscribe()
     {
+        $this->email = strtolower(trim((string) $this->email));
+
         $this->validate([
-            'email' => 'required|email|unique:newsletter_subscribers,email',
+            'email' => 'required|email|max:255',
         ]);
 
-        $email = $this->email;
+        $successMessage = 'Thank you for subscribing! You\'ll receive our next Field Notes edition.';
 
-        NewsletterSubscriber::create([
-            'email' => $email,
-            'subscribed_at' => now(),
-        ]);
+        // Bots fill the hidden field: pretend it worked, store nothing.
+        if ($this->website !== '') {
+            $this->message = $successMessage;
+            $this->messageType = 'success';
+            $this->email = '';
+            return;
+        }
 
-        $this->message = 'Thank you for subscribing! You\'ll receive our next Field Notes edition.';
+        $throttleKey = 'newsletter-subscribe:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $this->message = 'Too many attempts. Please try again in a few minutes.';
+            $this->messageType = 'error';
+            return;
+        }
+        RateLimiter::hit($throttleKey, 600);
+
+        // An address that is already on the list gets the same friendly
+        // answer, so the form never reveals who is subscribed.
+        $subscriber = NewsletterSubscriber::firstOrCreate(
+            ['email' => $this->email],
+            ['subscribed_at' => now()]
+        );
+
+        $this->message = $successMessage;
         $this->messageType = 'success';
         $this->email = '';
 
-        $this->dispatch('newsletter-subscribed', placement: $this->placement);
+        if ($subscriber->wasRecentlyCreated) {
+            $this->dispatch('newsletter-subscribed', placement: $this->placement);
+        }
 
         // You could also trigger an event to send a welcome email
         // event(new NewsletterSubscribed($this->email));
@@ -51,6 +73,7 @@ new class extends Component {
             ? 'flex-1 px-3 py-2 rounded-l-lg bg-white border border-black/10 focus:outline-none focus:border-[#8B5A2B] text-[#1A1A1A] placeholder-[#9A9A9A]'
             : 'flex-1 px-3 py-2 rounded-l-lg bg-[#2A2A2A] border-0 focus:outline-none text-white placeholder-[#6B6B6B]';
         $errorClasses = $isLight ? 'text-rose-500 text-xs mt-1 block' : 'text-red-400 text-xs mt-1 block';
+        $noteClasses = $isLight ? 'text-[#5C5C5C]' : 'text-[#C7B5A6]';
     @endphp
 
     @if($message)
@@ -61,9 +84,12 @@ new class extends Component {
     @endif
 
     <form wire:submit.prevent="subscribe" class="flex">
-        <input type="email" wire:model="email" placeholder="Your email"
+        <input type="email" wire:model="email" placeholder="Your email" aria-label="Email address"
             class="{{ $inputClasses }}"
             required>
+        <div class="hidden" aria-hidden="true">
+            <input type="text" wire:model="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
         <button type="submit"
             class="bg-[#8B5A2B] px-4 py-2 rounded-r-lg hover:bg-[#6B421F] transition disabled:opacity-50"
             wire:loading.attr="disabled">
@@ -72,4 +98,5 @@ new class extends Component {
         </button>
     </form>
     @error('email') <span class="{{ $errorClasses }}">{{ $message }}</span> @enderror
+    <p class="text-xs mt-3 {{ $noteClasses }}">We respect your privacy. Unsubscribe at any time.</p>
 </div>
