@@ -39,7 +39,7 @@ return [
         ],
         'stack' => ['Laravel'],
         'results' => [
-            ['value' => '3+ hrs', 'label' => 'saved every day by bringing their services together on one architecture'],
+            ['value' => '3+ hrs', 'label' => 'saved every day on daily operations handled by management and dispatchers'],
         ],
         'quote' => null,
     ],
@@ -87,7 +87,7 @@ return [
         'engineering' => [],
         'stack' => [],
         'results' => [
-            ['value' => '15', 'label' => 'clients, consistently'],
+            ['value' => '15+', 'label' => 'more clients every month'],
         ],
         'quote' => null,
     ],
@@ -106,13 +106,13 @@ return [
             'Online reservation system',
             'Inventory control',
             'Secure payment checkout integration',
-            'Data protection compliance for the facility\'s clients',
+            'Systems that meet Seattle\'s ADH rules for the care of persons',
         ],
         'engineering' => [],
         'stack' => [],
         'results' => [
             ['value' => '10+', 'label' => 'additional bookings'],
-            ['value' => 'Compliant', 'label' => 'with data protection regulations for its clients'],
+            ['value' => 'Compliant', 'label' => 'with Seattle\'s ADH rules for the care of persons'],
         ],
         'quote' => null,
     ],
