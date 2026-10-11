@@ -87,6 +87,12 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/ecosystem', 'pages.ecosystem');
 Route::view('/header', 'pages.header-media');
 Route::view('/studio', 'studio');
+Route::get('/studio/case-studies/{slug}', function (string $slug) {
+    $study = config("case_studies.$slug");
+    abort_if(! $study, 404);
+
+    return view('studio-case-study', ['study' => $study, 'slug' => $slug, 'title' => $study['name'].' case study | Vumbi Tech Studio']);
+})->where('slug', '[a-z0-9-]+')->name('studio.case-study');
 Route::view('/demo', 'demo');
 
 Route::get('/booking/{partnerPackage:slug}', function (PartnerPackage $partnerPackage) {
