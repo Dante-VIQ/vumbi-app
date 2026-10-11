@@ -25,6 +25,7 @@ return [
         'tags' => ['Fleet Dispatch', 'NEMT Logistics', 'Driver Portal'],
         'brief' => 'An NEMT operator needs to move patients between homes, clinics and facilities with the right vehicle for each person (wheelchair, gurney, ambulatory), on time, with a record of every trip. Running that on phone calls and spreadsheets does not scale, and an online presence that does not rank means new facility referrals never find the business.',
         'built' => [
+            'A single architecture, proposed and built by us, that brings the operator\'s services together',
             'Dispatch and fleet engine with accessibility-aware routing (wheelchair, gurney, ambulatory)',
             'Facility-to-facility patient scheduling and automated dispatch',
             'Driver portal for assignments and trip records',
@@ -37,7 +38,9 @@ return [
             'Delivered reusable frontend components so new service and location pages can ship without a developer rebuilding layout each time.',
         ],
         'stack' => ['Laravel'],
-        'results' => [],
+        'results' => [
+            ['value' => '3+ hrs', 'label' => 'saved every day by bringing their services together on one architecture'],
+        ],
         'quote' => null,
     ],
 
@@ -59,7 +62,9 @@ return [
         ],
         'engineering' => [],
         'stack' => [],
-        'results' => [],
+        'results' => [
+            ['value' => '20+', 'label' => 'rides every 14 days, from online bookings and direct calls'],
+        ],
         'quote' => null,
     ],
 
@@ -81,7 +86,9 @@ return [
         ],
         'engineering' => [],
         'stack' => [],
-        'results' => [],
+        'results' => [
+            ['value' => '15', 'label' => 'clients, consistently'],
+        ],
         'quote' => null,
     ],
 
@@ -99,10 +106,14 @@ return [
             'Online reservation system',
             'Inventory control',
             'Secure payment checkout integration',
+            'Data protection compliance for the facility\'s clients',
         ],
         'engineering' => [],
         'stack' => [],
-        'results' => [],
+        'results' => [
+            ['value' => '10+', 'label' => 'additional bookings'],
+            ['value' => 'Compliant', 'label' => 'with data protection regulations for its clients'],
+        ],
         'quote' => null,
     ],
 ];
