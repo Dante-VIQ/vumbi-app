@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -111,10 +111,10 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'africa@vumbidna.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'africa@vumbiventures.com'),
         'name' => env('MAIL_FROM_NAME', 'Vumbi Ventures'),
     ],
 
-    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbidna.com'),
+    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbiventures.com'),
 
 ];
