@@ -270,218 +270,48 @@ new class extends Component {
 
             {{-- Projects Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                {{-- Project 1: Seattle Mobility Solutions --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                01
+                @foreach (config('case_studies') as $slug => $study)
+                    <div
+                        class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-6">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
+                                    {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                                </div>
+                                <span
+                                    class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
+                                    Live Operational
+                                </span>
                             </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
 
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Seattle Mobility Solutions
-                        </h3>
+                            <h3 class="text-2xl font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors">
+                                {{ $study['name'] }}
+                            </h3>
+                            <p class="text-xs text-slate-400 mb-4">{{ $study['industry'] }}</p>
 
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            A specialized Non-Emergency Medical Transportation (NEMT) dispatch and fleet engine built
-                            for US healthcare corridors. Integrates wheelchair/gurney accessibility routing,
-                            facility-to-facility patient scheduling, automated dispatching algorithms, and
-                            HIPAA-compliant trip log management.
-                        </p>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">{{ $study['summary'] }}</p>
 
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Fleet
-                                Dispatch</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">NEMT
-                                Logistics</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Driver
-                                Portal</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">seattlemobilitysolutions.com</span>
-                        <a href="https://mobilityseattle.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 2: Ride Aide LLC --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                02
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                @foreach ($study['tags'] as $tag)
+                                    <span
+                                        class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">{{ $tag }}</span>
+                                @endforeach
                             </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
                         </div>
 
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Ride Aide LLC
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            An end-to-end transportation booking platform designed for medical appointments and senior
-                            transport. Features live GPS ride tracking, dynamic distance-based fare estimation,
-                            automated SMS notifications for patients, and driver shift optimization systems.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Live
-                                GPS Tracking</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Ride
-                                Booking</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Automated
-                                Dispatch</span>
+                        <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                            <a href="{{ route('studio.case-study', $slug) }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all">
+                                Read case study
+                            </a>
+                            <a href="{{ $study['url'] }}" target="_blank" rel="noopener noreferrer"
+                                class="text-xs text-slate-400 hover:text-amber-300 font-mono transition-colors">
+                                {{ $study['url_label'] }} &#8599;
+                            </a>
                         </div>
                     </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">rideaidellc.com</span>
-                        <a href="https://rideaidellc.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 3: GB Handyman LLC --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                03
-                            </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            GB Handyman LLC
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            An active home services booking and business management hub. Allows homeowners to request
-                            estimates, schedule contractor site visits, receive digital invoices, and track home
-                            improvement job progress in real time.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Quote
-                                Engine</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Job
-                                CRM</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Invoicing</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">gbhandymanllc.com</span>
-                        <a href="https://gbhandymanllc.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 4: Amazing Palace --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                04
-                            </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Amazing Palace
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            A full-stack luxury retail and e-commerce portal equipped with a product catalog showcase,
-                            online reservation systems, automated inventory control, and secure payment checkout
-                            integrations.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">E-Commerce</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Payment
-                                Gateway</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Inventory
-                                Management</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">amazingpalace.com</span>
-                        <a href="https://amazingpalace.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
+                @endforeach
             </div>
         </div>
     </section>
