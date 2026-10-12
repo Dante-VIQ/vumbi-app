@@ -22,10 +22,23 @@ class AdminNewLeadNotification extends Mailable
 
     public function envelope(): Envelope
     {
+        $recipients = config('mail.admin_email', ['bookings@vumbiventures.com']);
+
+        if (is_string($recipients)) {
+            $recipients = array_values(array_filter(array_map(
+                fn($email) => trim((string) $email),
+                preg_split('/\s*,\s*/', $recipients)
+            )));
+        }
+
+        if (! is_array($recipients) || $recipients === []) {
+            $recipients = ['bookings@vumbiventures.com'];
+        }
+
         return new Envelope(
             subject: "🔔 New Booking Lead: {$this->lead->package_title}",
             from: config('mail.from.address'),
-            to: config('mail.admin_email', 'bookings@vumbiventures.com'),
+            to: $recipients,
         );
     }
 

@@ -32,7 +32,7 @@ new class extends Component {
         $this->relatedCultures = Culture::where('id', '!=', $this->culture->id)
             ->when($location, function ($q) use ($location) {
                 $q->where('location', 'like', "%{$location}%")
-                  ->orWhere('name', 'like', "%{$location}%");
+                    ->orWhere('name', 'like', "%{$location}%");
             })
             ->latest()
             ->limit(3)
@@ -40,9 +40,9 @@ new class extends Component {
             ->all();
 
         $this->nearbyDestinations = Destination::when($location, function ($q) use ($location) {
-                $q->where('location', 'like', "%{$location}%")
-                  ->orWhere('name', 'like', "%{$location}%");
-            })
+            $q->where('location', 'like', "%{$location}%")
+                ->orWhere('name', 'like', "%{$location}%");
+        })
             ->limit(3)
             ->get()
             ->all();
@@ -86,7 +86,7 @@ new class extends Component {
 
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-        
+
         $encodedHtml = mb_convert_encoding($detail, 'HTML-ENTITIES', 'UTF-8');
         $dom->loadHTML($encodedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
@@ -164,7 +164,8 @@ new class extends Component {
             </nav>
 
             @if($culture->location)
-                <span class="inline-block text-xs font-semibold bg-white/80 backdrop-blur-sm border border-black/5 px-3.5 py-1.5 rounded-full shadow-sm mb-4 text-[#8B5A2B]">
+                <span
+                    class="inline-block text-xs font-semibold bg-white/80 backdrop-blur-sm border border-black/5 px-3.5 py-1.5 rounded-full shadow-sm mb-4 text-[#8B5A2B]">
                     📍 {{ $culture->location }}
                 </span>
             @endif
@@ -191,11 +192,12 @@ new class extends Component {
     {{-- Content Body & Sidebar Grid --}}
     <div class="container mx-auto px-6 py-4 max-w-7xl">
         <div class="grid lg:grid-cols-12 gap-10">
-            
+
             {{-- Main Story Article --}}
             <div class="lg:col-span-8">
                 <div class="bg-white p-8 sm:p-10 rounded-3xl border border-black/5 shadow-sm">
-                    <article class="prose prose-lg max-w-none prose-p:text-[#3A3A3A] prose-p:leading-relaxed prose-headings:text-[#1A1A1A] prose-a:text-[#8B5A2B]">
+                    <article
+                        class="prose prose-lg max-w-none prose-p:text-[#3A3A3A] prose-p:leading-relaxed prose-headings:text-[#1A1A1A] prose-a:text-[#8B5A2B]">
                         @if (!empty($this->contentBlocks))
                             @foreach ($this->contentBlocks as $block)
                                 {!! $block !!}
@@ -214,7 +216,7 @@ new class extends Component {
                                 class="w-9 h-9 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white transition">
                                 <span class="text-xs font-bold">X</span>
                             </a>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" 
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
                                 target="_blank" rel="noopener noreferrer"
                                 class="w-9 h-9 border border-black/10 rounded-full flex items-center justify-center hover:bg-[#8B5A2B] hover:text-white transition">
                                 <span class="text-xs font-bold">f</span>
@@ -244,13 +246,16 @@ new class extends Component {
                         <h3 class="font-bold text-lg text-[#1A1A1A] mb-4">Nearby Destinations</h3>
                         <div class="space-y-4">
                             @foreach ($nearbyDestinations as $dest)
-                                <a href="{{ route('destination.show', $dest['slug'] ?? $dest['id']) }}" class="flex gap-3 group items-center">
-                                    <div class="w-12 h-12 rounded-xl bg-zinc-100 overflow-hidden shrink-0 border border-black/5">
+                                <a href="{{ route('pages.destination', ['destination' => $dest['slug'] ?? $dest['id']]) }}"
+                                    class="flex gap-3 group items-center">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-zinc-100 overflow-hidden shrink-0 border border-black/5">
                                         <img src="{{ $this->resolveImageUrl($dest['media_path'] ?? $dest['image'] ?? null) }}"
-                                             class="w-full h-full object-cover">
+                                            class="w-full h-full object-cover">
                                     </div>
                                     <div>
-                                        <h4 class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-1">
+                                        <h4
+                                            class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-1">
                                             {{ $dest['name'] }}
                                         </h4>
                                         <p class="text-xs text-[#5C5C5C]">{{ $dest['location'] }}</p>
@@ -272,7 +277,8 @@ new class extends Component {
                                     data-gtag-event="affiliate_click"
                                     data-gtag-params="{{ json_encode(['placement' => 'culture_sidebar', 'offer' => $offer['title'] ?? null]) }}">
                                     <p class="font-semibold text-sm text-[#1A1A1A]">{{ $offer['title'] ?? 'Special Offer' }}</p>
-                                    <p class="text-xs text-[#8B5A2B] font-medium mt-1">{{ $offer['price'] ?? 'Check Availability' }}</p>
+                                    <p class="text-xs text-[#8B5A2B] font-medium mt-1">
+                                        {{ $offer['price'] ?? 'Check Availability' }}</p>
                                 </a>
                             @endforeach
                         </div>
@@ -286,7 +292,8 @@ new class extends Component {
                         <div class="space-y-4">
                             @foreach ($relatedCultures as $related)
                                 <a href="{{ route('cultures.show', $related['slug'] ?? $related['id']) }}" class="block group">
-                                    <h4 class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-2">
+                                    <h4
+                                        class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-2">
                                         {{ $related['name'] ?? $related['title'] }}
                                     </h4>
                                     <p class="text-xs text-[#5C5C5C] mt-1">📍 {{ $related['location'] ?? 'Regional' }}</p>

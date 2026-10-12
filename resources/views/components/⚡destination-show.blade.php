@@ -311,7 +311,7 @@ new class extends Component
                         <h3 class="font-bold text-lg text-[#1A1A1A] mb-4">Similar Destinations</h3>
                         <div class="space-y-4">
                             @foreach($relatedDestinations as $item)
-                                <a href="{{ route('destination.show', $item->slug ?? $item->id) }}" class="flex gap-3 group items-center">
+                                <a href="{{ route('pages.destination', ['destination' => $item->slug ?? $item->id]) }}" class="flex gap-3 group items-center">
                                     <div class="w-12 h-12 rounded-xl bg-zinc-200 overflow-hidden shrink-0">
                                         @if($item->media_path)
                                             <img src="{{ Storage::url($item->media_path) }}" class="w-full h-full object-cover">

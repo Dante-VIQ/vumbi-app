@@ -119,6 +119,9 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Vumbi Ventures'),
     ],
 
-    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbiventures.com'),
+    'admin_email' => array_values(array_filter(array_map(
+        fn($email) => trim((string) $email),
+        preg_split('/\s*,\s*/', (string) env('ADMIN_EMAIL', 'africa@vumbiventures.com'))
+    ))),
 
 ];
