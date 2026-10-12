@@ -20,7 +20,7 @@ class InquiryController extends Controller
         $validated = $request->validate([
             'destination'  => ['nullable', 'string', 'max:255'],
             'name'         => ['required', 'string', 'max:150'],
-            'email'        => ['required', 'email:rfc,dns', 'max:255'],
+            'email'        => ['required', 'email:rfc', 'max:255'],
             'phone'        => ['required', 'string', 'max:30'],
             'travel_month' => ['required', 'date_format:Y-m'],
             'travelers'    => ['required', 'integer', 'min:1', 'max:100'],
@@ -45,7 +45,6 @@ class InquiryController extends Controller
                 ->send(new SafariQuoteReceived($quote));
 
             return redirect()->back()->with('success', 'Your safari quote request has been sent! Our team will contact you shortly.');
-
         } catch (\Exception $e) {
             Log::error('Safari Quote Submission Error: ' . $e->getMessage());
 
