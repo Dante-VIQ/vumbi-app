@@ -24,6 +24,7 @@
     <meta name="twitter:description" content="@yield('twitter_description', $__env->yieldContent('description') ?: 'Authentic African safaris and custom tour itineraries.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     {{-- Canonical URL --}}
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
