@@ -522,14 +522,25 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label for="inq-month" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
-                    <input id="inq-month" type="month" name="travel_month" required
-                           value="{{ old('travel_month') }}"
-                           class="w-full border @error('travel_month') border-red-500 @else border-slate-300 @enderror
-                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
-                    @error('travel_month')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
-                </div>
+<div x-data="travelMonthPicker">
+    <label for="inq-month" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
+    <div class="relative">
+        <input
+            x-ref="input"
+            id="inq-month"
+            type="text"
+            name="travel_month"
+            required
+            readonly
+            placeholder="Select travel month"
+            value="{{ old('travel_month') }}"
+            class="w-full border @error('travel_month') border-red-500 @else border-slate-300 @enderror
+                   rounded-xl px-3.5 py-2.5 pr-10 text-sm bg-white cursor-pointer
+                   focus:ring-2 focus:ring-[#8B5A2B] outline-none">
+        <i class="fas fa-calendar-alt absolute right-3 top-1/2 -translate-y-1/2 text-[#8B5A2B] pointer-events-none text-sm"></i>
+    </div>
+    @error('travel_month')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+</div>
                 <div>
                     <label for="inq-travelers" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travelers Count</label>
                     <input id="inq-travelers" type="number" min="1" max="100" name="travelers" required

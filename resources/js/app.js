@@ -1,5 +1,52 @@
 import './bootstrap';
 
+import Alpine from 'alpinejs';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
+import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect';
+import 'flatpickr/dist/plugins/monthSelect/style.css';
+
+window.Alpine = Alpine;
+window.flatpickr = flatpickr;
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('travelMonthPicker', () => ({
+        picker: null,
+
+        init() {
+            this.picker = flatpickr(this.$refs.input, {
+                plugins: [
+                    new monthSelectPlugin({
+                        shorthand: true,
+                        dateFormat: 'Y-m',      // value submitted to Laravel
+                        altFormat: 'F Y',       // what the user sees: "April 2026"
+                    }),
+                ],
+                minDate: 'today',               // no past months
+                maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)),
+                disableMobile: true,            // use Flatpickr even on phones — consistent UI
+                allowInput: false,              // read-only, forces the picker
+                defaultDate: this.$refs.input.value || null,
+            });
+
+            // Sync back to Alpine when user picks
+            this.picker.config.onChange.push((_, str) => {
+                this.$refs.input.value = str;
+            });
+        },
+
+        reset() {
+            if (this.picker) {
+                this.picker.clear();
+                this.$refs.input.value = '';
+            }
+        },
+    }));
+
+    Alpine.start();
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const track = document.getElementById('slider-track');
     const slides = document.querySelectorAll('#slider-track > div');

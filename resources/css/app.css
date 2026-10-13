@@ -91,3 +91,67 @@ body {
     max-width: 100%;
     height: auto;
 }
+
+
+/* Flatpickr — Vumbi Ventures brand skin */
+.flatpickr-calendar {
+    border-radius: 14px;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    font-family: inherit;
+    padding: 6px;
+}
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: #1A1A1A;
+    font-weight: 800;
+}
+.flatpickr-current-month {
+    font-size: 15px;
+    padding-top: 10px;
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    padding-top: 14px;
+    color: #8B5A2B;
+}
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #6B3E1A;
+}
+.flatpickr-monthSelect-months {
+    margin: 10px 1px 3px;
+}
+.flatpickr-monthSelect-month {
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    color: #1A1A1A;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    margin: 2px;
+    padding: 10px 8px;
+    width: calc(33.33% - 6px);
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+}
+.flatpickr-monthSelect-month:hover,
+.flatpickr-monthSelect-month:focus {
+    background: #FCFAF7;
+    color: #8B5A2B;
+    outline: none;
+}
+.flatpickr-monthSelect-month.selected {
+    background: #8B5A2B;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(139, 90, 43, 0.25);
+}
+.flatpickr-monthSelect-month.today {
+    box-shadow: inset 0 0 0 2px #E8D5BE;
+}
+.flatpickr-monthSelect-month.flatpickr-disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+    background: transparent;
+}
