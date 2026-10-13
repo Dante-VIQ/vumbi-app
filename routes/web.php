@@ -50,6 +50,9 @@ Route::post('/inquiry/send-quote', [InquiryController::class, 'sendQuote'])
     ->middleware('throttle:5,1')
     ->name('inquiry.send-quote');
 
+Route::get('/inquiry/thank-you/{quote}', [InquiryController::class, 'thankYou'])
+    ->name('inquiry.thank-you');
+
 Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact')->name('contact');

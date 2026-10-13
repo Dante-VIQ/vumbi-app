@@ -1,5 +1,22 @@
-<div x-data="{ inquiryModal: false, selectedDestination: '' }">
+<div x-data="{
+        inquiryModal: {{ $errors->any() ? 'true' : 'false' }},
+        selectedDestination: {{ old('destination') ? json_encode(old('destination')) : "''" }}
+     }">
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)"
+            class="bg-emerald-600 text-white text-sm font-semibold px-6 py-3 text-center">
+            {{ session('success') }}
+            <button @click="show = false" class="ml-4 font-bold">&times;</button>
+        </div>
+    @endif
 
+    @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 12000)"
+            class="bg-red-600 text-white text-sm font-semibold px-6 py-3 text-center">
+            {{ session('error') }}
+            <button @click="show = false" class="ml-4 font-bold">&times;</button>
+        </div>
+    @endif
     {{-- ================= 1. HERO SECTION (PARTNER & AGGREGATOR MODEL) ================= --}}
     <section x-data="{
                 currentSlide: 0,
@@ -274,7 +291,8 @@
                                 {{ $dest['name'] }}
                             </h3>
                             <p class="text-[#8B5A2B] text-xs font-semibold mt-1"><i class="fas fa-map-marker-alt"></i>
-                                {{ $dest['location'] }}</p>
+                                {{ $dest['location'] }}
+                            </p>
                             <p class="text-sm text-[#5C5C5C] mt-3 leading-relaxed">
                                 {{ $dest['description'] }}
                             </p>
@@ -282,17 +300,15 @@
                     </div>
 
                     {{-- Action Row: lead capture is the primary path (it keeps the visitor
-                         in our funnel and lets us follow up), the affiliate booking link is
-                         a clearly secondary, lower-emphasis option for visitors who already
-                         know they want to book instantly. --}}
+                    in our funnel and lets us follow up), the affiliate booking link is
+                    a clearly secondary, lower-emphasis option for visitors who already
+                    know they want to book instantly. --}}
                     <div class="p-6 pt-0 flex flex-col gap-2">
-                        <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
+                        <button @click.stop="inquiryModal = true; selectedDestination = @js($dest['name'])"
                             class="w-full py-3 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-paper-plane"></i> Request Partner Quote
                         </button>
-                        <a href="{{ $dest['link'] }}"
-                            target="_blank"
-                            rel="nofollow sponsored"
+                        <a href="{{ $dest['link'] }}" target="_blank" rel="nofollow sponsored"
                             title="Book directly on our affiliate partner's site"
                             class="text-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline py-1 transition"
                             data-gtag-event="affiliate_click"
@@ -417,79 +433,132 @@
     </section>
 
     {{-- ================= 7. RAPID INQUIRY MODAL ================= --}}
-    <div x-show="inquiryModal" x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" x-cloak>
+<div x-show="inquiryModal"
+     x-cloak
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="inquiry-title"
+     @keydown.escape.window="inquiryModal = false"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
 
-        <div @click.away="inquiryModal = false"
-            class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative">
-            <button @click="inquiryModal = false"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">
-                &times;
-            </button>
+    <div @click.away="inquiryModal = false"
+         x-data="{ submitting: false }"
+         class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
 
-            <div class="mb-6">
-                <span class="text-xs font-bold text-[#8B5A2B] uppercase tracking-wider">Fast Response Guaranteed</span>
-                <h3 class="text-2xl font-extrabold text-slate-900 mt-1">Partner Tour & Safari Quote</h3>
-                <p class="text-xs text-slate-500">Inquiring for: <span class="font-bold text-slate-800"
-                        x-text="selectedDestination"></span></p>
+        <button type="button" @click="inquiryModal = false"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold"
+                aria-label="Close">&times;</button>
+
+        <div class="mb-6">
+            <span class="text-xs font-bold text-[#8B5A2B] uppercase tracking-wider">Fast Response Guaranteed</span>
+            <h3 id="inquiry-title" class="text-2xl font-extrabold text-slate-900 mt-1">
+                Partner Tour & Safari Quote
+            </h3>
+            <p class="text-xs text-slate-500">Inquiring for:
+                <span class="font-bold text-slate-800" x-text="selectedDestination || 'General Inquiry'"></span>
+            </p>
+        </div>
+
+        {{-- Validation error summary --}}
+        @if($errors->any())
+            <div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
+                <ul class="list-disc list-inside space-y-0.5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('inquiry.send-quote') }}"
+              method="POST"
+              class="space-y-4"
+              @submit="submitting = true">
+            @csrf
+
+            <input type="hidden" name="destination" x-model="selectedDestination">
+
+            {{-- Honeypot --}}
+            <div class="hidden" aria-hidden="true">
+                <label>Website</label>
+                <input type="text" name="website" tabindex="-1" autocomplete="off">
             </div>
 
-            <form action="/inquiry/send-quote" method="POST" class="space-y-4">
-                @csrf
-                <input type="hidden" name="destination" x-model="selectedDestination">
+            <div>
+                <label for="inq-name" class="block text-xs font-bold text-slate-700 uppercase mb-1">Your Full Name</label>
+                <input id="inq-name" type="text" name="name" required
+                       value="{{ old('name') }}"
+                       class="w-full border @error('name') border-red-500 @else border-slate-300 @enderror
+                              rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                       placeholder="e.g. Jane Doe">
+                @error('name')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
 
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Your Full Name</label>
-                    <input type="text" name="name" required
-                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                        placeholder="e.g. Jane Doe">
+                    <label for="inq-email" class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+                    <input id="inq-email" type="email" name="email" required
+                           value="{{ old('email') }}"
+                           class="w-full border @error('email') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                           placeholder="jane@example.com">
+                    @error('email')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
-                        <input type="email" name="email" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                            placeholder="jane@example.com">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp / Phone</label>
-                        <input type="tel" name="phone" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                            placeholder="+254 7...">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
-                        <input type="month" name="travel_month" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Travelers Count</label>
-                        <input type="number" min="1" name="travelers" value="2" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
-                    </div>
-                </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Special Requests /
-                        Preferences</label>
-                    <textarea name="notes" rows="2"
-                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                        placeholder="e.g. Need 4x4 Land Cruiser transfer from Nakuru, luxury lodge preferences..."></textarea>
+                    <label for="inq-phone" class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp / Phone</label>
+                    <input id="inq-phone" type="tel" name="phone" required
+                           value="{{ old('phone') }}"
+                           class="w-full border @error('phone') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                           placeholder="+254 7...">
+                    @error('phone')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
+            </div>
 
-                <button type="submit"
-                    class="w-full py-3.5 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white font-bold rounded-xl transition shadow-md">
-                    Submit Safari Quote Request
-                </button>
-            </form>
-        </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="inq-month" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
+                    <input id="inq-month" type="month" name="travel_month" required
+                           value="{{ old('travel_month') }}"
+                           class="w-full border @error('travel_month') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
+                    @error('travel_month')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label for="inq-travelers" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travelers Count</label>
+                    <input id="inq-travelers" type="number" min="1" max="100" name="travelers" required
+                           value="{{ old('travelers', 2) }}"
+                           class="w-full border @error('travelers') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
+                    @error('travelers')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div>
+                <label for="inq-notes" class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                    Special Requests / Preferences
+                </label>
+                <textarea id="inq-notes" name="notes" rows="2"
+                          class="w-full border @error('notes') border-red-500 @else border-slate-300 @enderror
+                                 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                          placeholder="e.g. Need 4x4 Land Cruiser transfer from Nakuru, luxury lodge preferences...">{{ old('notes') }}</textarea>
+                @error('notes')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <button type="submit" :disabled="submitting"
+                    class="w-full py-3.5 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white font-bold rounded-xl
+                           transition shadow-md disabled:opacity-60 disabled:cursor-not-allowed">
+                <span x-show="!submitting">Submit Safari Quote Request</span>
+                <span x-show="submitting" x-cloak>Sending…</span>
+            </button>
+        </form>
     </div>
+</div>
 
 </div>

@@ -70,4 +70,10 @@ class SafariQuote extends Model
             }
         );
     }
+
+    /** Human-friendly reference like VV-2026-000123 */
+    public function getReferenceAttribute(): string
+    {
+        return sprintf('VV-%s-%06d', $this->created_at?->format('Y') ?? date('Y'), $this->id);
+    }
 }
