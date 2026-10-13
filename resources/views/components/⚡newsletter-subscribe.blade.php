@@ -56,10 +56,10 @@ new class extends Component {
 
         $this->message = $successMessage;
         $this->messageType = 'success';
-        $this->email = '';
+        // $this->email = '';
 
         $this->reset('email');
-        
+
         if ($subscriber->wasRecentlyCreated) {
             $this->dispatch('newsletter-subscribed', placement: $this->placement);
 
