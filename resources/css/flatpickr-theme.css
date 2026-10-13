@@ -215,16 +215,8 @@ span.flatpickr-weekday {
     outline: none !important;
 }
 
-.flatpickr-monthSelect-month.selected {
-    background: #8B5A2B !important;
-    border-color: #8B5A2B !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 10px rgba(139, 90, 43, 0.25) !important;
-}
-
-.flatpickr-monthSelect-month.today {
-    box-shadow: inset 0 0 0 2px #E8D5BE !important;
-}
+.flatpickr-monthSelect-month.today { box-shadow: inset 0 0 0 2px #E8D5BE !important; }
+.flatpickr-monthSelect-month.selected { box-shadow: 0 4px 10px rgba(139,90,43,.25) !important; }
 
 .flatpickr-monthSelect-month.flatpickr-disabled,
 .flatpickr-monthSelect-month.flatpickr-disabled:hover {

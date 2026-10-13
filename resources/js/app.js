@@ -58,15 +58,23 @@ Alpine.data('travelMonthPicker', () => ({
             onOpen: (selectedDates, dateStr, instance) => {
                 const cal = instance.calendarContainer;
 
-                // Center it in the viewport.
-                cal.style.position = 'fixed';
-                cal.style.top = '50%';
-                cal.style.left = '50%';
-                cal.style.transform = 'translate(-50%, -50%)';
-                cal.style.margin = '0';
+                // Prevent the initial layout jump while Flatpickr mounts the popup.
+                cal.style.visibility = 'hidden';
+                cal.style.opacity = '0';
 
-                // Add the pop-in animation class.
-                cal.classList.add('flatpickr-calendar--centered');
+                requestAnimationFrame(() => {
+                    cal.style.position = 'fixed';
+                    cal.style.top = '50%';
+                    cal.style.left = '50%';
+                    cal.style.transform = 'translate(-50%, -50%)';
+                    cal.style.margin = '0';
+                    cal.style.opacity = '1';
+                    cal.style.visibility = 'visible';
+
+                    cal.classList.remove('flatpickr-calendar--centered');
+                    void cal.offsetWidth;
+                    cal.classList.add('flatpickr-calendar--centered');
+                });
 
                 // Lock scroll + show backdrop.
                 document.body.style.overflow = 'hidden';
