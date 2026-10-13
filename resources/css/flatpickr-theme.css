@@ -241,3 +241,69 @@ span.flatpickr-weekday {
     outline: 2px solid #8B5A2B !important;
     outline-offset: -2px !important;
 }
+
+/* ============================================================
+ *  Centered-modal presentation
+ * ============================================================ */
+
+/* Backdrop behind the calendar */
+.flatpickr-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 17, 17, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.flatpickr-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Pop-in animation for the centered calendar */
+.flatpickr-calendar--centered {
+    animation: flatpickr-pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes flatpickr-pop-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Keep the calendar from ever exceeding the viewport on small screens */
+.flatpickr-calendar--centered {
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    z-index: 10001 !important;  
+}
+
+/* Slightly larger padding since it's now a "dialog" */
+.flatpickr-calendar--centered {
+    padding: 14px 12px !important;
+    min-width: 340px !important;
+}
+
+/* Mobile — narrower, tighter padding */
+@media screen and (max-width: 480px) {
+    .flatpickr-calendar--centered {
+        width: calc(100vw - 32px) !important;
+        min-width: 0 !important;
+        max-width: 360px !important;
+        padding: 12px 8px !important;
+    }
+
+    .flatpickr-monthSelect-month {
+        padding: 14px 6px !important;
+        font-size: 14px !important;
+    }
+}

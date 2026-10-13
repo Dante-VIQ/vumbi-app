@@ -22,47 +22,88 @@ window.monthSelectPlugin = monthSelectPlugin;
  * ============================================================ */
 document.addEventListener('alpine:init', () => {
 
-    Alpine.data('travelMonthPicker', () => ({
-        picker: null,
+Alpine.data('travelMonthPicker', () => ({
+    picker: null,
+    backdrop: null,
 
-        init() {
-            if (!this.$refs.input) return;
+    init() {
+        if (!this.$refs.input) return;
 
-            this.picker = window.flatpickr(this.$refs.input, {
-                plugins: [
-                    new window.monthSelectPlugin({
-                        shorthand: true,
-                        dateFormat: 'Y-m',
-                        altFormat: 'F Y',
-                    }),
-                ],
-                minDate: 'today',
-                maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)),
-                disableMobile: true,
-                allowInput: false,
-                defaultDate: this.$refs.input.value || null,
-                static: true,
-                positionElement: this.$refs.input,
-                onChange: (selectedDates, dateStr) => {
-                    this.$refs.input.value = dateStr;
-                },
-            });
-        },
+        // Create the backdrop once, before Flatpickr opens.
+        this.backdrop = document.createElement('div');
+        this.backdrop.className = 'flatpickr-backdrop';
+        this.backdrop.setAttribute('aria-hidden', 'true');
+        this.backdrop.addEventListener('click', () => this.picker && this.picker.close());
+        document.body.appendChild(this.backdrop);
 
-        destroy() {
-            if (this.picker) {
-                this.picker.destroy();
-                this.picker = null;
-            }
-        },
+        this.picker = window.flatpickr(this.$refs.input, {
+            plugins: [
+                new window.monthSelectPlugin({
+                    shorthand: true,
+                    dateFormat: 'Y-m',
+                    altFormat: 'F Y',
+                }),
+            ],
+            minDate: 'today',
+            maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)),
+            disableMobile: true,
+            allowInput: false,
+            defaultDate: this.$refs.input.value || null,
 
-        reset() {
-            if (this.picker) {
-                this.picker.clear();
-                this.$refs.input.value = '';
-            }
-        },
-    }));
+            // Send the calendar to <body> so we can center it independently
+            // of the modal's stacking context.
+            static: false,
+            appendTo: document.body,
+
+            onOpen: (selectedDates, dateStr, instance) => {
+                const cal = instance.calendarContainer;
+
+                // Center it in the viewport.
+                cal.style.position = 'fixed';
+                cal.style.top = '50%';
+                cal.style.left = '50%';
+                cal.style.transform = 'translate(-50%, -50%)';
+                cal.style.margin = '0';
+
+                // Add the pop-in animation class.
+                cal.classList.add('flatpickr-calendar--centered');
+
+                // Lock scroll + show backdrop.
+                document.body.style.overflow = 'hidden';
+                this.backdrop.classList.add('is-open');
+            },
+
+            onClose: () => {
+                // Unlock scroll + hide backdrop.
+                document.body.style.overflow = '';
+                this.backdrop.classList.remove('is-open');
+            },
+
+            onChange: (selectedDates, dateStr) => {
+                this.$refs.input.value = dateStr;
+                // Auto-close on selection — standard modal behaviour.
+                this.picker.close();
+            },
+        });
+    },
+
+    destroy() {
+        if (this.picker) {
+            this.picker.destroy();
+            this.picker = null;
+        }
+        if (this.backdrop && this.backdrop.parentNode) {
+            this.backdrop.parentNode.removeChild(this.backdrop);
+        }
+    },
+
+    reset() {
+        if (this.picker) {
+            this.picker.clear();
+            this.$refs.input.value = '';
+        }
+    },
+}));
 
     Alpine.data('travelDateRange', () => ({
         picker: null,

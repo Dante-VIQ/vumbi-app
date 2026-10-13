@@ -433,7 +433,7 @@
     </section>
 
     {{-- ================= 7. RAPID INQUIRY MODAL ================= --}}
-<div x-show="inquiryModal"
+<div x-show="inquiryModal" @click.self="inquiryModal = false"
      x-cloak
      role="dialog"
      aria-modal="true"
@@ -447,8 +447,7 @@
      x-transition:leave-end="opacity-0"
      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
 
-    <div @click.away="inquiryModal = false"
-         x-data="{ submitting: false }"
+   <div x-data="{ submitting: false }"
          class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
 
         <button type="button" @click="inquiryModal = false"
