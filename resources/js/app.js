@@ -1,39 +1,59 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect';
 import 'flatpickr/dist/plugins/monthSelect/style.css';
 
+// Brand skin — imported last so it wins the cascade over Tailwind Preflight.
+import '../css/flatpickr-theme.css';
+
 window.Alpine = Alpine;
 window.flatpickr = flatpickr;
+window.monthSelectPlugin = monthSelectPlugin;
 
+/* ============================================================
+ *  Register every Alpine component inside `alpine:init`.
+ *  Do NOT call Alpine.start() in here — Alpine.start() is what
+ *  fires this event, so calling it again recurses infinitely.
+ * ============================================================ */
 document.addEventListener('alpine:init', () => {
+
     Alpine.data('travelMonthPicker', () => ({
         picker: null,
 
         init() {
-            this.picker = flatpickr(this.$refs.input, {
+            if (!this.$refs.input) return;
+
+            this.picker = window.flatpickr(this.$refs.input, {
                 plugins: [
-                    new monthSelectPlugin({
+                    new window.monthSelectPlugin({
                         shorthand: true,
-                        dateFormat: 'Y-m',      // value submitted to Laravel
-                        altFormat: 'F Y',       // what the user sees: "April 2026"
+                        dateFormat: 'Y-m',
+                        altFormat: 'F Y',
                     }),
                 ],
-                minDate: 'today',               // no past months
+                minDate: 'today',
                 maxDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)),
-                disableMobile: true,            // use Flatpickr even on phones — consistent UI
-                allowInput: false,              // read-only, forces the picker
+                disableMobile: true,
+                allowInput: false,
                 defaultDate: this.$refs.input.value || null,
+                static: true,
+                positionElement: this.$refs.input,
+                onChange: (selectedDates, dateStr) => {
+                    this.$refs.input.value = dateStr;
+                },
             });
+        },
 
-            // Sync back to Alpine when user picks
-            this.picker.config.onChange.push((_, str) => {
-                this.$refs.input.value = str;
-            });
+        destroy() {
+            if (this.picker) {
+                this.picker.destroy();
+                this.picker = null;
+            }
         },
 
         reset() {
@@ -44,94 +64,42 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
-    Alpine.start();
+    Alpine.data('travelDateRange', () => ({
+        picker: null,
+
+        init() {
+            if (!this.$refs.start) return;
+
+            this.picker = window.flatpickr(this.$refs.start, {
+                mode: 'range',
+                minDate: 'today',
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'D, d M Y',
+                disableMobile: true,
+                static: true,
+                onChange: (dates) => {
+                    this.$refs.start.value = dates[0]
+                        ? this.picker.formatDate(dates[0], 'Y-m-d')
+                        : '';
+                    this.$refs.end.value = dates[1]
+                        ? this.picker.formatDate(dates[1], 'Y-m-d')
+                        : '';
+                },
+            });
+        },
+
+        destroy() {
+            if (this.picker) {
+                this.picker.destroy();
+                this.picker = null;
+            }
+        },
+    }));
+
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const track = document.getElementById('slider-track');
-    const slides = document.querySelectorAll('#slider-track > div');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const dotsContainer = document.getElementById('dots-container');
-
-    let currentIndex = 0;
-    const slideCount = slides.length;
-
-    if (slideCount === 0) return;
-
-    // Create Dots
-    function createDots() {
-        dotsContainer.innerHTML = '';
-        for (let i = 0; i < slideCount; i++) {
-            const dot = document.createElement('button');
-            dot.className = `w-3 h-3 rounded-full transition-all ${i === 0 ? 'bg-[#8B5A2B] scale-110' : 'bg-gray-300'}`;
-            dot.addEventListener('click', () => goToSlide(i));
-            dotsContainer.appendChild(dot);
-        }
-    }
-
-    // Go to specific slide
-    function goToSlide(index) {
-        currentIndex = index;
-        track.style.transform = `translateX(-${currentIndex * 100}%)`;
-        updateDots();
-    }
-
-    // Update active dot
-    function updateDots() {
-        const dots = dotsContainer.querySelectorAll('button');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('bg-[#8B5A2B]', i === currentIndex);
-            dot.classList.toggle('scale-110', i === currentIndex);
-            dot.classList.toggle('bg-gray-300', i !== currentIndex);
-        });
-    }
-
-    // Next & Previous
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % slideCount;
-        goToSlide(currentIndex);
-    }
-
-    function prevSlide() {
-        currentIndex = (currentIndex - 1 + slideCount) % slideCount;
-        goToSlide(currentIndex);
-    }
-
-    // Event Listeners
-    nextBtn.addEventListener('click', nextSlide);
-    prevBtn.addEventListener('click', prevSlide);
-
-    // Auto-play (optional but recommended)
-    let autoplayInterval;
-    function startAutoplay() {
-        autoplayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
-    }
-
-    function stopAutoplay() {
-        clearInterval(autoplayInterval);
-    }
-
-    // Touch swipe support (basic)
-    let touchStartX = 0;
-    track.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        stopAutoplay();
-    });
-
-    track.addEventListener('touchend', (e) => {
-        const touchEndX = e.changedTouches[0].screenX;
-        if (touchStartX - touchEndX > 50) nextSlide();
-        if (touchEndX - touchStartX > 50) prevSlide();
-        startAutoplay();
-    });
-
-    // Pause autoplay on hover
-    const sliderContainer = document.getElementById('hero-slider');
-    sliderContainer.addEventListener('mouseenter', stopAutoplay);
-    sliderContainer.addEventListener('mouseleave', startAutoplay);
-
-    // Initialize
-    createDots();
-    startAutoplay();
-});
+/* ============================================================
+ *  Start Alpine exactly ONCE, at the bottom, outside listeners.
+ * ============================================================ */
+Alpine.start();
