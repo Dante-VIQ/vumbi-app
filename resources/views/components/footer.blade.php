@@ -75,6 +75,7 @@
                             </svg></a></li>
                     <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
                     <li><a href="/tours" class="hover:text-white transition">Plan Trip</a></li>
+                    <li><a href="{{ route('safari-checklist') }}" class="hover:text-white transition">Free Safari Checklist</a></li>
                     <li><a href="/destinations" class="hover:text-white transition">Explore Destinations</a></li>
                     <li><a href="/studio" class="hover:text-white transition">Our Studio</a></li>
                 </ul>
