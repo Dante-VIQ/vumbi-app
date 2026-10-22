@@ -106,5 +106,5 @@ new class extends Component {
         </button>
     </form>
     @error('email') <span class="{{ $errorClasses }}">{{ $message }}</span> @enderror
-    <p class="text-xs mt-3 {{ $noteClasses }}">We respect your privacy. Unsubscribe at any time. <a href="{{ route('privacy') }}" class="underline hover:opacity-80">Privacy policy</a></p>
+    <p class="text-xs mt-3 {{ $noteClasses }}">Includes our free Kenya first-safari planning checklist. We respect your privacy. Unsubscribe at any time. <a href="{{ route('privacy') }}" class="underline hover:opacity-80">Privacy policy</a></p>
 </div>

@@ -47,21 +47,21 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
                         </span>
-                        <span>VUMBI VENTURES • EAST AFRICA TRAVEL & TRANSPORT AGGREGATOR</span>
+                        <span>VUMBI VENTURES • EAST AFRICA SAFARI PLANNING</span>
                     </div>
 
                     <h1
                         class="text-4xl sm:text-6xl lg:text-7xl xl:text-[4.1rem] leading-[1.08] font-black tracking-tight text-[#1A1A1A]">
-                        Discover Africa.<br>
+                        Plan Your First East Africa Safari.<br>
                         <span class="text-[#8B5A2B] relative inline-block">
-                            Book Verified Partner Deals.
+                            Book With Trusted Local Partners.
                             <span class="absolute -bottom-1 left-0 h-[3px] w-full bg-[#D98C5F]/40 rounded"></span>
                         </span>
                     </h1>
 
                     <p class="max-w-lg mx-auto lg:mx-0 text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
-                        We connect you directly with vetted 4x4 transport operators, safari guides, and exclusive travel
-                        deals across Kenya and East Africa.
+                        Honest guides, prices shown upfront, and vetted local operators across Kenya and East Africa, so you can
+                        choose and book with confidence.
                     </p>
 
                     {{-- Direct Action Buttons --}}
@@ -69,16 +69,21 @@
                         <button @click="inquiryModal = true; selectedDestination = 'Hero Section Inquiry'"
                             class="px-8 py-4 bg-[#8B5A2B] hover:bg-[#6B3E1A] text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-[#8B5A2B]/20 hover:scale-[1.02]">
                             <i class="fas fa-paper-plane text-sm"></i>
-                            Get Custom Partner Quote
+                            Get a Free Safari Quote
                         </button>
 
-                        <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
+                        <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
                             target="_blank"
                             class="px-6 py-4 border border-emerald-600/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp text-lg text-emerald-600"></i>
                             WhatsApp Chat
                         </a>
                     </div>
+                    <p class="text-sm text-gray-600 text-center lg:text-left">
+                        Planning your first safari?
+                        <a href="{{ route('safari-checklist') }}" class="font-semibold text-[#8B5A2B] underline underline-offset-2 hover:opacity-80"
+                            data-gtag-event="checklist_click" data-gtag-params='{"placement":"homepage_hero"}'>Get the free Kenya first-safari checklist →</a>
+                    </p>
 
                     {{-- Partner Trust Metrics --}}
                     <div class="grid grid-cols-3 gap-4 pt-4 border-t border-black/5 max-w-lg mx-auto lg:mx-0">
@@ -88,14 +93,14 @@
                                 Partners</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Best</div>
-                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Affiliate
-                                Rates</div>
+                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Upfront</div>
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Starting
+                                Prices</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">100%</div>
-                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Curated
-                                Trips</div>
+                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Hand-picked</div>
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Safari
+                                Itineraries</div>
                         </div>
                     </div>
                 </div>
@@ -344,9 +349,9 @@
                         class="w-12 h-12 bg-[#8B5A2B]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#8B5A2B] text-xl">
                         <i class="fas fa-tags"></i>
                     </div>
-                    <h3 class="font-bold text-[#1A1A1A]">Curated Affiliate Deals</h3>
-                    <p class="text-xs text-[#5C5C5C] mt-2 leading-relaxed">Access direct partner pricing and exclusive
-                        travel discounts via our global travel affiliate network.</p>
+                    <h3 class="font-bold text-[#1A1A1A]">Prices You Can See</h3>
+                    <p class="text-xs text-[#5C5C5C] mt-2 leading-relaxed">See starting prices upfront and book through
+                        established global travel platforms.</p>
                 </div>
                 <div class="p-6 rounded-2xl bg-[#FCFAF7] border border-amber-900/5">
                     <div
@@ -423,7 +428,7 @@
                     class="w-full sm:w-auto px-8 py-4 bg-[#8B5A2B] hover:bg-[#A87A4D] text-white font-bold rounded-xl transition shadow-lg shadow-[#8B5A2B]/30">
                     <i class="fas fa-calendar-alt mr-2"></i> Request Custom Itinerary Quote
                 </button>
-                <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
                     target="_blank"
                     class="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
                     <i class="fab fa-whatsapp text-lg"></i> Chat Instantly on WhatsApp
@@ -557,7 +562,7 @@
                 <textarea id="inq-notes" name="notes" rows="2"
                           class="w-full border @error('notes') border-red-500 @else border-slate-300 @enderror
                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                          placeholder="e.g. Need 4x4 Land Cruiser transfer from Nakuru, luxury lodge preferences...">{{ old('notes') }}</textarea>
+                          placeholder="e.g. First safari, 5 nights, interested in Maasai Mara and Amboseli, mid-range lodges...">{{ old('notes') }}</textarea>
                 @error('notes')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 

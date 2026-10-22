@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Request Received — Vumbi Ventures</title>
+    <meta name="robots" content="noindex, nofollow">
     @vite(['resources/css/app.css'])
+    @include('partials.gtag')
 </head>
 <body class="bg-[#F8F5F2] min-h-screen flex items-center justify-center p-6">
 
@@ -42,7 +44,7 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-3 mt-4">
-            <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20my%20reference%20is%20{{ $quote->reference }}"
+            <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20my%20reference%20is%20{{ $quote->reference }}"
                target="_blank"
                class="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-center">
                 WhatsApp Us
@@ -52,7 +54,31 @@
                 Back to Home
             </a>
         </div>
+
+        <p class="text-sm text-slate-600 mt-6">
+            While you wait:
+            <a href="{{ route('safari-checklist') }}" class="font-semibold text-[#8B5A2B] underline"
+               data-gtag-event="checklist_click" data-gtag-params='{"placement":"quote_thank_you"}'>use our free Kenya first-safari checklist</a>.
+        </p>
     </div>
 
+    @include('partials.analytics-events')
+    {{-- The quote request is the main conversion. Fire once per request: a refresh must not double count. --}}
+    <script>
+        (function () {
+            var ref = @json($quote->reference);
+            var key = 'lead_tracked_' + ref;
+            try { if (sessionStorage.getItem(key)) return; } catch (e) {}
+            if (typeof gtag === 'function') {
+                gtag('event', 'generate_lead', {
+                    lead_type: 'safari_quote',
+                    destination: @json($quote->destination),
+                    travelers: @json((int) $quote->travelers),
+                    travel_month: @json($quote->travel_month),
+                });
+                try { sessionStorage.setItem(key, '1'); } catch (e) {}
+            }
+        })();
+    </script>
 </body>
 </html>

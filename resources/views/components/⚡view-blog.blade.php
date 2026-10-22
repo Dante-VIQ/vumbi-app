@@ -525,7 +525,7 @@ new class extends Component
                                 <div class="not-prose my-10 bg-[#F5EFE6] border border-[#8B5A2B]/15 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
                                     <div class="flex-1">
                                         <h3 class="font-semibold text-lg text-[#1A1A1A] mb-1">Enjoying this so far?</h3>
-                                        <p class="text-sm text-[#5C5C5C] leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox.</p>
+                                        <p class="text-sm text-[#5C5C5C] leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox. Includes our free Kenya first-safari checklist.</p>
                                     </div>
                                     <div class="w-full md:w-72 shrink-0">
                                         <livewire:newsletter-subscribe variant="light" placement="inline" :key="'newsletter-inline-' . $blog->id" />
