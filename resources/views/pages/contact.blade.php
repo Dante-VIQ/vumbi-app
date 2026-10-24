@@ -148,7 +148,7 @@
                 <ul class="text-xs text-[#5C5C5C] space-y-2 mb-8 bg-[#FCFAF7] p-4 rounded-xl">
                     <li class="flex items-start gap-2">
                         <span class="text-[#8B5A2B] font-bold">✓</span>
-                        <span><strong>20-min Briefing:</strong> Logistics, seasonal movements, & transparent pricing ($500–$5,000+/person).</span>
+                        <span><strong>20-min Briefing:</strong> Logistics, seasonal movements, & transparent pricing (from about $80/person for day trips and coastal stays to $500–$5,000+/person for multi-day safaris).</span>
                     </li>
                 </ul>
             </div>
@@ -302,7 +302,7 @@
                     </div>
                 </div>
                 <p class="text-xs text-[#5C5C5C] mb-4">Skip the email queue for quick service questions or urgent updates.</p>
-                <a href="https://wa.me/254734591543" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 text-sm font-medium bg-green-600 text-white w-full py-2.5 rounded-xl hover:bg-green-700 transition">
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}" target="_blank" rel="noopener" data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"contact_page"}' class="inline-flex items-center justify-center gap-2 text-sm font-medium bg-green-600 text-white w-full py-2.5 rounded-xl hover:bg-green-700 transition">
                     Start WhatsApp Chat →
                 </a>
             </div>

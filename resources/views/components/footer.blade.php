@@ -96,9 +96,9 @@
             <p>&copy; {{ date('Y') }} Vumbi Ventures. All rights reserved. Built from the spirit of Africa.</p>
             <div class="flex gap-6 mt-4 md:mt-0">
                 <a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy Policy</a>
-                <a href="/" class="hover:text-white transition">Terms of Service</a>
+                <a href="{{ route('terms') }}" class="hover:text-white transition">Terms of Service</a>
                 <a href="/portfolio" class="hover:text-white transition">Portfolio</a>
-                <a href="/" class="hover:text-white transition">Sitemap</a>
+                <a href="{{ url('/sitemap.xml') }}" class="hover:text-white transition">Sitemap</a>
             </div>
         </div>
     </div>

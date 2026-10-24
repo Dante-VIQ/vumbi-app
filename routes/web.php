@@ -57,6 +57,7 @@ Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy-policy', 'pages.privacy')->name('privacy');
+Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/safari-checklist', 'pages.safari-checklist')->name('safari-checklist');
 Route::get('/newsletter/unsubscribe/{id}', [\App\Http\Controllers\NewsletterUnsubscribeController::class, 'show'])
     ->whereNumber('id')->middleware('signed')->name('newsletter.unsubscribe');

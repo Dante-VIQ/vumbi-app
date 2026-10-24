@@ -145,7 +145,7 @@
             </div>
 
             <div style="text-align: center; margin-bottom: 16px;">
-                <a href="https://wa.me/254734591543" class="whatsapp-btn">
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}" class="whatsapp-btn">
                     💬 Chat With Us on WhatsApp
                 </a>
             </div>

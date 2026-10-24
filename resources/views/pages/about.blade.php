@@ -319,8 +319,9 @@
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="https://wa.me/254745781236?text=Hi%20Vumbi%20Ventures,%20I%20read%20your%20story%20and%20would%20like%20to%20connect." 
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20read%20your%20story%20and%20would%20like%20to%20connect."
                    target="_blank"
+                   data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"about_cta"}'
                    class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
                     <i class="fab fa-whatsapp text-xl"></i> Chat on WhatsApp
                 </a>

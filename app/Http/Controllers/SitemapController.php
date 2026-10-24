@@ -32,6 +32,7 @@ class SitemapController extends Controller
             (object) ['loc' => url('/studio'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/safari-checklist'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/privacy-policy'), 'lastmod' => now()->toDateString(), 'priority' => '0.3', 'changefreq' => 'yearly'],
+            (object) ['loc' => url('/terms'), 'lastmod' => now()->toDateString(), 'priority' => '0.3', 'changefreq' => 'yearly'],
             ...collect(array_keys(config('case_studies')))->map(fn ($slug) => (object) [
                 'loc' => route('studio.case-study', $slug),
                 'lastmod' => now()->toDateString(),

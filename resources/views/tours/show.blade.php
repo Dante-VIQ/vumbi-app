@@ -266,8 +266,10 @@
                         @endif
                     </div>
 
-                    <a href="https://wa.me/254745781236?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
+                    <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
                         target="_blank"
+                        data-gtag-event="whatsapp_click"
+                        data-gtag-params="{{ json_encode(['placement' => 'tour_page', 'package_id' => $package->id]) }}"
                         class="w-full bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 py-3 rounded-xl font-semibold transition flex justify-center items-center gap-2 mt-3 text-sm">
                         💬 Ask on WhatsApp
                     </a>
