@@ -74,6 +74,7 @@
 
                         <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
                             target="_blank"
+                            data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"homepage_hero"}'
                             class="px-6 py-4 border border-emerald-600/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp text-lg text-emerald-600"></i>
                             WhatsApp Chat
@@ -430,6 +431,7 @@
                 </button>
                 <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
                     target="_blank"
+                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"homepage_cta"}'
                     class="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
                     <i class="fab fa-whatsapp text-lg"></i> Chat Instantly on WhatsApp
                 </a>

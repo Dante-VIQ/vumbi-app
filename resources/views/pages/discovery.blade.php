@@ -1,14 +1,14 @@
 @extends('layouts.app')
  
 @section('title', 'Discover Africa – Destinations, Safaris & Travel Deals by Region')
-@section('description', 'Search 200+ handpicked African destinations — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
+@section('description', 'Search African destinations, safaris and cultural trips — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
 
 @push('schema')
     @php
     $pageSchemas = [];
 
     $pageSchemas[] = [
-        "@context" => "[https://schema.org](https://schema.org)",
+        "@context" => "https://schema.org",
         "@type" => "CollectionPage",
         "name" => "African Travel Experiences | Vumbi Ventures",
         "description" => "Explore authentic African safaris, cultural immersions, and hidden gems.",
@@ -28,7 +28,7 @@
         <!-- 1. HERO                                       -->
         <!-- ============================================= -->
         <section class="relative h-screen flex items-center justify-center">
-            <div class="absolute inset-0 bg-[url('[https://picsum.photos/id/1015/2000/1200](https://picsum.photos/id/1015/2000/1200)')] bg-cover bg-center">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/maasai-mara.jpg') }}')">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-zinc-950"></div>
             </div>
 
@@ -55,6 +55,26 @@
         <!-- ============================================= -->
         <!-- 2. BEFORE SEARCH: Trending & Categories       -->
         <!-- ============================================= -->
+        {{-- No-results / error fallback: never leave the visitor at a dead end. --}}
+        <div x-show="error && !loading" x-cloak class="max-w-2xl mx-auto px-6 pb-20 -mt-20 relative z-20 text-center">
+            <h2 class="text-3xl font-bold mb-3">We couldn't find a guide for that yet</h2>
+            <p class="text-zinc-300 mb-8">Try a nearby or more popular destination, or tell us where you want to go and we'll put together a custom itinerary for you.</p>
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button @click="query = 'Maasai Mara'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Maasai Mara</button>
+                <button @click="query = 'Nairobi'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Nairobi</button>
+                <button @click="query = 'Mombasa'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Mombasa</button>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="{{ route('contact') }}"
+                    data-gtag-event="no_results_quote_click"
+                    class="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-black rounded-2xl font-semibold transition">Get a custom quote</a>
+                <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + query + ' and would like help planning a trip.')"
+                    target="_blank" rel="noopener"
+                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"discover_no_results"}'
+                    class="px-8 py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-semibold transition">Chat on WhatsApp</a>
+            </div>
+        </div>
+
         <div x-show="!result?.city && !loading && !error" class="max-w-7xl mx-auto px-6 pb-20 -mt-20 relative z-20">
             <!-- Trending Cities -->
             @if (isset($trendingCities) && count($trendingCities) > 0)
@@ -64,7 +84,7 @@
                         @foreach ($trendingCities as $city)
                             <button @click="query = '{{ $city->name }}'; searchPlace()"
                                 class="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-400/60 transition transform hover:-translate-y-1 shadow-lg">
-                                <img src="{{ $city->image_url ?? '[https://picsum.photos/seed/](https://picsum.photos/seed/)' . $city->slug . '/400/300' }}"
+                                <img src="{{ $city->image_url ?? asset('images/maasai-mara.jpg') }}"
                                     alt="{{ $city->name }}"
                                     class="w-full h-40 object-cover group-hover:scale-105 transition">
                                 <div class="p-4">
@@ -107,7 +127,7 @@
                         <a href="{{ route('tours.show', $pkg) }}"
                             class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                             <div class="h-48 bg-cover bg-center"
-                                style="background-image: url('{{ $pkg->image ?: '[https://picsum.photos/400/250](https://picsum.photos/400/250)' }}')">
+                                style="background-image: url('{{ $pkg->image ?: asset('images/maasai-mara.jpg') }}')">
                             </div>
                             <div class="p-5">
                                 <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}</div>
@@ -288,7 +308,7 @@
                         <template x-for="pkg in result.partner_packages" :key="pkg.id">
                             <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                                 <div class="h-48 bg-cover bg-center"
-                                    :style="'background-image: url(' + (pkg.image || '[https://picsum.photos/400/250](https://picsum.photos/400/250)') + ')'">
+                                    :style="'background-image: url(' + (pkg.image || '{{ asset('images/maasai-mara.jpg') }}') + ')'">
                                 </div>
                                 <div class="p-5">
                                     <h3 class="font-semibold text-lg" x-text="pkg.title"></h3>
@@ -347,7 +367,16 @@
                                     class="text-green-400 font-semibold"></span>
                             </div>
                         </template>
-                        <div x-show="search && !packages.length" class="text-center text-zinc-500 py-4">No packages found for this destination.</div>
+                        <div x-show="search && !packages.length" class="text-center text-zinc-400 py-4 text-sm">
+                            <p>No packages found for this destination yet.</p>
+                            <div class="flex justify-center gap-4 mt-3">
+                                <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" class="text-amber-400 hover:text-amber-300 font-semibold">Get a custom quote</a>
+                                <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + search + ' and would like help planning a trip.')"
+                                    target="_blank" rel="noopener"
+                                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"discover_modal_no_results"}'
+                                    class="text-green-400 hover:text-green-300 font-semibold">WhatsApp us</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -420,9 +449,16 @@
                     partner_packages: []
                 },
 
+                track(name, params) {
+                    if (typeof gtag === 'function') {
+                        gtag('event', name, params || {});
+                    }
+                },
+
                 async searchPlace() {
                     if (!this.query?.trim()) return;
 
+                    this.track('discover_search', { query: this.query.trim() });
                     this.loading = true;
                     this.error = null;
                     this.building = false;
@@ -441,6 +477,13 @@
                         if (!res.ok) throw new Error(data.message || 'Search failed');
 
                         this.result = data.result || this.result;
+
+                        if (this.result?.city) {
+                            this.track('destination_view', { destination: this.result.city, source: 'discover' });
+                        } else if (data.status !== 'building') {
+                            // Nothing came back for this search: show the fallback instead of a dead end.
+                            this.error = 'no_results';
+                        }
 
                         if (data.status === 'building') {
                             this.building = true;
@@ -471,6 +514,9 @@
 
                             if (data.status === 'ready') {
                                 this.result = data.result;
+                                if (this.result?.city) {
+                                    this.track('destination_view', { destination: this.result.city, source: 'discover' });
+                                }
                                 this.building = false;
                                 clearInterval(interval);
                             }

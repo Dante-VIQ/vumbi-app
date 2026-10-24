@@ -106,7 +106,8 @@ return [
     // Business WhatsApp number (digits only, with country code). Used by the
     // <x-whatsapp-cta> component. Override with WHATSAPP_NUMBER in .env.
     'whatsapp' => [
-        'number' => env('WHATSAPP_NUMBER', '254745781236'),
+        // Digits only (no "+" or spaces) so it can go straight into wa.me links.
+        'number' => preg_replace('/\D/', '', (string) env('WHATSAPP_NUMBER', '254745781236')),
     ],
 
     'internal' => [

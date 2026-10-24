@@ -180,7 +180,7 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="btn">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20my%20reference%20is%20{{ urlencode($quote->reference) }}"
+                                        <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20my%20reference%20is%20{{ urlencode($quote->reference) }}"
                                            style="display:inline-block; padding:16px 28px; background:#059669; color:#ffffff; text-decoration:none; border-radius:10px; font-weight:700; font-size:15px; min-height:44px; line-height:20px;">
                                             💬&nbsp; Chat on WhatsApp
                                         </a>

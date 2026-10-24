@@ -46,6 +46,7 @@
         <div class="flex flex-col sm:flex-row gap-3 mt-4">
             <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20my%20reference%20is%20{{ $quote->reference }}"
                target="_blank"
+               data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"quote_thank_you"}'
                class="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-center">
                 WhatsApp Us
             </a>

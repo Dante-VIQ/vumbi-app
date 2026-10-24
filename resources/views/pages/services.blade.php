@@ -146,11 +146,11 @@
                 <ul class="mt-6 space-y-3">
                     <li class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-[#5C5C5C]">200+ handpicked destinations across the continent</span>
+                        <span class="text-[#5C5C5C]">Search destinations, safaris and cultural tours across Kenya and East Africa</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-[#5C5C5C]">Best price guarantee with our partner network</span>
+                        <span class="text-[#5C5C5C]">Starting prices shown upfront, with booking through established partners</span>
                     </li>
                     <li class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -171,12 +171,12 @@
 
             <div class="relative">
                 <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
-                    <img src="https://placehold.co/800x600/e8dfd5/8B5A2B?text=African+Safari" alt="African safari experience" class="w-full h-full object-cover">
+                    <img src="{{ asset('images/maasai-mara.jpg') }}" alt="Safari vehicle on the Maasai Mara plains" loading="lazy" class="w-full h-full object-cover">
                 </div>
                 {{-- Floating stat card --}}
                 <div class="absolute -bottom-4 -left-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/50">
-                    <div class="text-2xl font-bold text-[#8B5A2B]">200+</div>
-                    <div class="text-sm text-[#5C5C5C]">Destinations</div>
+                    <div class="text-2xl font-bold text-[#8B5A2B]">Upfront</div>
+                    <div class="text-sm text-[#5C5C5C]">Starting prices</div>
                 </div>
             </div>
         </div>
