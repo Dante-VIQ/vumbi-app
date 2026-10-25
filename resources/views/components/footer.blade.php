@@ -10,8 +10,8 @@
                     <span class="text-xl font-semibold">Vumbi Ventures</span>
                 </a>
                 <p class="text-[#C7B5A6] text-sm leading-relaxed">
-                    From overlooked places, we build remarkable solutions. A purpose-driven digital innovation company
-                    inspired by Africa.
+                    Honest guides, upfront prices and vetted local partners for safaris, culture and adventure across
+                    Kenya and East Africa.
                 </p>
 
                 {{-- Social Links --}}
@@ -74,10 +74,10 @@
                                 </path>
                             </svg></a></li>
                     <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
-                    <li><a href="/tours" class="hover:text-white transition">Plan Trip</a></li>
+                    <li><a href="/discover" class="hover:text-white transition">Find My Trip</a></li>
                     <li><a href="{{ route('safari-checklist') }}" class="hover:text-white transition">Free Safari Checklist</a></li>
                     <li><a href="/destinations" class="hover:text-white transition">Explore Destinations</a></li>
-                    <li><a href="/studio" class="hover:text-white transition">Our Studio</a></li>
+                    <li><a href="/studio" class="hover:text-white transition">Vumbi Tech Studio</a></li>
                 </ul>
             </div>
 

@@ -66,6 +66,10 @@ Route::post('/newsletter/unsubscribe/{id}', [\App\Http\Controllers\NewsletterUns
 Route::view('/ecosystem', 'pages.ecosystem');
 Route::view('/header', 'pages.header-media');
 Route::view('/studio', 'studio');
+Route::view('/studio/contact', 'studio-contact', [
+    'title' => 'Contact Vumbi Tech Studio',
+    'description' => 'Tell us about your website, web app or growth project. Vumbi Tech Studio replies within 24 business hours.',
+])->name('studio.contact');
 Route::get('/studio/case-studies/{slug}', function (string $slug) {
     $study = config("case_studies.$slug");
     abort_if(! $study, 404);

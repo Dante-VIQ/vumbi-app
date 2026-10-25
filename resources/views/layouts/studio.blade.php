@@ -47,6 +47,9 @@
                 <a href="/demo" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors hidden sm:block">
                     Nafasi Demo
                 </a>
+                <a href="{{ route('studio.contact') }}" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors hidden sm:block">
+                    Contact
+                </a>
 
                 <!-- Back to Main Vumbi Ventures Link -->
                 <a href="https://vumbiventures.com" target="_blank" rel="noopener noreferrer" 

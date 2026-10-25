@@ -45,6 +45,7 @@
                     @switch($data['inquiry_type'])
                         @case('travel') Travel Booking / Discovery @break
                         @case('web_dev') Web Development Services @break
+                        @case('seo') SEO & Digital Growth @break
                         @case('partnership') Partnership Opportunity @break
                         @case('other') Other @break
                         @default {{ $data['inquiry_type'] }}
@@ -53,6 +54,20 @@
             </div>
         </div>
         
+        @if(!empty($data['travel_details']))
+        <div class="field">
+            <div class="label">Travel month & group size</div>
+            <div class="value">{{ $data['travel_details'] }}</div>
+        </div>
+        @endif
+
+        @if(!empty($data['website']))
+        <div class="field">
+            <div class="label">Website</div>
+            <div class="value">{{ $data['website'] }}</div>
+        </div>
+        @endif
+
         @if(!empty($data['subject']))
         <div class="field">
             <div class="label">Subject</div>

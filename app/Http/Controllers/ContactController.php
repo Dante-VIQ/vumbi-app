@@ -27,6 +27,8 @@ class ContactController extends Controller
         'phone' => 'nullable|string',
         'inquiry_type' => 'required|string',
         'subject' => 'nullable|string',
+        'website' => 'nullable|url',
+        'travel_details' => 'nullable|string|max:255',
         'message' => 'required|string',
         'consent' => 'accepted',
     ]);
@@ -36,7 +38,8 @@ class ContactController extends Controller
 
     // Optionally store in database
 
-    return redirect()->route('contact')->with('success', 'Thank you! We will get back to you within 24 hours.');
+    // Return to the page the form was sent from (travel contact or Studio contact).
+    return redirect()->back()->with('success', 'Thank you! We will get back to you within 24 hours.');
 }
 
 }
