@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Our Story: The Meaning Behind Vumbi Ventures')
-@section('description', 'Vumbi means dust. We find potential in what the world overlooks. Learn about our mission to build remarkable solutions for overlooked places across Africa.')
+@section('description', 'Vumbi means dust. We find potential in what the world overlooks. Learn how we connect travellers with vetted local partners across East Africa.')
 @section('keywords', 'about Vumbi Ventures, African travel company, sustainable tourism Africa, authentic travel, our mission')
 @section('og_image', asset('images/about-og.jpg')) 
 
@@ -22,7 +22,7 @@
         "@context" => "https://schema.org",
         "@type" => "AboutPage",
         "name" => "About Vumbi Ventures",
-        "description" => "Learn about the team behind Vumbi Ventures and our mission to showcase authentic African travel experiences and regional digital solutions.",
+        "description" => "Learn about the team behind Vumbi Ventures and our mission to showcase authentic African travel experiences and the local partners who make them possible.",
         "url" => url()->current()
     ];
 @endphp
@@ -51,7 +51,7 @@
                 </h1>
                 
                 <p class="text-base sm:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto font-normal">
-                    <strong class="text-[#8B5A2B] font-bold">Vumbi</strong> means dust in Swahili. We find potential in what others overlook. From the heart of East Africa, we build remarkable travel experiences and digital ecosystems for overlooked spaces.
+                    <strong class="text-[#8B5A2B] font-bold">Vumbi</strong> means dust in Swahili. We find potential in what others overlook. From the heart of East Africa, we build remarkable travel experiences for overlooked places and the people who know them best.
                 </p>
             </div>
         </div>
@@ -111,7 +111,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg sm:text-xl font-bold text-[#1A1A1A] mb-1">We build where others don't try</h3>
-                                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Whether structuring partner fleet networks or web applications, we tackle complex, real challenges.</p>
+                                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Whether it is building a network of vetted fleet partners or planning a route nobody has mapped, we take on the hard, real problems.</p>
                             </div>
                         </div>
                     </div>
@@ -251,7 +251,7 @@
                         </div>
                         <h3 class="text-2xl font-bold text-[#1A1A1A] mb-3">Our Vision</h3>
                         <p class="text-sm sm:text-base text-gray-600 leading-relaxed mb-6">
-                            To become East Africa's most trusted travel aggregator and software ecosystem, seamlessly bridging local services to global markets.
+                            To become East Africa's most trusted way to plan and book a trip, linking local guides, drivers and operators with travellers worldwide.
                         </p>
                     </div>
 
@@ -304,7 +304,7 @@
                         <i class="fas fa-[#8B5A2B] fa-compass"></i>
                     </div>
                     <h3 class="font-bold text-lg text-[#1A1A1A] mb-1">Relentless Quality</h3>
-                    <p class="text-xs sm:text-sm text-gray-600">Vetted vehicles, expert guides, and high-performance digital tools.</p>
+                    <p class="text-xs sm:text-sm text-gray-600">Vetted vehicles, expert guides, and clear, honest communication.</p>
                 </div>
             </div>
         </div>
@@ -315,7 +315,7 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 max-w-3xl">
             <h2 class="text-3xl sm:text-5xl font-black mb-4 tracking-tight">Partner or Explore With Us</h2>
             <p class="text-base sm:text-lg text-white/90 mb-8 max-w-xl mx-auto">
-                Whether you need a custom safari itinerary, tour transport partnership, or software solutions, let's connect.
+                Whether you need a custom safari itinerary or want to partner with us as an operator, guide or vehicle owner, let's connect.
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">

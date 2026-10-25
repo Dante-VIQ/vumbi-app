@@ -374,6 +374,89 @@ new class extends Component {
         </div>
     </section>
 
+    {{-- Website & Growth Packages (moved here from the travel site's Services page) --}}
+    <section id="packages" class="max-w-6xl mx-auto px-4 py-16 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-white">Website &amp; Growth Packages</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto mt-3 text-base">
+                Flexible options for businesses at every stage. All packages include responsive design and SEO foundations.
+            </p>
+        </div>
+
+        @php
+            $studioPackages = [
+                [
+                    'slug' => 'starter',
+                    'name' => 'Starter',
+                    'price' => '$700',
+                    'desc' => 'Perfect for small businesses needing a professional online presence.',
+                    'features' => ['5-Page Custom Website', 'Mobile Responsive', 'Basic SEO Setup', 'Contact Form Integration', '2 Rounds of Revisions', '30 Days Support'],
+                    'featured' => false,
+                ],
+                [
+                    'slug' => 'growth',
+                    'name' => 'Growth',
+                    'price' => '$1,250',
+                    'desc' => 'For businesses ready to attract clients and showcase their work.',
+                    'features' => ['Up to 10 Pages', 'Advanced SEO', 'Blog or Portfolio Section', 'Social Media Integration', 'Basic Branding Package', '3 Months Support'],
+                    'featured' => true,
+                ],
+                [
+                    'slug' => 'scale',
+                    'name' => 'Scale',
+                    'price' => 'Custom',
+                    'desc' => 'Complex web apps, e-commerce, or ongoing marketing retainers.',
+                    'features' => ['Custom Web Application', 'E-commerce / Booking Systems', 'Full Branding & Visuals', 'Marketing Strategy & Ads', 'Ongoing Maintenance', 'Priority Support'],
+                    'featured' => false,
+                ],
+            ];
+        @endphp
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach ($studioPackages as $pkg)
+                <div class="relative flex flex-col rounded-3xl p-8 backdrop-blur-xl border {{ $pkg['featured'] ? 'bg-gradient-to-b from-amber-950/30 to-slate-900/40 border-amber-500/40' : 'bg-gradient-to-b from-slate-800/30 to-slate-900/40 border-white/10' }}">
+                    @if ($pkg['featured'])
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[10px] font-bold uppercase px-3 py-1 rounded-full tracking-wider">Most Popular</span>
+                    @endif
+                    <h3 class="text-xl font-bold text-white">{{ $pkg['name'] }}</h3>
+                    <div class="mt-2 text-3xl font-extrabold text-amber-400">{{ $pkg['price'] }}</div>
+                    <p class="text-sm text-slate-400 mt-2">{{ $pkg['desc'] }}</p>
+                    <ul class="mt-6 space-y-3 text-sm text-slate-300 flex-grow">
+                        @foreach ($pkg['features'] as $feat)
+                            <li class="flex items-start gap-3"><span class="text-emerald-400">✓</span> {{ $feat }}</li>
+                        @endforeach
+                    </ul>
+                    <a href="{{ route('studio.contact', ['package' => $pkg['slug']]) }}"
+                        class="mt-8 block text-center py-3 rounded-xl font-semibold text-sm transition {{ $pkg['featured'] ? 'bg-amber-400 hover:bg-amber-300 text-slate-950' : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white' }}">
+                        Get Started
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- How we work --}}
+    <section class="max-w-5xl mx-auto px-4 pb-16 relative z-10">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-extrabold text-white">How We Work</h2>
+            <p class="text-slate-400 mt-2">A straightforward process from idea to launch, and beyond.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            @foreach ([
+                ['01', 'Discovery Call', 'We learn about your business, goals and audience.'],
+                ['02', 'Proposal & Plan', 'A clear scope, timeline and investment estimate.'],
+                ['03', 'Design & Build', 'Iterative development with regular feedback loops.'],
+                ['04', 'Launch & Grow', 'Deployment, training and ongoing marketing support.'],
+            ] as [$num, $title, $desc])
+                <div>
+                    <div class="text-3xl font-light text-amber-400/60">{{ $num }}</div>
+                    <h3 class="font-semibold text-white mt-2">{{ $title }}</h3>
+                    <p class="text-sm text-slate-400 mt-1">{{ $desc }}</p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     {{-- Contact CTA --}}
     <footer class="border-t border-white/10 bg-slate-950/80 py-16 relative z-10 text-center">
         <div class="max-w-4xl mx-auto px-4">
@@ -382,7 +465,7 @@ new class extends Component {
                 Whether you need a custom enterprise application or want to pilot a licensed platform like Nafasi in
                 your region.
             </p>
-            <a href="mailto:studio@vumbiventures.com"
+            <a href="{{ route('studio.contact') }}"
                 class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-slate-950 font-black text-base hover:bg-slate-200 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.2)]">
                 ✉️ Contact Tech Studio
             </a>

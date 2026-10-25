@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Vumbi Ventures | Safari & Digital Growth Experts')
-@section('description', 'Connect with Vumbi Ventures for bespoke African safaris, data-driven SEO consulting, and custom software development. Book your strategy call today.')
-@section('keywords', 'contact Vumbi Ventures, African safari booking, SEO strategy call, custom web development Kenya, digital growth Africa')
+@section('title', 'Contact Vumbi Ventures | Plan Your East Africa Safari')
+@section('description', 'Tell us when you want to travel and who is coming. Vumbi Ventures replies with safari options and upfront prices from vetted local partners in Kenya and East Africa.')
+@section('keywords', 'contact Vumbi Ventures, African safari booking, Kenya safari quote, East Africa travel planning, safari partners')
 @section('robots', 'index, follow')
 
 @push('schema')
@@ -13,12 +13,12 @@
         "@context" => "https://schema.org",
         "@type" => "ContactPage",
         "name" => "Contact Vumbi Ventures",
-        "description" => "Connect with Vumbi Ventures for bespoke African safaris, data-driven SEO consulting, and custom software development.",
+        "description" => "Contact Vumbi Ventures to plan a safari or trip in Kenya and East Africa and get a custom quote from vetted local partners.",
         "url" => url()->current(),
         "mainEntity" => [
             "@type" => "ContactPoint",
             "contactType" => "Customer Service & Advisory",
-            "telephone" => "+254-734-591543",
+            "telephone" => "+" . config("services.whatsapp.number"),
             "email" => "info@vumbiventures.com",
             "availableLanguage" => ["English", "Swahili"]
         ]
@@ -108,99 +108,74 @@
     <div class="relative container mx-auto px-6 text-center max-w-4xl">
         <span class="inline-flex items-center gap-2 text-sm bg-white/80 backdrop-blur-sm border border-black/5 px-4 py-2 rounded-full shadow-sm">
             <span class="w-2 h-2 bg-[#8B5A2B] rounded-full animate-pulse"></span>
-            Clear the Path Forward
+            Plan Your Trip
         </span>
 
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold mt-6 leading-tight tracking-tight text-[#1A1A1A]">
-            Chart Your Course to <br class="hidden sm:inline"/>
+            Tell us where you want to go, <br class="hidden sm:inline"/>
             <span class="text-[#8B5A2B] relative inline-block">
-                Extraordinary
+                we'll plan the rest
                 <span class="absolute -bottom-1 left-0 w-full h-1 bg-[#D98C5F]/30 rounded-full"></span>
-            </span> 
-            Adventures & Growth
+            </span>
         </h1>
 
         <p class="mt-6 text-[#5C5C5C] text-lg max-w-2xl mx-auto leading-relaxed">
-            At <strong>Vumbi Ventures</strong>, we operate at the intersection of wild exploration and digital innovation. Whether planning a luxury safari or scaling your search performance, start the conversation on your terms.
+            Share your travel month and group size and we'll reply with options and upfront prices from vetted local partners, usually within a day.
         </p>
     </div>
 </section>
 
-{{-- Consultation Paths --}}
+{{-- Contact Paths --}}
 <section class="container mx-auto px-6 py-8">
     <div class="text-center max-w-2xl mx-auto mb-12">
-        <h2 class="text-2xl md:text-3xl font-semibold text-[#1A1A1A]">Choose Your Consultation Path</h2>
-        <p class="text-[#5C5C5C] mt-2">Select a focus area below to book a direct advisory call or submit an inquiry.</p>
+        <h2 class="text-2xl md:text-3xl font-semibold text-[#1A1A1A]">How can we help?</h2>
+        <p class="text-[#5C5C5C] mt-2">Pick the option that fits, or just send us a message below.</p>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-8">
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {{-- Path 1: Safari --}}
         <div class="service-card p-8 flex flex-col justify-between">
             <div>
                 <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
                     <i class="fas fa-compass text-[#8B5A2B] text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">1. Safari & Expeditions</h3>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Adventures & Private Retreats</p>
+                <h3 class="text-xl font-semibold mb-2">Plan a trip</h3>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Safaris, Adventures & Group Travel</p>
                 <p class="text-sm text-[#5C5C5C] mb-6">
-                    Crafted for luxury travelers and groups seeking custom itineraries—from tracking the Great Migration to private coastal stays in Zanzibar.
+                    Hikes, budget trips, family and group safaris, or a private itinerary, from tracking the Great Migration to coastal stays in Zanzibar.
                 </p>
                 <ul class="text-xs text-[#5C5C5C] space-y-2 mb-8 bg-[#FCFAF7] p-4 rounded-xl">
                     <li class="flex items-start gap-2">
                         <span class="text-[#8B5A2B] font-bold">✓</span>
-                        <span><strong>20-min Briefing:</strong> Logistics, seasonal movements, & transparent pricing (from about $80/person for day trips and coastal stays to $500–$5,000+/person for multi-day safaris).</span>
+                        <span><strong>Upfront pricing:</strong> from about $80/person for day trips and coastal stays to $500–$5,000+/person for multi-day safaris.</span>
                     </li>
                 </ul>
             </div>
             <a href="#contact-form" onclick="setInquiryType('travel', 'Safari & Travel Booking')" class="btn-primary text-center py-3 rounded-xl text-sm w-full block">
-                Book Safari Consultation
+                Ask for a Custom Quote
             </a>
         </div>
 
-        {{-- Path 2: SEO & Digital Growth --}}
-        <div class="service-card p-8 flex flex-col justify-between border-2 border-[#8B5A2B]/20 relative">
-            <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8B5A2B] text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full tracking-wider">Most Popular</span>
-            <div>
-                <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-chart-line text-[#8B5A2B] text-xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">2. SEO & Growth Strategy</h3>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Tourism & Digital Enterprise</p>
-                <p class="text-sm text-[#5C5C5C] mb-6">
-                    Outpace competitors with rigorous keyword architecture, authoritative search performance optimizations, and high-intent booking strategies.
-                </p>
-                <ul class="text-xs text-[#5C5C5C] space-y-2 mb-8 bg-[#FCFAF7] p-4 rounded-xl">
-                    <li class="flex items-start gap-2">
-                        <span class="text-[#8B5A2B] font-bold">✓</span>
-                        <span><strong>30-min Audit:</strong> Authority analysis, traffic bottleneck checks, & growth strategy.</span>
-                    </li>
-                </ul>
-            </div>
-            <a href="#contact-form" onclick="setInquiryType('seo', 'SEO & Digital Growth Strategy')" class="btn-primary text-center py-3 rounded-xl text-sm w-full block">
-                Schedule SEO Discovery Call
-            </a>
-        </div>
-
-        {{-- Path 3: Software & Tech --}}
+        {{-- Path 2: Partnership --}}
         <div class="service-card p-8 flex flex-col justify-between">
             <div>
                 <div class="w-12 h-12 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-code text-[#8B5A2B] text-xl"></i>
+                    <i class="fas fa-handshake text-[#8B5A2B] text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">3. Software & Tech Solutions</h3>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Enterprise & Web Platforms</p>
+                <h3 class="text-xl font-semibold mb-2">Partner with us</h3>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#8B5A2B] mb-4">Operators, Guides & Vehicle Owners</p>
                 <p class="text-sm text-[#5C5C5C] mb-6">
-                    Build reliable, scalable web applications, booking engine integrations, and custom software systems designed for high engagement.
+                    Own a licensed safari vehicle, run tours or guide in East Africa? We connect local partners with travellers who are ready to book.
                 </p>
                 <ul class="text-xs text-[#5C5C5C] space-y-2 mb-8 bg-[#FCFAF7] p-4 rounded-xl">
                     <li class="flex items-start gap-2">
                         <span class="text-[#8B5A2B] font-bold">✓</span>
-                        <span><strong>Technical Scoping:</strong> Assessing stack selection, parameters, and timeline expectations.</span>
+                        <span><strong>Vetted network:</strong> we check licences, vehicles and guides before listing a partner.</span>
                     </li>
                 </ul>
             </div>
-            <a href="#contact-form" onclick="setInquiryType('web_dev', 'Custom Software Development')" class="btn-primary text-center py-3 rounded-xl text-sm w-full block">
-                Schedule Technical Scoping Call
+            <a href="#contact-form" onclick="setInquiryType('partnership', 'Becoming a Vumbi travel partner')" class="btn-primary text-center py-3 rounded-xl text-sm w-full block">
+                Become a Partner
             </a>
         </div>
     </div>
@@ -214,7 +189,7 @@
         <div class="lg:col-span-2">
             <div class="glass-panel rounded-3xl p-6 md:p-10 shadow-xl">
                 <h2 class="text-2xl font-semibold mb-2">Send Us a Message</h2>
-                <p class="text-sm text-[#5C5C5C] mb-6">Fill out your details and we will respond within 24 business hours.</p>
+                <p class="text-sm text-[#5C5C5C] mb-6">Fill out your details and we will reply within 24 business hours.</p>
 
                 @if(session('success'))
                     <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm flex items-center gap-2">
@@ -247,10 +222,8 @@
                             <label for="inquiry_type" class="block text-sm font-medium text-[#5C5C5C] mb-1">I'm interested in *</label>
                             <select name="inquiry_type" id="inquiry_type" required class="input-field">
                                 <option value="">-- Please select --</option>
-                                <option value="travel" {{ old('inquiry_type') == 'travel' ? 'selected' : '' }}>Safari & Travel Expeditions</option>
-                                <option value="seo" {{ old('inquiry_type') == 'seo' ? 'selected' : '' }}>SEO & Digital Growth Strategy</option>
-                                <option value="web_dev" {{ old('inquiry_type') == 'web_dev' ? 'selected' : '' }}>Custom Software & Web Development</option>
-                                <option value="partnership" {{ old('inquiry_type') == 'partnership' ? 'selected' : '' }}>Partnership Opportunity</option>
+                                <option value="travel" {{ old('inquiry_type') == 'travel' ? 'selected' : '' }}>Planning a safari or trip</option>
+                                <option value="partnership" {{ old('inquiry_type') == 'partnership' ? 'selected' : '' }}>Partnering as an operator or guide</option>
                                 <option value="other" {{ old('inquiry_type') == 'other' ? 'selected' : '' }}>Other Inquiry</option>
                             </select>
                             @error('inquiry_type') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
@@ -263,21 +236,21 @@
                             <input type="text" name="subject" id="subject" value="{{ old('subject') }}" class="input-field" placeholder="How can we help?">
                         </div>
                         <div>
-                            <label for="website" class="block text-sm font-medium text-[#5C5C5C] mb-1">Website URL (if applicable)</label>
-                            <input type="url" name="website" id="website" value="{{ old('website') }}" class="input-field" placeholder="https://yourbrand.com">
+                            <label for="travel_details" class="block text-sm font-medium text-[#5C5C5C] mb-1">Travel month & group size (optional)</label>
+                            <input type="text" name="travel_details" id="travel_details" value="{{ old('travel_details') }}" class="input-field" placeholder="e.g. August, 4 people">
                         </div>
                     </div>
 
                     <div>
-                        <label for="message" class="block text-sm font-medium text-[#5C5C5C] mb-1">Message / Project Details *</label>
-                        <textarea name="message" id="message" rows="4" required class="input-field" placeholder="Tell us more about your goals, timing, or inquiry...">{{ old('message') }}</textarea>
+                        <label for="message" class="block text-sm font-medium text-[#5C5C5C] mb-1">Message *</label>
+                        <textarea name="message" id="message" rows="4" required class="input-field" placeholder="Where would you like to go, and what matters most: budget, adventure, comfort, kids?">{{ old('message') }}</textarea>
                         @error('message') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="flex items-center gap-3">
                         <input type="checkbox" name="consent" id="consent" required class="w-4 h-4 text-[#8B5A2B] rounded border-gray-300 focus:ring-[#8B5A2B]">
                         <label for="consent" class="text-xs text-[#5C5C5C]">
-                            I agree to be contacted about this inquiry. (We protect your data and never spam.)
+                            I agree to be contacted about this inquiry. We protect your data and never spam. See our <a href="{{ route('privacy') }}" class="underline">privacy policy</a>.
                         </label>
                     </div>
 
@@ -312,7 +285,7 @@
                 <h3 class="font-semibold text-base mb-3">Direct Emails</h3>
                 <div class="space-y-3 text-sm">
                     <div>
-                        <p class="text-xs text-[#5C5C5C]">General & Tech Inquiries:</p>
+                        <p class="text-xs text-[#5C5C5C]">General & Travel Enquiries:</p>
                         <a href="mailto:vumbiventures@gmail.com" class="text-[#8B5A2B] font-medium hover:underline">vumbiventures@gmail.com</a>
                     </div>
                     {{-- <div>
@@ -322,10 +295,15 @@
                 </div>
             </div>
 
+            {{-- Pointer for non-travel enquiries --}}
+            <p class="text-xs text-[#5C5C5C] px-1">
+                Looking for web development or software? <a href="{{ route('studio.contact') }}" class="text-[#8B5A2B] font-medium hover:underline">Contact Vumbi Tech Studio</a>.
+            </p>
+
             {{-- Location --}}
             <div class="service-card p-6">
                 <h3 class="font-semibold text-base mb-1">Primary Operating Hubs</h3>
-                <p class="text-xs text-[#5C5C5C] mb-3">Kenya & Tanzania — Serving Global Clients</p>
+                <p class="text-xs text-[#5C5C5C] mb-3">Kenya & Tanzania — Serving Travellers Worldwide</p>
                 <p class="text-xs text-[#5C5C5C] flex items-center gap-1.5">
                     <i class="fas fa-map-marker-alt text-[#8B5A2B]"></i>
                     Nakuru & Nairobi, Kenya
@@ -345,7 +323,7 @@
     </div>
     <div class="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
         <p class="text-xs text-[#5C5C5C]">
-            📍 P448+FW, Nakuru, Kenya — Serving clients across Africa and globally.
+            📍 P448+FW, Nakuru, Kenya — Serving travellers worldwide.
         </p>
         <div class="flex gap-4 text-xs font-medium text-[#8B5A2B]">
             <a href="https://www.openstreetmap.org/directions?engine=graphhopper_car&route=%3B-0.325%2C36.075" target="_blank" rel="noopener" class="hover:underline">Directions (OSM) →</a>

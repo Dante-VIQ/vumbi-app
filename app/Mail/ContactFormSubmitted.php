@@ -24,6 +24,7 @@ class ContactFormSubmitted extends Mailable
         $subject = match ($this->data['inquiry_type'] ?? 'other') {
             'travel' => 'New Travel Inquiry - Vumbi Ventures',
             'web_dev' => 'New Web Development Inquiry - Vumbi Ventures',
+            'seo' => 'New SEO & Growth Inquiry - Vumbi Ventures',
             'partnership' => 'New Partnership Inquiry - Vumbi Ventures',
             default => 'New Contact Form Submission - Vumbi Ventures',
         };
