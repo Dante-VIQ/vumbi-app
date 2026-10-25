@@ -90,12 +90,21 @@
         </div>
     </section>
 
+    {{-- Baseline tracking: gtag is defined later in the layout, so wait for the page to load. --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof gtag === 'function') {
+                gtag('event', 'destination_view', { destination: @json($destination->name), source: 'destination_page' });
+            }
+        });
+    </script>
+
     {{-- Quick Booking Bar --}}
     <div class="bg-white shadow-md sticky top-16 md:top-20 z-30 border-b border-black/5">
         <div class="container mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <span class="font-semibold">Ready to visit {{ $destination->name }}?</span>
-                <span class="text-[#5C5C5C] text-sm ml-2 hidden sm:inline">Best price guarantee</span>
+                <span class="text-[#5C5C5C] text-sm ml-2 hidden sm:inline">Starting prices shown upfront</span>
             </div>
             <a href="{{ url('/discover?search='.urlencode($destination->name)) }}"
                class="bg-[#8B5A2B] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-sm hover:shadow-md">

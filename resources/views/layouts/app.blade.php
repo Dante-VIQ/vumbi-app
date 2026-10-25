@@ -249,7 +249,14 @@
                         </div>
                     </template>
                     <div x-show="search && !packages.length" class="text-center text-slate-400 py-6 text-sm">
-                        No safari packages found matching your query. Contact our tour team directly for a custom itinerary!
+                        <p>No safari packages found matching your query yet. Tell us what you have in mind and we'll build a custom itinerary.</p>
+                        <div class="flex justify-center gap-4 mt-3">
+                            <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" class="text-amber-400 hover:text-amber-300 font-semibold">Get a custom quote</a>
+                            <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + search + ' and would like help planning a safari.')"
+                                target="_blank" rel="noopener"
+                                data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"search_modal_no_results"}'
+                                class="text-green-400 hover:text-green-300 font-semibold">WhatsApp us</a>
+                        </div>
                     </div>
                 </div>
             </div>
