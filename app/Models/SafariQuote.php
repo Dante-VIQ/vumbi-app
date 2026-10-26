@@ -25,6 +25,7 @@ class SafariQuote extends Model
         'travelers',
         'notes',
         'status',
+        'persona',
     ];
 
     /**

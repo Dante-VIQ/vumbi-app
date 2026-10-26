@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PartnerPackage;
+use App\Support\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
@@ -37,6 +38,9 @@ class TourController extends Controller
         if ($location = $request->input('location')) {
             $query->where('location', 'like', "%{$location}%");
         }
+
+        // Persona tags: audience, interest, budget band, trip length, party size
+        $query->tagged(Persona::sanitizeFilters($request->only(['audience', 'interest', 'budget', 'days', 'group'])));
 
         // Sort
         match ($request->input('sort')) {

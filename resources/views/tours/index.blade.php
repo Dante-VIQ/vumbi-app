@@ -100,7 +100,7 @@
                         x-cloak>
                         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                             <h3 class="font-bold text-white text-base">Filter Expeditions</h3>
-                            @if(request()->anyFilled(['location', 'type', 'difficulty', 'min_price', 'max_price', 'search']))
+                            @if(request()->anyFilled(['location', 'type', 'difficulty', 'min_price', 'max_price', 'search', 'audience', 'interest', 'days', 'group']))
                                 <a href="{{ route('tours.index') }}" class="text-xs text-amber-400 hover:text-amber-300 font-medium">Reset All</a>
                             @endif
                         </div>
@@ -149,6 +149,50 @@
                                         value="{{ request('max_price') }}"
                                         class="w-1/2 bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm placeholder-slate-500 focus:border-amber-500 focus:outline-none">
                                 </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Best For</label>
+                                <select name="audience" form="filter-form"
+                                    class="w-full bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm focus:border-amber-500 focus:outline-none">
+                                    <option value="">Everyone</option>
+                                    @foreach (\App\Support\Persona::all() as $key => $info)
+                                        <option value="{{ $key }}" {{ request('audience') == $key ? 'selected' : '' }}>{{ $info['label'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Interest</label>
+                                <select name="interest" form="filter-form"
+                                    class="w-full bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm focus:border-amber-500 focus:outline-none">
+                                    <option value="">Any interest</option>
+                                    @foreach (\App\Support\Persona::interests() as $key => $label)
+                                        <option value="{{ $key }}" {{ request('interest') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Trip Length</label>
+                                <select name="days" form="filter-form"
+                                    class="w-full bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm focus:border-amber-500 focus:outline-none">
+                                    <option value="">Any length</option>
+                                    @foreach (\App\Support\Persona::durations() as $key => $label)
+                                        <option value="{{ $key }}" {{ request('days') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Party Size</label>
+                                <select name="group" form="filter-form"
+                                    class="w-full bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm focus:border-amber-500 focus:outline-none">
+                                    <option value="">Any size</option>
+                                    @foreach (\App\Support\Persona::partySizes() as $key => $label)
+                                        <option value="{{ $key }}" {{ request('group') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <button type="submit" form="filter-form"
