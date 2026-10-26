@@ -52,6 +52,7 @@ class InquiryController extends Controller
                 'travelers'    => $validated['travelers'],
                 'notes'        => $validated['notes'] ?? null,
                 'status'       => 'pending',
+                'persona'      => \App\Support\Persona::current($request),
                 'ip_address'   => $request->ip(),
                 'user_agent'   => substr((string) $request->userAgent(), 0, 512),
             ]);

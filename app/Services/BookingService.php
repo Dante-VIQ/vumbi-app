@@ -20,6 +20,7 @@ class BookingService
             'email' => ($data['email'] ?? null) ?: null,
             'start_date' => ($data['start_date'] ?? null) ?: null,
             'status' => 'new',
+            'persona' => \App\Support\Persona::current(),
         ]);
 
         // The lead is already saved; a mail failure must never lose it or

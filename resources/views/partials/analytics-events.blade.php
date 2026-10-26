@@ -3,8 +3,24 @@
      even where gtag isn't defined (non-production) — every call is guarded. --}}
 <script>
     (function () {
+        // Persona (adventure | youth | group) chosen on /discover. The server keeps it in a
+        // cookie; mirror it to localStorage and attach it to GA so conversions can be split by it.
+        var persona = '';
+        try {
+            var meta = document.querySelector('meta[name="vumbi-persona"]');
+            persona = meta ? (meta.getAttribute('content') || '') : '';
+            if (persona) {
+                localStorage.setItem('vumbi_persona', persona);
+            } else if (window.location.search.indexOf('persona=') === -1) {
+                persona = localStorage.getItem('vumbi_persona') || '';
+            }
+        } catch (e) {}
+
         function track(eventName, params) {
             if (typeof gtag === 'function') {
+                if (persona) {
+                    gtag('set', 'user_properties', { persona: persona });
+                }
                 gtag('event', eventName, params || {});
             }
         }

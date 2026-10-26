@@ -48,6 +48,7 @@ class RedirectController extends Controller
                 'referring_url' => $request->headers->get('referer'),
                 'ip_hash' => hash('sha256', (string) $request->ip()),
                 'clicked_at' => now(),
+                'persona' => \App\Support\Persona::current($request),
             ]);
         } catch (Throwable $e) {
             Log::warning('Affiliate click could not be logged', [

@@ -85,7 +85,7 @@ Route::post('/contact', [ContactController::class, 'submit'])
     ->name('contact.submit');
 
 Route::prefix('discover')->group(function () {
-    Route::get('/', [DiscoveryController::class, 'index']);
+    Route::get('/', [DiscoveryController::class, 'index'])->name('discover.index');
     Route::post('/search', [DiscoveryController::class, 'search'])->name('discover.search');
     Route::get('/{country}/{city}', [CityController::class, 'show'])->name('discover.city');
 });

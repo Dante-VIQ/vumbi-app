@@ -116,3 +116,55 @@
     <input type="checkbox" name="active" value="1" {{ old('active', $package->active ?? true) ? 'checked' : '' }} class="w-5 h-5">
     <label class="text-sm">Active (visible to customers)</label>
 </div>
+
+<!-- Persona tags: drive /discover filters and the persona ordering -->
+<div class="border-t border-zinc-800 pt-6 space-y-4">
+    <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider">Who is this trip for?</h3>
+
+    <div>
+        <label class="block text-sm font-medium mb-2">Audiences</label>
+        <div class="flex flex-wrap gap-4">
+            @foreach(\App\Support\Persona::all() as $key => $info)
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="audiences[]" value="{{ $key }}"
+                           {{ in_array($key, old('audiences', $package->audiences ?? []), true) ? 'checked' : '' }}>
+                    {{ $info['label'] }}
+                </label>
+            @endforeach
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium mb-2">Interests</label>
+        <div class="flex flex-wrap gap-4">
+            @foreach(\App\Support\Persona::interests() as $key => $label)
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="interests[]" value="{{ $key }}"
+                           {{ in_array($key, old('interests', $package->interests ?? []), true) ? 'checked' : '' }}>
+                    {{ $label }}
+                </label>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Budget band <span class="text-zinc-500">(auto from price if blank)</span></label>
+            <select name="budget_band" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-white">
+                <option value="">Auto</option>
+                @foreach(\App\Support\Persona::budgetBands() as $key => $label)
+                    <option value="{{ $key }}" {{ old('budget_band', $package->budget_band ?? '') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Accommodation</label>
+            <select name="accommodation_style" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-white">
+                <option value="">{{ '—' }}</option>
+                @foreach(\App\Support\Persona::accommodationStyles() as $key => $label)
+                    <option value="{{ $key }}" {{ old('accommodation_style', $package->accommodation_style ?? '') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="vumbi-persona" content="{{ \App\Support\Persona::current() }}">
 
     {{-- SEO Meta Tags --}}
     <title>@yield('title', config('app.name', 'Vumbi Ventures')) - Authentic East African Safaris & Expeditions</title>

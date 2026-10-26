@@ -39,7 +39,17 @@ class PartnerPackageController extends Controller
             'itinerary_text' => 'nullable|string',
             'included_text' => 'nullable|string',
             'excluded_text' => 'nullable|string',
+            'audiences' => 'nullable|array',
+            'audiences.*' => ['string', \Illuminate\Validation\Rule::in(\App\Support\Persona::keys())],
+            'interests' => 'nullable|array',
+            'interests.*' => ['string', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::interests()))],
+            'budget_band' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::budgetBands()))],
+            'accommodation_style' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::accommodationStyles()))],
         ]);
+
+        // Unticked boxes send nothing: store an explicit empty list so tags can be cleared.
+        $validated['audiences'] = $validated['audiences'] ?? [];
+        $validated['interests'] = $validated['interests'] ?? [];
 
         $validated['itinerary'] = array_filter(array_map('trim', explode("\n", $request->itinerary_text ?? '')));
         $validated['included'] = array_filter(array_map('trim', explode("\n", $request->included_text ?? '')));
@@ -75,7 +85,17 @@ class PartnerPackageController extends Controller
             'itinerary_text' => 'nullable|string',
             'included_text' => 'nullable|string',
             'excluded_text' => 'nullable|string',
+            'audiences' => 'nullable|array',
+            'audiences.*' => ['string', \Illuminate\Validation\Rule::in(\App\Support\Persona::keys())],
+            'interests' => 'nullable|array',
+            'interests.*' => ['string', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::interests()))],
+            'budget_band' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::budgetBands()))],
+            'accommodation_style' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Support\Persona::accommodationStyles()))],
         ]);
+
+        // Unticked boxes send nothing: store an explicit empty list so tags can be cleared.
+        $validated['audiences'] = $validated['audiences'] ?? [];
+        $validated['interests'] = $validated['interests'] ?? [];
 
         $validated['itinerary'] = array_filter(array_map('trim', explode("\n", $request->itinerary_text ?? '')));
         $validated['included'] = array_filter(array_map('trim', explode("\n", $request->included_text ?? '')));

@@ -119,9 +119,100 @@
             </div>
         </div>
 
-        @if (isset($featuredPackages) && count($featuredPackages) > 0)
-            <section class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20">
-                <h2 class="text-3xl font-bold mb-8 text-center">🌍 Featured Trips</h2>
+        {{-- ============================================= --}}
+        {{-- 2b. TRIPS: who's travelling + filters         --}}
+        {{-- ============================================= --}}
+        @php
+            $personas = \App\Support\Persona::all();
+            $toggle = function (string $key, $value) use ($filters) {
+                $next = (string) ($filters[$key] ?? '') === (string) $value ? null : $value;
+
+                return request()->fullUrlWithQuery([$key => $next]) . '#trips';
+            };
+            $pill = 'px-4 py-2 rounded-full border text-sm transition ';
+            $pillOn = 'bg-amber-400 border-amber-400 text-black font-semibold';
+            $pillOff = 'bg-zinc-900 border-zinc-800 hover:border-amber-400 text-zinc-200';
+        @endphp
+
+        <section id="trips" class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20 scroll-mt-24">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Who's travelling?</h2>
+                <p class="text-zinc-400">Pick one and we'll put the trips that suit you first.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                @foreach ($personas as $key => $info)
+                    <a href="{{ request()->fullUrlWithQuery(['persona' => $key]) }}#trips"
+                        data-gtag-event="persona_selected" data-gtag-params='{"persona":"{{ $key }}","placement":"discover"}'
+                        class="block rounded-2xl border p-5 transition {{ $persona === $key ? 'border-amber-400 bg-amber-400/10' : 'border-zinc-800 bg-zinc-900 hover:border-amber-400/60' }}">
+                        <div class="font-semibold text-lg">{{ $info['label'] }}</div>
+                        <div class="text-sm text-zinc-400 mt-1">{{ $info['tagline'] }}</div>
+                    </a>
+                @endforeach
+            </div>
+            @if ($persona)
+                <p class="text-center text-sm text-zinc-500 mb-8">
+                    Showing trips for <span class="text-zinc-300">{{ \App\Support\Persona::label($persona) }}</span>.
+                    <a href="{{ request()->fullUrlWithQuery(['persona' => 'all']) }}#trips" class="text-amber-400 hover:text-amber-300">Show everyone's trips</a>
+                </p>
+            @else
+                <div class="mb-8"></div>
+            @endif
+
+            {{-- Filters --}}
+            <div class="space-y-3 mb-8">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Interest</span>
+                    @foreach (\App\Support\Persona::interests() as $key => $label)
+                        <a href="{{ $toggle('interest', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"interest","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['interest'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Budget</span>
+                    @foreach (\App\Support\Persona::budgetBands() as $key => $label)
+                        <a href="{{ $toggle('budget', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"budget","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['budget'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Length</span>
+                    @foreach (\App\Support\Persona::durations() as $key => $label)
+                        <a href="{{ $toggle('days', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"days","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['days'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Party</span>
+                    @foreach (\App\Support\Persona::partySizes() as $key => $label)
+                        <a href="{{ $toggle('group', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"group","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ (string) ($filters['group'] ?? '') === (string) $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                @if ($filters !== [])
+                    <div>
+                        <a href="{{ route('discover.index') }}{{ $persona ? '?persona=' . $persona : '' }}#trips" class="text-sm text-amber-400 hover:text-amber-300">Clear filters</a>
+                    </div>
+                @endif
+            </div>
+
+            @if ($noMatches)
+                <div class="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-6 text-center mb-8">
+                    <p class="text-lg font-semibold">No trips match all of those filters yet.</p>
+                    <p class="text-zinc-300 text-sm mt-1">Here are our most popular trips, or tell us what you want and we'll build it for you.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+                        <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" data-gtag-params='{"placement":"trip_filters"}'
+                            class="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-black rounded-2xl font-semibold transition">Get a custom quote</a>
+                        <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text={{ rawurlencode('Hi Vumbi Ventures, I could not find the right trip on your site and would like help planning one.') }}"
+                            target="_blank" rel="noopener"
+                            data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"trip_filters_no_match"}'
+                            class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-semibold transition">Chat on WhatsApp</a>
+                    </div>
+                </div>
+            @endif
+
+            @if (isset($featuredPackages) && count($featuredPackages) > 0)
+                <h2 class="text-3xl font-bold mb-8 text-center">{{ $noMatches ? 'Popular Trips' : 'Trips for You' }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach ($featuredPackages as $pkg)
                         <a href="{{ route('tours.show', $pkg) }}"
@@ -130,9 +221,17 @@
                                 style="background-image: url('{{ $pkg->image ?: asset('images/maasai-mara.jpg') }}')">
                             </div>
                             <div class="p-5">
-                                <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}</div>
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <span class="text-xs text-green-400 uppercase tracking-wide">{{ ucfirst($pkg->type) }}</span>
+                                    @if ($pkg->duration_days)
+                                        <span class="text-xs text-zinc-400">{{ $pkg->duration_days }} {{ \Illuminate\Support\Str::plural('day', $pkg->duration_days) }}</span>
+                                    @endif
+                                    @foreach (array_slice($pkg->audiences ?? [], 0, 2) as $aud)
+                                        <span class="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full border {{ $persona === $aud ? 'border-amber-400 text-amber-300' : 'border-zinc-700 text-zinc-400' }}">{{ \App\Support\Persona::label($aud) }}</span>
+                                    @endforeach
+                                </div>
                                 <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
-                                <p class="text-sm text-zinc-400 mt-1 line-clamp-2">{{ $pkg->description }}</p>
+                                <p class="text-sm text-zinc-400 mt-1">{{ \Illuminate\Support\Str::words(strip_tags((string) $pkg->description), 25) }}</p>
                                 <div class="flex items-center justify-between mt-4">
                                     <span class="text-2xl font-bold text-green-400">$ {{ number_format($pkg->price) }}</span>
                                     <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
@@ -144,8 +243,8 @@
                         </a>
                     @endforeach
                 </div>
-            </section>
-        @endif
+            @endif
+        </section>
 
         <!-- ============================================= -->
         <!-- 3. AFTER SEARCH: Results & Tabs               -->

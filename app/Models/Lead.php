@@ -11,7 +11,7 @@ class Lead extends Model
     protected $fillable = [
         'first_name', 'phone', 'email',
         'partner_package_id', 'start_date',
-        'status',
+        'status', 'persona',
     ];
 
     protected $casts = [
