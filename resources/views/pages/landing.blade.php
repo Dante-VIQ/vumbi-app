@@ -177,6 +177,20 @@
         </div>
     </section>
 
+    {{-- ================= PERSONA STRIP ================= --}}
+    <section class="container mx-auto px-4 sm:px-6 py-8">
+        <p class="text-center text-sm font-medium text-zinc-600 mb-4">How do you like to travel?</p>
+        <div class="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                <a href="{{ route('trips.show', $tsSlug) }}" data-gtag-event="persona_card_click" data-gtag-params="{{ json_encode(['style' => $tsSlug, 'placement' => 'home_strip']) }}"
+                    class="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-md hover:border-[#8B5A2B] transition p-5 text-center">
+                    <span class="font-semibold">{{ $ts['name'] }}</span>
+                    <span class="block text-xs text-zinc-500 mt-1">{{ $ts['badge'] }} &rarr;</span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
     {{-- ================= 2. LIVE NETWORK STATUS BAR ================= --}}
     <section class="py-6 bg-white border-y border-black/5">
         <div class="container mx-auto px-6">
@@ -218,6 +232,7 @@
             $eastAfricanDestinations = [
                 [
                     'name' => 'Maasai Mara National Reserve',
+                    'audiences' => ['adventure','group'],
                     'location' => 'Kenya',
                     'description' => 'Great Migration game drives, big cat tracking, and luxury partner tented camps.',
                     'price' => 'From $175 / person',
@@ -227,6 +242,7 @@
                 ],
                 [
                     'name' => 'Lake Nakuru & Rift Valley',
+                    'audiences' => ['youth','group'],
                     'location' => 'Kenya',
                     'description' => 'Rhino sanctuaries, flamingo lakes, and 1 to 3 day safari getaways with local drivers.',
                     'price' => 'From $325 / person',
@@ -236,6 +252,7 @@
                 ],
                 [
                     'name' => 'Amboseli Kilimanjaro View',
+                    'audiences' => ['group'],
                     'location' => 'Kenya',
                     'description' => 'Massive elephant herds set against the backdrop of Mount Kilimanjaro.',
                     'price' => 'From $422 / person',
@@ -245,6 +262,7 @@
                 ],
                 [
                     'name' => 'Zanzibar Beach & Spice Tour',
+                    'audiences' => ['youth','group'],
                     'location' => 'Tanzania',
                     'description' => 'Combine mainland game drives with pristine white sand beach relaxation.',
                     'price' => 'From $105 / person',
@@ -254,6 +272,7 @@
                 ],
                 [
                     'name' => 'Diani Beach Getaway',
+                    'audiences' => ['youth','group'],
                     'location' => 'Kenya Coast',
                     'description' => 'Turquoise Indian Ocean waters, water sports, and luxury beach resort affiliate deals.',
                     'price' => 'From $80 / person',
@@ -263,6 +282,7 @@
                 ],
                 [
                     'name' => 'Serengeti & Ngorongoro Crater',
+                    'audiences' => ['adventure','group'],
                     'location' => 'Tanzania',
                     'description' => 'Unmatched predator density and the world’s largest intact volcanic caldera.',
                     'price' => 'From $791 / person',
@@ -271,6 +291,13 @@
                     'link' => 'https://gyg.me/jTATNgL2'
                 ],
             ];
+            // Editable guesses: show destinations that suit the visitor's saved persona first.
+            $homePersona = \App\Support\Persona::current();
+            if ($homePersona) {
+                $eastAfricanDestinations = collect($eastAfricanDestinations)
+                    ->sortByDesc(fn ($d) => in_array($homePersona, $d['audiences'] ?? [], true) ? 1 : 0)
+                    ->values()->all();
+            }
         @endphp
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

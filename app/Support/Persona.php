@@ -117,6 +117,19 @@ final class Persona
         return in_array($value, self::keys(), true) ? $value : null;
     }
 
+    /** Pre-written WhatsApp opener that tells us who is asking. */
+    public static function whatsappMessage(?string $persona, ?string $context = null): string
+    {
+        $base = match ($persona) {
+            self::ADVENTURE => 'Hi Vumbi Ventures, I am interested in an adventure trip (a hike, climb or multi-day expedition) and would like help planning it.',
+            self::YOUTH => 'Hi Vumbi Ventures, I am looking for a budget-friendly trip and would like help planning it.',
+            self::GROUP => 'Hi Vumbi Ventures, I am planning a trip for a group and would like help with options and prices.',
+            default => 'Hi Vumbi Ventures, I would like help planning a trip.',
+        };
+
+        return $context ? $base . ' ' . $context : $base;
+    }
+
     /** The persona for this request: ?persona= wins, then the cookie. */
     public static function current(?Request $request = null): ?string
     {

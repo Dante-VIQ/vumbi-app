@@ -29,6 +29,10 @@ class ContactController extends Controller
         'subject' => 'nullable|string',
         'website' => 'nullable|url',
         'travel_details' => 'nullable|string|max:255',
+        'travel_month' => ['nullable', 'date_format:Y-m'],
+        'group_size' => 'nullable|integer|min:1|max:200',
+        'budget_range' => ['nullable', \Illuminate\Validation\Rule::in(['budget', 'mid', 'premium'])],
+        'persona' => ['nullable', \Illuminate\Validation\Rule::in(\App\Support\Persona::keys())],
         'message' => 'required|string',
         'consent' => 'accepted',
     ]);

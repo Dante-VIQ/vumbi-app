@@ -98,6 +98,7 @@
 </style>
 @endpush
 
+@php $persona = \App\Support\Persona::current(); @endphp
 @section('content')
 
 {{-- Hero Section --}}
@@ -197,67 +198,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('contact.submit') }}" method="POST" class="space-y-5">
-                    @csrf
-
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-[#5C5C5C] mb-1">Full Name *</label>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" required autocomplete="name" class="input-field" placeholder="Jane Doe">
-                            @error('name') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-[#5C5C5C] mb-1">Email Address *</label>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" required autocomplete="email" class="input-field" placeholder="jane@example.com">
-                            @error('email') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-[#5C5C5C] mb-1">Phone Number (optional)</label>
-                            <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" autocomplete="tel" class="input-field" placeholder="+254 XXX XXX XXX">
-                        </div>
-                        <div>
-                            <label for="inquiry_type" class="block text-sm font-medium text-[#5C5C5C] mb-1">I'm interested in *</label>
-                            <select name="inquiry_type" id="inquiry_type" required class="input-field">
-                                <option value="">-- Please select --</option>
-                                <option value="travel" {{ old('inquiry_type') == 'travel' ? 'selected' : '' }}>Planning a safari or trip</option>
-                                <option value="partnership" {{ old('inquiry_type') == 'partnership' ? 'selected' : '' }}>Partnering as an operator or guide</option>
-                                <option value="other" {{ old('inquiry_type') == 'other' ? 'selected' : '' }}>Other Inquiry</option>
-                            </select>
-                            @error('inquiry_type') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="subject" class="block text-sm font-medium text-[#5C5C5C] mb-1">Subject</label>
-                            <input type="text" name="subject" id="subject" value="{{ old('subject') }}" class="input-field" placeholder="How can we help?">
-                        </div>
-                        <div>
-                            <label for="travel_details" class="block text-sm font-medium text-[#5C5C5C] mb-1">Travel month & group size (optional)</label>
-                            <input type="text" name="travel_details" id="travel_details" value="{{ old('travel_details') }}" class="input-field" placeholder="e.g. August, 4 people">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="message" class="block text-sm font-medium text-[#5C5C5C] mb-1">Message *</label>
-                        <textarea name="message" id="message" rows="4" required class="input-field" placeholder="Where would you like to go, and what matters most: budget, adventure, comfort, kids?">{{ old('message') }}</textarea>
-                        @error('message') <span class="text-xs text-red-500 mt-1">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" name="consent" id="consent" required class="w-4 h-4 text-[#8B5A2B] rounded border-gray-300 focus:ring-[#8B5A2B]">
-                        <label for="consent" class="text-xs text-[#5C5C5C]">
-                            I agree to be contacted about this inquiry. We protect your data and never spam. See our <a href="{{ route('privacy') }}" class="underline">privacy policy</a>.
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-base font-semibold">
-                        Submit Inquiry
-                    </button>
-                </form>
+                <x-travel-enquiry-form :persona="$persona" placement="contact" :show-type="true" />
             </div>
         </div>
 
@@ -275,7 +216,7 @@
                     </div>
                 </div>
                 <p class="text-xs text-[#5C5C5C] mb-4">Skip the email queue for quick service questions or urgent updates.</p>
-                <a href="https://wa.me/{{ config('services.whatsapp.number') }}" target="_blank" rel="noopener" data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"contact_page"}' class="inline-flex items-center justify-center gap-2 text-sm font-medium bg-green-600 text-white w-full py-2.5 rounded-xl hover:bg-green-700 transition">
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', (string) config('services.whatsapp.number')) }}?text={{ rawurlencode(\App\Support\Persona::whatsappMessage($persona)) }}" target="_blank" rel="noopener" data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"contact_page"}' class="inline-flex items-center justify-center gap-2 text-sm font-medium bg-green-600 text-white w-full py-2.5 rounded-xl hover:bg-green-700 transition">
                     Start WhatsApp Chat →
                 </a>
             </div>

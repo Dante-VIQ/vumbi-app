@@ -54,6 +54,24 @@
             </div>
         </div>
         
+        @if(!empty($data['persona']))
+        <div class="field">
+            <div class="label">Traveller type</div>
+            <div class="value">{{ \App\Support\Persona::label($data['persona']) ?? $data['persona'] }}</div>
+        </div>
+        @endif
+
+        @if(!empty($data['travel_month']) || !empty($data['group_size']) || !empty($data['budget_range']))
+        <div class="field">
+            <div class="label">Trip details</div>
+            <div class="value">
+                @if(!empty($data['travel_month'])) Travel month: {{ $data['travel_month'] }}<br> @endif
+                @if(!empty($data['group_size'])) Travellers: {{ $data['group_size'] }}<br> @endif
+                @if(!empty($data['budget_range'])) Budget per person: {{ ['budget' => 'Under $250', 'mid' => '$250 to $700', 'premium' => '$700 and above'][$data['budget_range']] ?? $data['budget_range'] }} @endif
+            </div>
+        </div>
+        @endif
+
         @if(!empty($data['travel_details']))
         <div class="field">
             <div class="label">Travel month & group size</div>
