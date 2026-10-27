@@ -53,8 +53,13 @@ Route::post('/inquiry/send-quote', [InquiryController::class, 'sendQuote'])
 Route::get('/inquiry/thank-you/{quote}', [InquiryController::class, 'thankYou'])
     ->name('inquiry.thank-you');
 
+Route::get('/trips', fn () => redirect('/services', 301));
+Route::get('/trips/{style}', [\App\Http\Controllers\TripStyleController::class, 'show'])
+    ->whereIn('style', ['adventure', 'youth', 'groups'])
+    ->name('trips.show');
+
 Route::view('/about', 'pages.about');
-Route::view('/services', 'pages.services');
+Route::get('/services', fn () => view('pages.services', ['styles' => \App\Support\TripStyles::all()]))->name('services');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy-policy', 'pages.privacy')->name('privacy');
 Route::view('/terms', 'pages.terms')->name('terms');

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
  
-@section('title', 'African Safari & Travel Planning Services | Custom Itineraries | Vumbi Ventures')
+@section('title', 'Trips & Travel Planning in Kenya & East Africa | Vumbi Ventures')
 @section('description', 'From private safaris in Kenya to cultural tours in Tanzania. We craft custom, authentic African travel experiences. Itineraries built for you.')
 @section('keywords', 'African travel services, custom safari planning, Kenya tour operator, Tanzania travel agency, adventure travel Africa, group travel services, bespoke itineraries, Vumbi Ventures services')
 
@@ -100,105 +100,67 @@
 </style>
 @endpush
 
-{{-- ===================== HERO ===================== --}}
-<section class="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16">
-    <div class="absolute inset-0 grain"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,90,43,0.05),transparent_50%)]"></div>
-
+<section class="relative overflow-hidden pt-24 pb-10 md:pt-32 md:pb-12">
     <div class="relative container mx-auto px-6 text-center max-w-4xl">
-        <span class="inline-flex items-center gap-2 text-sm bg-white/70 backdrop-blur-sm border border-white/40 px-4 py-2 rounded-full shadow-sm">
-            <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>
-            What We Do
+        <span class="inline-flex items-center gap-2 text-sm bg-white/70 border border-black/5 px-4 py-2 rounded-full shadow-sm">
+            <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>What we do
         </span>
-
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold mt-6 leading-tight tracking-tight">
-            Plan your East Africa trip with <span class="text-[#8B5A2B] relative inline-block">
-                people who know it
-                <span class="absolute -bottom-1 left-0 w-full h-1 bg-[#D98C5F]/30 rounded-full"></span>
-            </span>
+        <h1 class="text-4xl md:text-5xl font-semibold mt-6 leading-tight tracking-tight">
+            Plan your East Africa trip with <span class="text-[#8B5A2B]">people who know it</span>
         </h1>
-
         <p class="mt-4 text-[#5C5C5C] text-lg max-w-2xl mx-auto">
-            Search destinations, compare starting prices, and book with vetted local operators, or ask us to put together a custom itinerary.
+            We connect you with vetted local operators, show you starting prices up front, and help you plan a trip that fits how you like to travel.
         </p>
     </div>
 </section>
 
-{{-- ===================== PRIMARY SERVICE: TRAVEL DISCOVERY ===================== --}}
-<section id="travel" class="container mx-auto px-6 py-12 scroll-mt-20">
-    <div class="glass-panel rounded-3xl p-8 md:p-12 shadow-xl">
-        <div class="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-                <div class="inline-flex items-center gap-2 text-sm bg-[#8B5A2B]/10 text-[#8B5A2B] px-4 py-1.5 rounded-full mb-4">
-                    <span class="w-2 h-2 bg-[#8B5A2B] rounded-full"></span>
-                    Plan Your Trip
-                </div>
-                <h2 class="text-3xl md:text-4xl font-semibold leading-tight">
-                    Discover Africa.
-                    <br>
-                    <span class="text-[#8B5A2B]">Book Extraordinary.</span>
-                </h2>
-                <p class="text-[#5C5C5C] mt-4 leading-relaxed">
-                    Our curated travel platform connects you with handpicked hotels, safaris, cultural tours, and flights across Africa. We partner with trusted providers to bring you the best deals — all in one seamless search.
-                </p>
-
-                <ul class="mt-6 space-y-3">
-                    <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-[#5C5C5C]">Search destinations, safaris and cultural tours across Kenya and East Africa</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-[#5C5C5C]">Starting prices shown upfront, with booking through established partners</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#8B5A2B] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-[#5C5C5C]">Local expertise — curated by Africans who know the continent</span>
-                    </li>
-                </ul>
-
-                <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="{{ url('/discover') }}" class="btn-primary px-6 py-3 rounded-xl inline-flex items-center gap-2">
-                        Start Exploring
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 0 0 20 15 15 0 0 0 0-20z"/><path d="M2 12h20"/></svg>
-                    </a>
-                    <a href="{{ url('/discover') }}" class="btn-outline px-6 py-3 rounded-xl inline-flex items-center gap-2">
-                        View Destinations
-                    </a>
-                </div>
-            </div>
-
-            <div class="relative">
-                <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
-                    <img src="{{ asset('images/maasai-mara.jpg') }}" alt="Safari vehicle on the Maasai Mara plains" loading="lazy" class="w-full h-full object-cover">
-                </div>
-                {{-- Floating stat card --}}
-                <div class="absolute -bottom-4 -left-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/50">
-                    <div class="text-2xl font-bold text-[#8B5A2B]">Upfront</div>
-                    <div class="text-sm text-[#5C5C5C]">Starting prices</div>
-                </div>
-            </div>
-        </div>
+<section id="travel" class="container mx-auto px-6 py-10 max-w-5xl scroll-mt-20">
+    <h2 class="text-2xl md:text-3xl font-semibold text-center">Pick the way you travel</h2>
+    <div class="mt-8 grid md:grid-cols-3 gap-6">
+        @foreach ($styles as $slug => $st)
+            @php $range = \App\Support\TripStyles::priceRange($slug); @endphp
+            <a href="{{ route('trips.show', $slug) }}" class="service-card p-6 flex flex-col hover:shadow-lg transition"
+                data-gtag-event="persona_card_click" data-gtag-params="{{ json_encode(['style' => $slug]) }}">
+                <span class="text-xs font-medium text-[#8B5A2B]">{{ $st['badge'] }}</span>
+                <h3 class="text-xl font-semibold mt-2">{{ $st['name'] }}</h3>
+                <p class="text-sm text-[#5C5C5C] mt-2 flex-1">{{ $st['who'][0] ?? '' }}</p>
+                @if ($range)
+                    <p class="mt-4 text-sm font-semibold">From ${{ number_format($range['min']) }}</p>
+                @endif
+                <span class="mt-3 text-sm font-medium text-[#8B5A2B]">See trips &rarr;</span>
+            </a>
+        @endforeach
     </div>
 </section>
 
-{{-- ===================== FINAL CTA ===================== --}}
-<section class="py-20 bg-[#121212] text-white text-center relative overflow-hidden mt-12 rounded-t-[3rem]">
-    <div class="absolute inset-0 grain opacity-[0.02]"></div>
-    <div class="container mx-auto px-6 relative">
-        <h2 class="text-3xl md:text-4xl font-semibold">Ready to get started?</h2>
-        <p class="text-white/70 text-lg mt-3 max-w-xl mx-auto">
-            Tell us when you want to travel and who is coming, and we'll come back with options and prices.
-        </p>
-        <div class="flex flex-wrap justify-center gap-4 mt-8">
-            <a href="{{ url('/discover') }}" class="bg-[#8B5A2B] hover:bg-[#6B421F] px-6 py-3 rounded-xl font-medium transition">
-                Find My Trip
-            </a>
-            <a href="{{ url('/contact') }}" class="bg-transparent border border-white/30 hover:bg-white/10 px-6 py-3 rounded-xl font-medium transition">
-                Ask for a Custom Quote
-            </a>
-        </div>
+<section class="container mx-auto px-6 py-10 max-w-5xl">
+    <h2 class="text-2xl md:text-3xl font-semibold text-center">How it works</h2>
+    <div class="mt-8 grid md:grid-cols-3 gap-6">
+        @foreach ([
+            ['1', 'Tell us what you want', 'Pick a trip style, search destinations, or send us your dates and group size.'],
+            ['2', 'Compare options', 'See starting prices and what is included from vetted local partners.'],
+            ['3', 'Book with a local operator', 'We connect you directly. You get a reply within 24 business hours.'],
+        ] as [$n, $t, $d])
+            <div class="service-card p-6">
+                <div class="w-9 h-9 rounded-full bg-[#8B5A2B]/10 text-[#8B5A2B] font-semibold flex items-center justify-center">{{ $n }}</div>
+                <h3 class="font-semibold mt-3">{{ $t }}</h3>
+                <p class="text-sm text-[#5C5C5C] mt-1">{{ $d }}</p>
+            </div>
+        @endforeach
     </div>
 </section>
 
+<section class="container mx-auto px-6 py-10 max-w-4xl">
+    <div class="service-card p-8 text-center">
+        <h2 class="text-2xl font-semibold">Not sure where to go?</h2>
+        <p class="text-[#5C5C5C] mt-2">Search destinations and see what fits your dates, budget and group.</p>
+        <a href="{{ route('discover.index') }}" class="inline-block mt-5 px-6 py-3 rounded-xl bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white font-semibold transition">Explore destinations</a>
+    </div>
+</section>
+
+<section class="container mx-auto px-6 pt-6 pb-20 max-w-4xl text-center">
+    <h2 class="text-2xl font-semibold">Ready to plan?</h2>
+    <p class="text-[#5C5C5C] mt-2">Tell us who's coming and when. We reply within 24 business hours.</p>
+    <a href="{{ route('contact') }}" class="inline-block mt-5 px-6 py-3 rounded-xl bg-white border border-black/10 hover:border-[#8B5A2B] font-semibold transition">Request a custom quote</a>
+</section>
 @endsection

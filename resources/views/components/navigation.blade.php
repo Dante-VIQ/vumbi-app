@@ -53,6 +53,18 @@
                 </a>
             @endforeach
 
+            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @keydown.escape="open = false">
+                <button type="button" @click="open = !open" :aria-expanded="open" aria-haspopup="true"
+                    class="px-3 py-2 text-sm font-medium text-zinc-700 hover:text-[#8B5A2B] flex items-center gap-1.5">
+                    <i class="fas fa-route text-xs text-zinc-400"></i> Trip Styles <i class="fas fa-chevron-down text-[10px]"></i>
+                </button>
+                <div x-show="open" x-cloak x-transition class="absolute left-0 top-full w-56 bg-white rounded-xl border border-zinc-100 shadow-lg py-2 z-50">
+                    @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                        <a href="{{ route('trips.show', $tsSlug) }}" class="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 hover:text-[#8B5A2B]">{{ $ts['name'] }}</a>
+                    @endforeach
+                </div>
+            </div>
+
             @role('master|engineer')
                 <a href="{{ url('/admin/africa') }}"
                     class="ml-1 px-2.5 py-1.5 text-xs font-semibold text-zinc-600 hover:text-[#8B5A2B] transition flex items-center gap-1">
@@ -148,6 +160,13 @@
                         class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors {{ $isActive ? 'bg-[#F5EFE6] text-[#8B5A2B] font-semibold' : 'text-zinc-700 hover:bg-zinc-50' }}">
                         <i class="{{ $item['icon'] }} w-5 text-center {{ $isActive ? 'text-[#8B5A2B]' : 'text-zinc-400' }}"></i>
                         {{ $item['name'] }}
+                    </a>
+                @endforeach
+                <p class="px-3.5 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-zinc-400">Trip styles</p>
+                @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                    <a href="{{ route('trips.show', $tsSlug) }}" @click="mobileOpen = false"
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-zinc-700 hover:bg-zinc-50">
+                        <i class="fas fa-route w-5 text-center text-zinc-400"></i>{{ $ts['name'] }}
                     </a>
                 @endforeach
             </nav>

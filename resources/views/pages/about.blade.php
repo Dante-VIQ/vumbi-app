@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Our Story: The Meaning Behind Vumbi Ventures')
+@section('title', 'About Vumbi Ventures | Vetted Local Partners in Kenya & East Africa')
 @section('description', 'Vumbi means dust. We find potential in what the world overlooks. Learn how we connect travellers with vetted local partners across East Africa.')
 @section('keywords', 'about Vumbi Ventures, African travel company, sustainable tourism Africa, authentic travel, our mission')
 @section('og_image', asset('images/about-og.jpg')) 
@@ -42,12 +42,7 @@
                 </div>
                 
                 <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-[#1A1A1A] tracking-tight leading-[1.1] mb-6">
-                    Our Name. 
-                    <span class="text-[#8B5A2B] relative inline-block">
-                        Our Meaning.
-                        <span class="absolute bottom-2 left-0 w-full h-3 bg-[#D98C5F]/20 -z-10 rounded"></span>
-                    </span><br>
-                    Our Purpose.
+                    Travel East Africa with <span class="text-[#8B5A2B]">people who know it</span>
                 </h1>
                 
                 <p class="text-base sm:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto font-normal">
@@ -121,64 +116,68 @@
         </div>
     </section>
 
-    {{-- ================= BUILT FROM AFRICA SECTION ================= --}}
+    {{-- ================= HOW WE WORK / PEOPLE / PROOF ================= --}}
+    @php
+        $founder = config('about.founder', []);
+        $showFounder = ! empty($founder['name']) && ! empty($founder['note']);
+        $team = array_filter(config('about.team', []), fn ($m) => ! empty($m['name']));
+        $tripCount = \App\Models\PartnerPackage::active()->count();
+        $noteCount = \App\Models\Blog::count();
+        $proof = collect([
+            $tripCount > 0 ? ['value' => $tripCount, 'label' => \Illuminate\Support\Str::plural('Trip', $tripCount) . ' listed'] : null,
+            $noteCount > 0 ? ['value' => $noteCount, 'label' => 'Field Notes published'] : null,
+        ])->filter()->merge(config('about.proof', []))->values();
+    @endphp
     <section class="py-16 lg:py-24 bg-white">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                
-                <!-- Left Visual Metric Block -->
-                <div class="order-2 lg:order-1">
-                    <div class="relative">
-                        <div class="bg-[#F8F5F2] p-8 sm:p-10 rounded-3xl border border-black/5 relative overflow-hidden">
-                            <div class="grid grid-cols-2 gap-6 relative z-10">
-                                <div class="bg-white p-6 rounded-2xl text-center shadow-sm border border-black/5">
-                                    <div class="text-4xl sm:text-5xl font-black text-[#8B5A2B] mb-1">54</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-gray-500">Nations</div>
-                                </div>
-                                <div class="bg-white p-6 rounded-2xl text-center shadow-sm border border-black/5">
-                                    <div class="text-4xl sm:text-5xl font-black text-[#8B5A2B] mb-1">2000+</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-gray-500">Languages & Cultures</div>
-                                </div>
-                                <div class="bg-white p-6 rounded-2xl text-center shadow-sm border border-black/5">
-                                    <div class="text-4xl sm:text-5xl font-black text-[#8B5A2B] mb-1">100%</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-gray-500">Authentic Groundwork</div>
-                                </div>
-                                <div class="bg-white p-6 rounded-2xl text-center shadow-sm border border-black/5">
-                                    <div class="text-4xl sm:text-5xl font-black text-[#8B5A2B] mb-1">∞</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-gray-500">Innovation Potential</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="absolute -top-4 -right-4 bg-[#8B5A2B] text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-lg">
-                            <i class="fas fa-map-marker-alt text-amber-400 mr-1.5"></i> Based in Nakuru, Kenya
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Narrative -->
-                <div class="order-1 lg:order-2 space-y-6">
-                    <div class="inline-flex items-center gap-2 bg-[#E5E0D9]/60 text-[#8B5A2B] px-4 py-2 rounded-full text-xs font-bold tracking-wider">
-                        <i class="fas fa-globe-africa"></i>
-                        <span>OUR FOUNDATION</span>
-                    </div>
-
-                    <h2 class="text-3xl sm:text-5xl font-black text-[#1A1A1A] leading-tight">
-                        Built From the <span class="text-[#8B5A2B]">Spirit of Africa</span>
-                    </h2>
-
-                    <div class="space-y-4 text-gray-600 text-base sm:text-lg leading-relaxed">
-                        <p>Vumbi Ventures is proudly inspired by Africa — its resilience, people, wildlife landscapes, and boundless ingenuity. Africa is not just where we operate; it is our foundation.</p>
-                        
-                        <p>The continent's diverse safari reserves, trade corridors, and tech-savvy communities fuel our purpose. Every service we facilitate carries practical, resourceful local knowledge.</p>
-
-                        <div class="bg-[#F8F5F2] p-6 rounded-2xl border-l-4 border-[#8B5A2B] text-slate-800 font-medium italic text-base">
-                            "We believe everyday African realities spark solutions that are practical, durable, and deeply human."
-                        </div>
-                    </div>
-                </div>
-
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <h2 class="text-3xl sm:text-5xl font-black text-[#1A1A1A] leading-tight text-center">
+                How we <span class="text-[#8B5A2B]">work</span>
+            </h2>
+            <p class="mt-4 text-center text-gray-600 text-base sm:text-lg max-w-3xl mx-auto">
+                We don't run the vehicles ourselves. We connect travellers with local partners we vet, and show prices up front.
+            </p>
+            <div class="mt-10 grid sm:grid-cols-2 gap-4">
+                @foreach (['Licensed local transport partners', 'Inspected 4x4s and vans', 'Certified driver-guides', 'Upfront prices, no surprises'] as $item)
+                    <div class="bg-[#F8F5F2] p-5 rounded-2xl border border-black/5 font-medium">&#10003; {{ $item }}</div>
+                @endforeach
             </div>
+
+            @if ($showFounder)
+                <div class="mt-16 grid md:grid-cols-3 gap-8 items-center">
+                    @if (! empty($founder['photo']))
+                        <img src="{{ asset($founder['photo']) }}" alt="{{ $founder['name'] }}" class="rounded-2xl w-full object-cover" loading="lazy">
+                    @endif
+                    <div class="{{ ! empty($founder['photo']) ? 'md:col-span-2' : 'md:col-span-3' }}">
+                        <h3 class="text-2xl font-bold">{{ $founder['name'] }}@if (! empty($founder['role'])) <span class="text-[#8B5A2B] text-base font-medium">, {{ $founder['role'] }}</span>@endif</h3>
+                        <p class="mt-3 text-gray-600 leading-relaxed">{{ $founder['note'] }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if (count($team))
+                <div class="mt-12 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    @foreach ($team as $m)
+                        <div class="bg-[#F8F5F2] p-5 rounded-2xl border border-black/5">
+                            <p class="font-semibold">{{ $m['name'] }}</p>
+                            @if (! empty($m['role']))<p class="text-sm text-[#8B5A2B]">{{ $m['role'] }}</p>@endif
+                            @if (! empty($m['bio']))<p class="text-sm text-gray-600 mt-2">{{ $m['bio'] }}</p>@endif
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            @if ($proof->isNotEmpty())
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @foreach ($proof as $item)
+                        <div class="bg-[#F8F5F2] p-6 rounded-2xl text-center border border-black/5">
+                            <div class="text-4xl font-black text-[#8B5A2B]">{{ $item['value'] }}</div>
+                            <div class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-1">{{ $item['label'] }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <p class="mt-12 text-center text-sm text-gray-600">Based in Nakuru, Kenya. Planning a trip? See <a href="{{ route('services') }}" class="text-[#8B5A2B] font-medium underline">how we help each type of traveller</a>.</p>
         </div>
     </section>
 

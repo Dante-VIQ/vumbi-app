@@ -594,6 +594,7 @@ new class extends Component
 
                 {{-- Sidebar WhatsApp CTA (desktop) --}}
                 <x-whatsapp-cta :title="$blog->title" placement="blog_sidebar" :blog-id="$blog->id" />
+                <x-trip-style-links class="mt-4" />
 
                 {{-- Travel Booking Widget --}}
                 {{-- @if ($blog->title)
