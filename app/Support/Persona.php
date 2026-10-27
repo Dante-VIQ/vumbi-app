@@ -140,7 +140,13 @@ final class Persona
         return $context ? $base . ' ' . $context : $base;
     }
 
-    /** The persona for this request: ?persona= wins, then the cookie. */
+    /** Cookie holding a persona we inferred from browsing (never a visitor's own choice). */
+    public const GUESS_COOKIE = 'vumbi_persona_guess';
+
+    /**
+     * The persona for this request: ?persona= wins, then the visitor's saved choice,
+     * then a guess from the trips they have been viewing.
+     */
     public static function current(?Request $request = null): ?string
     {
         $request ??= request();
@@ -151,8 +157,30 @@ final class Persona
         }
 
         $cookie = $request->cookie(self::COOKIE);
+        if (is_string($cookie) && ($persona = self::normalize($cookie))) {
+            return $persona;
+        }
 
-        return is_string($cookie) ? self::normalize($cookie) : null;
+        $guess = $request->cookie(self::GUESS_COOKIE);
+
+        return is_string($guess) ? self::normalize($guess) : null;
+    }
+
+    /** True when the persona in use is our guess from browsing, not something the visitor chose. */
+    public static function isInferred(?Request $request = null): bool
+    {
+        $request ??= request();
+
+        if ($request->query('persona') !== null) {
+            return false;
+        }
+        $cookie = $request->cookie(self::COOKIE);
+        if (is_string($cookie) && self::normalize($cookie)) {
+            return false;
+        }
+        $guess = $request->cookie(self::GUESS_COOKIE);
+
+        return is_string($guess) && self::normalize($guess) !== null;
     }
 
     /**

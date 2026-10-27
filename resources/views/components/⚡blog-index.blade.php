@@ -89,12 +89,26 @@ new class extends Component {
             ->paginate($this->perPage);
     }
 
+    /** Up to three posts matching the visitor's persona; only on the unfiltered first view. */
+    public function picksForVisitor()
+    {
+        $persona = \App\Support\Persona::current();
+        $slug = \App\Support\TripStyles::slugFor($persona);
+
+        if (! $slug || $this->selectedCategory !== 'all' || ! empty($this->search)) {
+            return collect();
+        }
+
+        return \App\Support\TripStyles::relatedPosts($slug, 3);
+    }
+
     public function with(): array
     {
         return [
             'blogs' => $this->blogs(),
             'categories' => $this->categories,
             'featuredBlogs' => $this->featuredBlogs,
+            'picks' => $this->picksForVisitor(),
         ];
     }
 };
@@ -165,6 +179,17 @@ new class extends Component {
             </div>
         </div>
     </section>
+
+    @if ($picks->isNotEmpty())
+        <section class="container mx-auto px-6 pt-10">
+            <h2 class="text-lg font-semibold mb-3">Picked for {{ strtolower(\App\Support\Persona::label(\App\Support\Persona::current()) ?? 'you') }}s</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                @foreach ($picks as $pick)
+                    <a href="{{ $pick->url }}" class="bg-white rounded-xl border border-black/5 p-4 hover:border-[#8B5A2B] transition font-medium text-sm">{{ $pick->title }}</a>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     {{-- FEATURED STORY SECTION --}}
     @if($featuredBlogs->count() > 0)

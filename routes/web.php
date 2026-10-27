@@ -24,6 +24,8 @@ use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
+Route::get('/quiz', [\App\Http\Controllers\QuizController::class, 'show'])->name('quiz');
+Route::post('/quiz', [\App\Http\Controllers\QuizController::class, 'submit'])->middleware('throttle:10,1')->name('quiz.submit');
 Route::get('/llms.txt', \App\Http\Controllers\LlmsController::class)->name('llms');
 
 Route::get('/', [LandingController::class, 'index'])->name('home');

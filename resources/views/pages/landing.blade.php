@@ -190,8 +190,11 @@
             @endforeach
         </div>
         <p class="text-center mt-5 text-sm">
+            <a href="{{ route('quiz') }}" data-gtag-event="quiz_start_click" data-gtag-params='{"placement":"home_strip"}'
+                class="text-[#8B5A2B] font-semibold underline underline-offset-2">Not sure yet? Take the 1-minute quiz</a>
+            <span class="text-zinc-400 mx-2">or</span>
             <a href="{{ route('discover.index') }}" data-gtag-event="find_my_trip_click" data-gtag-params='{"placement":"home_strip"}'
-                class="text-[#8B5A2B] font-semibold underline underline-offset-2">Not sure yet? Search destinations and find your trip &rarr;</a>
+                class="text-[#8B5A2B] font-semibold underline underline-offset-2">search destinations</a>
         </p>
     </section>
 
@@ -420,7 +423,7 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-6">
 
-                    @foreach($blogs as $blog)
+                    @foreach(\App\Support\TripStyles::prioritisePosts(collect($blogs), \App\Support\Persona::current()) as $blog)
                         <article class="insight-card p-5 bg-white rounded-2xl shadow-sm border border-black/5">
                             <h3 class="font-bold text-lg text-slate-900 hover:text-[#8B5A2B]">
                                 <a href="{{ $blog->url }}">{{ $blog->title }}</a>

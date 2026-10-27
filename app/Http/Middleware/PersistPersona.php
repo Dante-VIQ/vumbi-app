@@ -29,6 +29,46 @@ class PersistPersona
             }
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        $this->inferFromBrowsing($request);
+
+        return $response;
+    }
+
+    /**
+     * With no explicit choice, remember which persona the viewed trips are tagged for.
+     * After two views pointing at the same persona we start using it as a soft guess
+     * (a separate cookie, so it never overrides what a visitor picks).
+     */
+    private function inferFromBrowsing(Request $request): void
+    {
+        if (! $request->isMethod('GET') || $request->route()?->getName() !== 'tours.show') {
+            return;
+        }
+        if ($request->cookie(Persona::COOKIE)) {
+            return; // they already told us
+        }
+
+        $package = $request->route('package');
+        $tags = is_object($package) && is_array($package->audiences ?? null) ? $package->audiences : [];
+        $tags = array_values(array_intersect($tags, Persona::keys()));
+        if ($tags === []) {
+            return;
+        }
+
+        $seen = json_decode((string) $request->cookie('vumbi_seen'), true);
+        $seen = is_array($seen) ? array_intersect_key(array_map('intval', $seen), array_flip(Persona::keys())) : [];
+        foreach ($tags as $tag) {
+            $seen[$tag] = min(50, ($seen[$tag] ?? 0) + 1);
+        }
+        Cookie::queue('vumbi_seen', json_encode($seen), 60 * 24 * 30);
+
+        arsort($seen);
+        $top = array_key_first($seen);
+        $second = array_values($seen)[1] ?? 0;
+        if ($seen[$top] >= 2 && $seen[$top] > $second) {
+            Cookie::queue(Persona::GUESS_COOKIE, $top, 60 * 24 * 30);
+        }
     }
 }
