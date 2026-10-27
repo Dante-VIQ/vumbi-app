@@ -13,7 +13,7 @@ class Blog extends Model
 
     protected $table = 'blogs'; // Ensure this matches your table name
 
-    protected $fillable = ['user_id', 'category', 'title', 'description', 'media_path', 'media_type', 'meta_title', 'meta_description', 'meta_keywords', 'is_featured'];
+    protected $fillable = ['user_id', 'category', 'title', 'slug', 'description', 'media_path', 'media_type', 'meta_title', 'meta_description', 'meta_keywords', 'is_featured'];
 
     protected $casts = [
         'created_at' => 'datetime',
@@ -94,8 +94,41 @@ class Blog extends Model
         };
     }
 
+    /** Canonical public URL: the slug URL, or the numeric one only if a slug is missing. */
+    public function getUrlAttribute(): string
+    {
+        return route('blog.show', $this->slug ?: $this->id);
+    }
+
+    /**
+     * Unique, URL-safe slug. Never all digits, so it cannot be confused with an old numeric id URL.
+     */
+    public function generateUniqueSlug(): string
+    {
+        $base = Str::limit(Str::slug((string) $this->title), 80, '');
+        if ($base === '' || ctype_digit($base)) {
+            $base = 'post-' . ($base !== '' ? $base : Str::lower(Str::random(6)));
+        }
+
+        $slug = $base;
+        $i = 2;
+        while (static::where('slug', $slug)->when($this->exists, fn ($q) => $q->where('id', '!=', $this->id))->exists()) {
+            $slug = "{$base}-{$i}";
+            $i++;
+        }
+
+        return $slug;
+    }
+
     protected static function booted()
     {
+        // Set once on creation. Editing a title later does not change the URL.
+        static::creating(function ($blog) {
+            if (empty($blog->slug)) {
+                $blog->slug = $blog->generateUniqueSlug();
+            }
+        });
+
         static::saving(function ($blog) {
             $blog->description = clean($blog->description ?? '');
         });

@@ -42,7 +42,7 @@ test('FAQ extractor reads question and answer pairs and ignores other sections',
 
 test('article pages publish Article and FAQPage schema with a real description', function () {
     $post = aeoPost();
-    $res = $this->get(route('blog.show', $post->id))->assertOk();
+    $res = $this->get($post->url)->assertOk();
 
     $types = collect(jsonLd($res->getContent()))->keyBy('@type');
     expect($types)->toHaveKeys(['Article', 'FAQPage', 'TravelAgency', 'WebSite'])
@@ -54,14 +54,14 @@ test('article pages publish Article and FAQPage schema with a real description',
 
 test('articles without an FAQ section get no FAQPage schema', function () {
     $post = aeoPost(['description' => '<p>Just a story.</p><h2>Part one</h2><p>Text.</p>']);
-    $types = collect(jsonLd($this->get(route('blog.show', $post->id))->getContent()))->pluck('@type');
+    $types = collect(jsonLd($this->get($post->url)->getContent()))->pluck('@type');
 
     expect($types)->not->toContain('FAQPage');
 });
 
 test('organization schema points at the homepage with a stable id and the configured contact details', function () {
     $post = aeoPost();
-    $org = collect(jsonLd($this->get(route('blog.show', $post->id))->getContent()))->firstWhere('@type', 'TravelAgency');
+    $org = collect(jsonLd($this->get($post->url)->getContent()))->firstWhere('@type', 'TravelAgency');
 
     expect($org['url'])->toBe(url('/'))
         ->and($org['@id'])->toBe(url('/') . '#organization')

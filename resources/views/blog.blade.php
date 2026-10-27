@@ -20,7 +20,7 @@
         $item = [
             "@type" => "ListItem",
             "position" => $index + 1,
-            "url" => route('blog.show', $blog),
+            "url" => $blog->url,
             "name" => $blog->title ?? '',
             "description" => Str::limit($blog->excerpt ?? $blog->description ?? '', 120),
         ];

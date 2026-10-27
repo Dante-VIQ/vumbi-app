@@ -191,7 +191,7 @@
 
                                 {{-- Title --}}
                                 <h2 class="text-xl text-raw-linen group-hover:text-sunflare transition mb-3">
-                                    <a href="{{ route('blog.show', $blog->id) }}">
+                                    <a href="{{ $blog->url }}">
                                         {{ $blog->title }}
                                     </a>
                                 </h2>
@@ -211,7 +211,7 @@
                                 </div>
 
                                 {{-- Read More --}}
-                                {{-- <a href="{{ route('blog.show', $blog->id) }}"
+                                {{-- <a href="{{ $blog->url }}"
                                    class="block mt-4 text-sunflare text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
                                     Read Article
                                     <span>→</span>

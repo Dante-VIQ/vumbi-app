@@ -423,7 +423,7 @@
                     @foreach($blogs as $blog)
                         <article class="insight-card p-5 bg-white rounded-2xl shadow-sm border border-black/5">
                             <h3 class="font-bold text-lg text-slate-900 hover:text-[#8B5A2B]">
-                                <a href="{{ route('blog.show', $blog->id) }}">{{ $blog->title }}</a>
+                                <a href="{{ $blog->url }}">{{ $blog->title }}</a>
                             </h3>
                             <p class="text-xs text-slate-500 mt-2 line-clamp-2">
                                 @php
@@ -431,7 +431,7 @@
                                 @endphp
                                 {{ Str::limit(strip_tags($rawDesc), 100) }}
                             </p>
-                            <a href="{{ route('blog.show', $blog->id) }}"
+                            <a href="{{ $blog->url }}"
                                 class="inline-block mt-4 text-xs font-bold text-[#8B5A2B]">
                                 Read Field Note →
                             </a>

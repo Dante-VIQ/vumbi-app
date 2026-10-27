@@ -36,12 +36,12 @@ class LlmsController extends Controller
         $lines[] = '- [Contact](' . route('contact') . '): enquiries are answered within 24 business hours';
         $lines[] = '';
 
-        $posts = Blog::latest()->take(25)->get(['id', 'title', 'category', 'meta_description']);
+        $posts = Blog::latest()->take(25)->get(['id', 'slug', 'title', 'category', 'meta_description']);
         if ($posts->isNotEmpty()) {
             $lines[] = '## Field Notes and guides';
             foreach ($posts as $post) {
                 $desc = $post->meta_description ? ': ' . Str::limit(strip_tags($post->meta_description), 140) : '';
-                $lines[] = '- [' . $post->title . '](' . route('blog.show', $post->id) . ')' . $desc;
+                $lines[] = '- [' . $post->title . '](' . $post->url . ')' . $desc;
             }
             $lines[] = '';
         }

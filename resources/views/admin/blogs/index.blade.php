@@ -161,7 +161,7 @@
                                         </a>
                                     @endcan
 
-                                    {{-- <a href="{{ route('blog.show', $blog->id) }}" target="_blank"
+                                    {{-- <a href="{{ $blog->url }}" target="_blank"
                                         class="p-2 border border-dust-mite hover:bg-terracotta transition text-sunflare"
                                         title="View">
                                         <i class="fas fa-external-link-alt"></i>

@@ -292,7 +292,7 @@ new class extends Component
                         <h3 class="font-bold text-lg text-[#1A1A1A] mb-4">Field Notes & Stories</h3>
                         <div class="space-y-4">
                             @foreach($relatedStories as $story)
-                                <a href="{{ route('blog.show', $story->slug ?? $story->id) }}" class="block group">
+                                <a href="{{ $story->url }}" class="block group">
                                     <h4 class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-2">
                                         {{ $story->title }}
                                     </h4>
