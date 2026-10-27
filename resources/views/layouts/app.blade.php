@@ -40,63 +40,44 @@
     @php
         $schemas = [];
         
-        // Organization (TravelAgency)
-        $schemas[] = [
+        // Organization (TravelAgency). One stable @id so every page points at the same entity.
+        $orgId = url('/') . '#organization';
+        $seoSameAs = array_values(array_filter((array) config('seo.same_as')));
+        $schemas[] = array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'TravelAgency',
-            'name' => 'Vumbi Ventures',
-            'url' => url()->current(),
+            '@id' => $orgId,
+            'name' => config('seo.name'),
+            'url' => url('/'),
             'logo' => asset('images/logo1.png'),
-            'description' => 'Custom African safaris, cultural tours, and authentic travel experiences across East Africa.',
+            'image' => asset('images/og-default.jpg'),
+            'description' => config('seo.tagline'),
             'address' => [
                 '@type' => 'PostalAddress',
-                'addressLocality' => 'Nakuru',
-                'addressCountry' => 'KE',
+                'addressLocality' => config('seo.locality'),
+                'addressCountry' => config('seo.country'),
             ],
-            'telephone' => '+254-734-591543',
-            'email' => 'info@vumbiventures.com',
-            'priceRange' => '$$',
-            'openingHours' => 'Mo-Fr 09:00-17:00',
-            'sameAs' => [
-                'https://twitter.com/vumbiventures',
-                'https://linkedin.com/company/vumbi-ventures',
-                'https://instagram.com/vumbiventures',
-            ],
-            'contactPoint' => [
+            'areaServed' => ['Kenya', 'Tanzania', 'Uganda', 'Rwanda'],
+            'telephone' => config('seo.telephone') ?: null,
+            'email' => config('seo.email') ?: null,
+            'sameAs' => $seoSameAs ?: null,
+            'contactPoint' => array_filter([
                 '@type' => 'ContactPoint',
-                'contactType' => 'Customer Service',
+                'contactType' => 'customer service',
+                'email' => config('seo.email') ?: null,
+                'telephone' => config('seo.telephone') ?: null,
                 'availableLanguage' => ['English', 'Swahili'],
-            ],
-            'potentialAction' => [
-                [
-                    '@type' => 'SearchAction',
-                    'target' => [
-                        '@type' => 'EntryPoint',
-                        'urlTemplate' => url('/tours') . '?q={search_term_string}',
-                    ],
-                    'query-input' => 'required name=search_term_string',
-                ],
-                [
-                    '@type' => 'ReserveAction',
-                    'target' => [
-                        '@type' => 'EntryPoint',
-                        'urlTemplate' => url('/tours'),
-                        'actionPlatform' => [
-                            'http://schema.org/DesktopWebPlatform',
-                            'http://schema.org/MobileWebPlatform',
-                        ],
-                    ],
-                    'description' => 'Book an authentic African safari or custom tour package.',
-                ],
-            ],
-        ];
+            ]),
+        ]);
 
         // WebSite schema
         $schemas[] = [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
-            'name' => 'Vumbi Ventures',
-            'url' => url()->current(),
+            '@id' => url('/') . '#website',
+            'name' => config('seo.name'),
+            'url' => url('/'),
+            'publisher' => ['@id' => $orgId],
             'potentialAction' => [
                 '@type' => 'SearchAction',
                 'target' => [

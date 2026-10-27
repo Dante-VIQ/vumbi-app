@@ -434,7 +434,10 @@ new class extends Component
                     </div>
                 </div>
                 <div class="text-sm text-[#5C5C5C] font-medium">
-                    {{ $blog->created_at ? $blog->created_at->format('M d, Y') : '' }}
+                    <time datetime="{{ $blog->created_at?->toDateString() }}">{{ $blog->created_at ? $blog->created_at->format('M d, Y') : '' }}</time>
+                    @if ($blog->updated_at && $blog->created_at && $blog->created_at->diffInDays($blog->updated_at) >= 7)
+                        <span class="block text-xs font-normal">Updated <time datetime="{{ $blog->updated_at->toDateString() }}">{{ $blog->updated_at->format('M d, Y') }}</time></span>
+                    @endif
                 </div>
             </div>
         </div>
