@@ -5,34 +5,45 @@
     $pageSchemas = [];
 
     // Article schema (always)
-    $pageSchemas[] = [
+    $plainBody = trim(preg_replace('/\s+/', ' ', strip_tags((string) $blog->description)));
+    $metaDesc = $blog->meta_description ?: Str::limit($plainBody, 160);
+    $articleImage = $blog->media_path ? asset($blog->media_path) : asset('images/og-default.jpg');
+    $orgRef = ['@id' => url('/') . '#organization'];
+    $pageSchemas[] = array_filter([
         "@context" => "https://schema.org",
         "@type" => "Article",
+        "@id" => url()->current() . '#article',
         "headline" => $blog->title,
-        "description" => $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160),
-        "image" => $blog->featured_image ? asset('storage/' . $blog->featured_image) : asset('images/og-default.jpg'),
-        "author" => [
-            "@type" => "Person",
-            "name" => $blog->author->name ?? 'Vumbi Ventures'
-        ],
-        "publisher" => [
-            "@type" => "Organization",
-            "name" => "Vumbi Ventures",
-            "logo" => [
-                "@type" => "ImageObject",
-                "url" => asset('images/logo1.png')
-            ]
-        ],
+        "description" => $metaDesc,
+        "image" => $articleImage,
+        "author" => $blog->author
+            ? ["@type" => "Person", "name" => $blog->author->name]
+            : $orgRef,
+        "publisher" => $orgRef,
         "datePublished" => $blog->created_at->toIso8601String(),
         "dateModified" => $blog->updated_at->toIso8601String(),
+        "articleSection" => $blog->category ?: null,
+        "wordCount" => str_word_count($plainBody) ?: null,
+        "inLanguage" => "en",
         "mainEntityOfPage" => [
             "@type" => "WebPage",
             "@id" => url()->current()
         ]
-    ];
+    ]);
 
-    // Optional: If you have comments or ratings, add AggregateRating
-    // if ($blog->comments_count > 0) { ... }
+    // FAQPage, only when the article really has a "Frequently Asked Questions" section.
+    $faqPairs = \App\Support\ArticleFaq::extract($blog->description);
+    if (count($faqPairs) >= 2) {
+        $pageSchemas[] = [
+            "@context" => "https://schema.org",
+            "@type" => "FAQPage",
+            "mainEntity" => array_map(fn ($f) => [
+                "@type" => "Question",
+                "name" => $f['q'],
+                "acceptedAnswer" => ["@type" => "Answer", "text" => $f['a']],
+            ], $faqPairs),
+        ];
+    }
 
     // You can also add BreadcrumbList here if not handled globally
 @endphp
@@ -41,15 +52,15 @@
 
 @section('title', $blog->meta_title ?: $blog->title . ' | Vumbi Ventures')
 
-@section('description', $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160))
+@section('description', $metaDesc)
 
 {{-- Use the blog's meta_keywords, fallback to a default list --}}
 @section('keywords', $blog->meta_keywords ?: 'Africa travel, travel stories, Vumbi Ventures, African culture')
 
 {{-- You can also override OG tags if needed --}}
 @section('og_title', $blog->meta_title ?: $blog->title)
-@section('og_description', $blog->meta_description ?: Str::limit($blog->excerpt ?? $blog->content, 160))
-@section('og_image', $blog->featured_image ? asset('storage/' . $blog->featured_image) : asset('images/og-default.jpg'))
+@section('og_description', $metaDesc)
+@section('og_image', $articleImage)
 
 {{-- Set canonical to the current URL --}}
 @section('canonical', url()->current())

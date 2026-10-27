@@ -25,6 +25,24 @@
             }
         }
 
+        // Visits that arrive from an AI assistant or answer engine. GA4 also reports these as referrals;
+        // this event makes them easy to chart on their own and tie to the persona.
+        try {
+            var ref = document.referrer || '';
+            var engines = {
+                'chatgpt.com': 'chatgpt', 'chat.openai.com': 'chatgpt', 'perplexity.ai': 'perplexity',
+                'claude.ai': 'claude', 'gemini.google.com': 'gemini', 'copilot.microsoft.com': 'copilot',
+                'you.com': 'you', 'phind.com': 'phind', 'kagi.com': 'kagi', 'duckduckgo.com/?q=': null
+            };
+            var utm = (window.location.search.match(/utm_source=([^&]+)/) || [])[1] || '';
+            Object.keys(engines).forEach(function (host) {
+                if (engines[host] && (ref.indexOf(host) !== -1 || utm.indexOf(engines[host]) === 0) && !window.__aiRefSent) {
+                    window.__aiRefSent = true;
+                    track('ai_referral', { engine: engines[host], landing: window.location.pathname });
+                }
+            });
+        } catch (e) {}
+
         // Newsletter signups — every <livewire:newsletter-subscribe> instance
         // dispatches this with its placement (sidebar, inline, endpost, footer).
         document.addEventListener('livewire:initialized', function () {

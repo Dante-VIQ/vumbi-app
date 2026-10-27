@@ -24,6 +24,7 @@ use App\Models\PartnerPackage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
+Route::get('/llms.txt', \App\Http\Controllers\LlmsController::class)->name('llms');
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/', [HomePageController::class, 'home'])->name('home');
