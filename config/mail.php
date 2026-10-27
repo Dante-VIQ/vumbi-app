@@ -118,6 +118,9 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Vumbi Ventures'),
     ],
 
+    // Where Vumbi Tech Studio enquiries (web_dev / seo) are delivered.
+    'studio_email' => env('STUDIO_EMAIL', 'studio@vumbiventures.com'),
+
     // 'admin_email' => array_values(array_filter(array_map(
     //     fn($email) => trim((string) $email),
     //     preg_split('/\s*,\s*/', (string) env('ADMIN_EMAIL', 'africa@vumbiventures.com'))

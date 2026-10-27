@@ -19,9 +19,9 @@ final class Persona
     public const YOUTH = 'youth';
     public const GROUP = 'group';
 
-    /** Price per person (USD) where "budget" ends and "premium" begins. */
-    public const BUDGET_MAX = 250;
-    public const PREMIUM_MIN = 700;
+    /** Package prices are stored in Kenya shillings (KSh). Per-person bands: budget below BUDGET_MAX, premium from PREMIUM_MIN. */
+    public const BUDGET_MAX = 30000;
+    public const PREMIUM_MIN = 90000;
 
     public static function all(): array
     {
@@ -65,6 +65,16 @@ final class Persona
     public static function budgetBands(): array
     {
         return ['budget' => 'Budget', 'mid' => 'Mid-range', 'premium' => 'Premium'];
+    }
+
+    /** Enquiry-form wording for each budget band, in KSh. */
+    public static function budgetRangeLabels(): array
+    {
+        return [
+            'budget' => 'Under KSh ' . number_format(self::BUDGET_MAX),
+            'mid' => 'KSh ' . number_format(self::BUDGET_MAX) . ' to ' . number_format(self::PREMIUM_MIN),
+            'premium' => 'KSh ' . number_format(self::PREMIUM_MIN) . ' and above',
+        ];
     }
 
     public static function accommodationStyles(): array

@@ -38,7 +38,11 @@ class ContactController extends Controller
     ]);
 
     // Send email notification to admin
-    Mail::to('africa@vumbiventures.com')->send(new ContactFormSubmitted($validated));
+    // Studio enquiries (web_dev / seo) go to the Studio inbox; everything else to the travel inbox.
+    $to = in_array($validated['inquiry_type'], ['web_dev', 'seo'], true)
+        ? config('mail.studio_email', 'studio@vumbiventures.com')
+        : 'africa@vumbiventures.com';
+    Mail::to($to)->send(new ContactFormSubmitted($validated));
 
     // Optionally store in database
 

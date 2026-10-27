@@ -84,7 +84,7 @@
             <label for="{{ $placement }}-budget" class="block text-sm font-medium text-[#5C5C5C] mb-1">Budget per person</label>
             <select name="budget_range" id="{{ $placement }}-budget" class="{{ $field }}">
                 <option value="">Not sure yet</option>
-                @foreach (['budget' => 'Under $250', 'mid' => '$250 to $700', 'premium' => '$700 and above'] as $key => $label)
+                @foreach (\App\Support\Persona::budgetRangeLabels() as $key => $label)
                     <option value="{{ $key }}" {{ old('budget_range') == $key ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
