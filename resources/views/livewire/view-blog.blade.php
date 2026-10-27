@@ -207,7 +207,7 @@
                         <h3 class="font-semibold text-base mb-4 text-zinc-900">Related Stories</h3>
                         <div class="space-y-4">
                             @foreach ($relatedPosts as $post)
-                                <a href="{{ route('blog.show', $post->slug ?? $post->id) }}" class="flex gap-3 group items-center">
+                                <a href="{{ $post->url }}" class="flex gap-3 group items-center">
                                     @if ($post->media_path)
                                         <img src="{{ asset('storage/' . $post->media_path) }}" class="w-14 h-14 rounded-xl object-cover shrink-0">
                                     @endif
@@ -236,7 +236,7 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     @foreach ($relatedPosts->take(3) as $post)
-                        <a href="{{ route('blog.show', $post->slug ?? $post->id) }}"
+                        <a href="{{ $post->url }}"
                             class="group block bg-[#FCFAF7] rounded-2xl overflow-hidden border border-black/5 hover:shadow-xl transition duration-300">
                             @if ($post->media_path)
                                 <div class="aspect-[16/9] overflow-hidden bg-zinc-200">

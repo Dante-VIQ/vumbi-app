@@ -112,9 +112,23 @@ Route::get('/blog', function () {
     return view('blog', compact('blogs'));
 })->name('blog');
 
-Route::get('/blog/{blog}', function (Blog $blog) {
-    $blog->load('author');
-    return view('singleblog', compact('blog'));
+Route::get('/blog/{blog}', function (string $blog) {
+    // Old numeric URLs (/blog/32) are already indexed: send them permanently to the slug URL.
+    if (ctype_digit($blog)) {
+        $post = Blog::findOrFail((int) $blog);
+        $target = route('blog.show', $post->slug ?: $post->id);
+        if ($post->slug) {
+            $query = request()->getQueryString();
+
+            return redirect($target . ($query ? '?' . $query : ''), 301);
+        }
+    } else {
+        $post = Blog::where('slug', $blog)->firstOrFail();
+    }
+
+    $post->load('author');
+
+    return view('singleblog', ['blog' => $post]);
 })->name('blog.show');
 
 Route::get('/blog/category/{category}', function ($category) {
