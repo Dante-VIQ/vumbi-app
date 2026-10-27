@@ -234,7 +234,7 @@
                                 <div x-text="pkg.title" class="font-medium text-amber-400"></div>
                                 <div x-text="pkg.location" class="text-xs text-slate-300 mt-0.5"></div>
                             </div>
-                            <span x-text="'$' + Number(pkg.price).toLocaleString()"
+                            <span x-text="'KSh ' + Number(pkg.price).toLocaleString()"
                                 class="text-white font-bold bg-amber-600/30 px-3 py-1 rounded-lg border border-amber-500/40 text-sm"></span>
                         </div>
                     </template>

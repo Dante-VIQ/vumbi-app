@@ -40,7 +40,7 @@ test('trip page lists tagged tours with a price range', function () {
 
     $this->get('/trips/adventure')->assertOk()
         ->assertSee('Tagged Hike')->assertSee('Tagged Climb')->assertDontSee('Other Trip')
-        ->assertSee('from $200 to $500', false);
+        ->assertSee('from KSh 200 to KSh 500', false);
 });
 
 test('trip page falls back honestly when nothing is tagged', function () {
@@ -99,4 +99,41 @@ test('contact rejects invalid persona and budget values', function () {
 
 test('sitemap lists trip pages', function () {
     $this->get('/sitemap.xml')->assertOk()->assertSee('/trips/adventure', false)->assertSee('/trips/groups', false);
+});
+
+test('prices on trip and services pages are shown in KSh', function () {
+    phaseFourPackage(['title' => 'Ksh Trip', 'price' => 45000, 'audiences' => ['group']]);
+
+    $this->get('/trips/groups')->assertOk()->assertSee('KSh 45,000')->assertDontSee('$45,000', false);
+    $this->get('/services')->assertOk()->assertSee('From KSh 45,000');
+});
+
+test('budget bands use KSh thresholds and the form labels match', function () {
+    expect(\App\Support\Persona::bandForPrice(29999))->toBe('budget')
+        ->and(\App\Support\Persona::bandForPrice(90000))->toBe('premium')
+        ->and(\App\Support\Persona::budgetRangeLabels()['mid'])->toBe('KSh 30,000 to 90,000');
+
+    $this->get('/contact')->assertOk()->assertSee('Under KSh 30,000');
+});
+
+test('studio enquiries go to the studio inbox and travel enquiries to the travel inbox', function () {
+    Mail::fake();
+    $base = ['name' => 'Jo', 'email' => 'jo@example.com', 'message' => 'Hello', 'consent' => 'on'];
+
+    $this->post('/contact', $base + ['inquiry_type' => 'web_dev'])->assertSessionHasNoErrors();
+    Mail::assertSent(ContactFormSubmitted::class, fn ($m) => $m->hasTo('studio@vumbiventures.com'));
+
+    $this->post('/contact', $base + ['inquiry_type' => 'travel'])->assertSessionHasNoErrors();
+    Mail::assertSent(ContactFormSubmitted::class, fn ($m) => $m->hasTo('africa@vumbiventures.com'));
+});
+
+test('the budget-band migration rebases old USD-derived bands', function () {
+    $a = phaseFourPackage(['price' => 12000]);                       // KSh 12,000
+    \Illuminate\Support\Facades\DB::table('partner_packages')->where('id', $a->id)->update(['budget_band' => 'budget']);
+    $b = phaseFourPackage(['price' => 50000]);
+    \Illuminate\Support\Facades\DB::table('partner_packages')->where('id', $b->id)->update(['budget_band' => 'premium']); // old USD result for 50,000
+
+    (include database_path('migrations/2026_10_27_100000_rebase_budget_bands_to_ksh.php'))->up();
+
+    expect($a->fresh()->budget_band)->toBe('budget')->and($b->fresh()->budget_band)->toBe('mid');
 });

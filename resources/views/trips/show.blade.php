@@ -62,7 +62,7 @@
     @elseif ($priceRange)
         <p class="text-sm text-[#5C5C5C] mt-2">
             {{ $priceRange['count'] }} {{ \Illuminate\Support\Str::plural('trip', $priceRange['count']) }},
-            from ${{ number_format($priceRange['min']) }}@if ($priceRange['max'] > $priceRange['min']) to ${{ number_format($priceRange['max']) }}@endif per listing.
+            from KSh {{ number_format($priceRange['min']) }}@if ($priceRange['max'] > $priceRange['min']) to KSh {{ number_format($priceRange['max']) }}@endif per person.
         </p>
     @endif
 
@@ -85,7 +85,7 @@
                                 @foreach (array_slice($tour->included, 0, 3) as $inc)<li>&#10003; {{ is_string($inc) ? $inc : '' }}</li>@endforeach
                             </ul>
                         @endif
-                        <p class="mt-auto pt-4 font-semibold text-[#8B5A2B]">From ${{ number_format((float) $tour->price) }}</p>
+                        <p class="mt-auto pt-4 font-semibold text-[#8B5A2B]">From KSh {{ number_format((float) $tour->price) }}</p>
                     </div>
                 </a>
             @endforeach

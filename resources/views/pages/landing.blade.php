@@ -189,6 +189,10 @@
                 </a>
             @endforeach
         </div>
+        <p class="text-center mt-5 text-sm">
+            <a href="{{ route('discover.index') }}" data-gtag-event="find_my_trip_click" data-gtag-params='{"placement":"home_strip"}'
+                class="text-[#8B5A2B] font-semibold underline underline-offset-2">Not sure yet? Search destinations and find your trip &rarr;</a>
+        </p>
     </section>
 
     {{-- ================= 2. LIVE NETWORK STATUS BAR ================= --}}

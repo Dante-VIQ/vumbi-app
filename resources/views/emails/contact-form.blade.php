@@ -67,7 +67,7 @@
             <div class="value">
                 @if(!empty($data['travel_month'])) Travel month: {{ $data['travel_month'] }}<br> @endif
                 @if(!empty($data['group_size'])) Travellers: {{ $data['group_size'] }}<br> @endif
-                @if(!empty($data['budget_range'])) Budget per person: {{ ['budget' => 'Under $250', 'mid' => '$250 to $700', 'premium' => '$700 and above'][$data['budget_range']] ?? $data['budget_range'] }} @endif
+                @if(!empty($data['budget_range'])) Budget per person: {{ \App\Support\Persona::budgetRangeLabels()[$data['budget_range']] ?? $data['budget_range'] }} @endif
             </div>
         </div>
         @endif

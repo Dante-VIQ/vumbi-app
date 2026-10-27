@@ -36,11 +36,11 @@ test('persona keys are normalised and bad values are rejected', function () {
 });
 
 test('prices map to budget bands', function () {
-    expect(Persona::bandForPrice(80))->toBe('budget')
-        ->and(Persona::bandForPrice(249.99))->toBe('budget')
-        ->and(Persona::bandForPrice(250))->toBe('mid')
-        ->and(Persona::bandForPrice(699))->toBe('mid')
-        ->and(Persona::bandForPrice(700))->toBe('premium')
+    expect(Persona::bandForPrice(8000))->toBe('budget')
+        ->and(Persona::bandForPrice(29999.99))->toBe('budget')
+        ->and(Persona::bandForPrice(30000))->toBe('mid')
+        ->and(Persona::bandForPrice(89999))->toBe('mid')
+        ->and(Persona::bandForPrice(90000))->toBe('premium')
         ->and(Persona::bandForPrice(0))->toBeNull()
         ->and(Persona::bandForPrice(null))->toBeNull();
 });
@@ -53,15 +53,15 @@ test('filters are cleaned to known keys and values', function () {
 });
 
 test('a new package gets a budget band from its price unless one is set', function () {
-    expect(personaTestPackage(['price' => 120])->budget_band)->toBe('budget')
-        ->and(personaTestPackage(['price' => 900])->budget_band)->toBe('premium')
-        ->and(personaTestPackage(['price' => 120, 'budget_band' => 'mid'])->budget_band)->toBe('mid');
+    expect(personaTestPackage(['price' => 12000])->budget_band)->toBe('budget')
+        ->and(personaTestPackage(['price' => 120000])->budget_band)->toBe('premium')
+        ->and(personaTestPackage(['price' => 12000, 'budget_band' => 'mid'])->budget_band)->toBe('mid');
 });
 
 test('tag filters narrow packages by audience, interest, budget, length and party size', function () {
-    $hike = personaTestPackage(['audiences' => ['adventure'], 'interests' => ['hiking'], 'price' => 900, 'duration_days' => 9, 'group_size_min' => 2, 'group_size_max' => 8]);
-    $beach = personaTestPackage(['audiences' => ['youth'], 'interests' => ['beach'], 'price' => 100, 'duration_days' => 3]);
-    $family = personaTestPackage(['audiences' => ['group'], 'interests' => ['wildlife'], 'price' => 400, 'duration_days' => 5, 'group_size_min' => 6, 'group_size_max' => 14]);
+    $hike = personaTestPackage(['audiences' => ['adventure'], 'interests' => ['hiking'], 'price' => 120000, 'duration_days' => 9, 'group_size_min' => 2, 'group_size_max' => 8]);
+    $beach = personaTestPackage(['audiences' => ['youth'], 'interests' => ['beach'], 'price' => 10000, 'duration_days' => 3]);
+    $family = personaTestPackage(['audiences' => ['group'], 'interests' => ['wildlife'], 'price' => 50000, 'duration_days' => 5, 'group_size_min' => 6, 'group_size_max' => 14]);
 
     $ids = fn (array $f) => PartnerPackage::tagged($f)->pluck('id')->sort()->values()->all();
 
@@ -90,10 +90,10 @@ test('ranking puts the persona first, untagged next and other personas last', fu
 test('the tagger suggests sensible tags', function () {
     $mountKenya = personaTestPackage([
         'title' => 'Mount Kenya Climbing Adventure', 'description' => 'Summit trek via Sirimon, then Mara game drives.',
-        'difficulty' => 'challenging', 'price' => 2500, 'group_size_max' => 6,
+        'difficulty' => 'challenging', 'price' => 250000, 'group_size_max' => 6,
     ]);
     $camping = personaTestPackage([
-        'title' => 'Budget Camping Safari', 'description' => 'Shared camping safari for backpackers.', 'price' => 175,
+        'title' => 'Budget Camping Safari', 'description' => 'Shared camping safari for backpackers.', 'price' => 17500,
     ]);
 
     $a = PackageTagger::suggest($mountKenya);

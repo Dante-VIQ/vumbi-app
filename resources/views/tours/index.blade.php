@@ -140,12 +140,12 @@
                             </div>
 
                             <div>
-                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Price Range (USD)</label>
+                                <label class="block font-medium text-xs text-slate-300 uppercase tracking-wider mb-2">Price Range (KSh)</label>
                                 <div class="flex gap-2">
-                                    <input type="number" name="min_price" form="filter-form" placeholder="Min ($)"
+                                    <input type="number" name="min_price" form="filter-form" placeholder="Min (KSh)"
                                         value="{{ request('min_price') }}"
                                         class="w-1/2 bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm placeholder-slate-500 focus:border-amber-500 focus:outline-none">
-                                    <input type="number" name="max_price" form="filter-form" placeholder="Max ($)"
+                                    <input type="number" name="max_price" form="filter-form" placeholder="Max (KSh)"
                                         value="{{ request('max_price') }}"
                                         class="w-1/2 bg-slate-800 border border-slate-700/80 rounded-xl p-3 text-slate-200 text-sm placeholder-slate-500 focus:border-amber-500 focus:outline-none">
                                 </div>
@@ -258,7 +258,7 @@
                                 <div class="p-5 pt-0 border-t border-slate-800/60 mt-4 flex justify-between items-center">
                                     <div>
                                         <span class="text-xs text-slate-500 block">Starting from</span>
-                                        <span class="text-xl font-extrabold text-amber-400">${{ number_format($pkg->price) }}</span>
+                                        <span class="text-xl font-extrabold text-amber-400">KSh {{ number_format($pkg->price) }}</span>
                                     </div>
                                     <span class="text-xs font-bold text-slate-300 group-hover:text-white flex items-center gap-1 transition">
                                         Details <span>→</span>
