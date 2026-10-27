@@ -29,6 +29,7 @@ class SitemapController extends Controller
             (object) ['loc' => url('/about'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
             (object) ['loc' => url('/destinations'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
             (object) ['loc' => url('/culture'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/quiz'), 'lastmod' => now()->toDateString(), 'priority' => '0.6', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/studio'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/trips/adventure'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
             (object) ['loc' => url('/trips/youth'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],

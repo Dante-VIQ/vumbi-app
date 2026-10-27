@@ -35,7 +35,7 @@
                 and we will match you with vetted local partners and send a custom itinerary or quote within 24 hours.
             </p>
 
-            <p style="margin:0 0 16px;">We send Field Notes about once a month.</p>
+            <p style="margin:0 0 16px;">We send Field Notes about once a month, plus two short follow-up emails in your first week.</p>
             <p style="margin:0;">The Vumbi Ventures team<br>Nakuru, Kenya</p>
         </div>
 

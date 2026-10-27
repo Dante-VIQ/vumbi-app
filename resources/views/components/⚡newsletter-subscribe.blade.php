@@ -51,7 +51,7 @@ new class extends Component {
         // answer, so the form never reveals who is subscribed.
         $subscriber = NewsletterSubscriber::firstOrCreate(
             ['email' => $this->email],
-            ['subscribed_at' => now()]
+            ['subscribed_at' => now(), 'persona' => \App\Support\Persona::current(), 'source' => $this->placement]
         );
 
         $this->message = $successMessage;

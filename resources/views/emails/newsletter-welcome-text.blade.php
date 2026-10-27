@@ -12,7 +12,7 @@ If you only read three things first:
 
 Already thinking about a trip? Reply to this email{!! $whatsappNumber ? ' or message us on WhatsApp (https://wa.me/' . $whatsappNumber . ')' : '' !!} and we will match you with vetted local partners and send a custom itinerary or quote within 24 hours.
 
-We send Field Notes about once a month.
+We send Field Notes about once a month, plus two short follow-up emails in your first week.
 
 The Vumbi Ventures team
 Nakuru, Kenya

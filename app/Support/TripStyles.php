@@ -92,4 +92,23 @@ final class TripStyles
             ->take($limit)
             ->get();
     }
+
+    /**
+     * Move posts that match a persona's interests to the front, keeping the existing
+     * order inside each group. Nothing is dropped, so the page still shows the same posts.
+     */
+    public static function prioritisePosts(Collection $posts, ?string $persona): Collection
+    {
+        $slug = self::slugFor($persona);
+        $keywords = $slug ? (self::find($slug)['blog_keywords'] ?? []) : [];
+        if ($keywords === []) {
+            return $posts->values();
+        }
+
+        $matches = fn ($post) => collect($keywords)->contains(
+            fn ($k) => stripos((string) $post->title . ' ' . (string) $post->category . ' ' . (string) $post->meta_keywords, $k) !== false
+        );
+
+        return $posts->sortByDesc(fn ($post) => $matches($post) ? 1 : 0)->values();
+    }
 }
