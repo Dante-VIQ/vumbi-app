@@ -12,7 +12,7 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $cacheKey = 'sitemap_content';
+        $cacheKey = 'sitemap_content_v2';
         $cached = cache()->get($cacheKey);
 
         if ($cached && ! app()->environment('local')) {
@@ -48,7 +48,7 @@ class SitemapController extends Controller
         $blogs = Blog::orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($post) {
-                $post->loc = route('blog.show', $post->id);
+                $post->loc = $post->url;
                 $post->lastmod = $post->updated_at->toDateString();
                 $post->priority = '0.7';
                 $post->changefreq = 'monthly';

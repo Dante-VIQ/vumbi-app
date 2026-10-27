@@ -134,7 +134,7 @@
         <h2 class="text-2xl font-semibold mb-4">From our Field Notes</h2>
         <div class="grid md:grid-cols-3 gap-4">
             @foreach ($posts as $post)
-                <a href="{{ route('blog.show', $post->id) }}" class="bg-white rounded-xl border border-black/5 p-4 hover:border-[#8B5A2B] transition">
+                <a href="{{ $post->url }}" class="bg-white rounded-xl border border-black/5 p-4 hover:border-[#8B5A2B] transition">
                     <p class="font-medium">{{ $post->title }}</p>
                 </a>
             @endforeach

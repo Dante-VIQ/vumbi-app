@@ -194,7 +194,7 @@ new class extends Component {
                                 <span class="text-xs text-zinc-500 font-medium">
                                     By {{ $blog->author->name ?? 'Vumbi Field Writer' }}
                                 </span>
-                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}" 
+                                <a href="{{ $blog->url }}" 
                                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md hover:shadow-lg">
                                     <span>Read Story</span>
                                     <span>→</span>
@@ -232,7 +232,7 @@ new class extends Component {
                                 </div>
 
                                 <h3 class="text-xl font-semibold text-zinc-900 group-hover:text-[#8B5A2B] transition-colors leading-snug">
-                                    <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}">{{ $blog->title }}</a>
+                                    <a href="{{ $blog->url }}">{{ $blog->title }}</a>
                                 </h3>
 
                                 <p class="text-sm text-[#5C5C5C] mt-3 line-clamp-3 leading-relaxed">
@@ -250,7 +250,7 @@ new class extends Component {
                                     {{ $blog->author->name ?? 'Vumbi Contributor' }}
                                 </span>
 
-                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}"
+                                <a href="{{ $blog->url }}"
                                    class="text-sm font-semibold text-[#8B5A2B] hover:text-[#5C3A1E] transition flex items-center gap-1">
                                     <span>Read</span>
                                     <span class="group-hover:translate-x-1 transition-transform">→</span>
