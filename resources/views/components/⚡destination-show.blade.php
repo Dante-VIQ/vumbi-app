@@ -127,19 +127,17 @@ new class extends Component
     @endpush
 
     @push('structured-data')
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "TouristDestination",
-          "name": "{{ $destination->name }}",
-          "description": "{{ Str::limit(strip_tags($destination->detail ?? $destination->description ?? ''), 155) }}",
-          "image": "{{ $destination->media_path ? Storage::url($destination->media_path) : ($destination->image ?? '') }}",
-          "address": { 
-              "@type": "PostalAddress", 
-              "addressLocality": "{{ $destination->location }}" 
-          }
-        }
-        </script>
+        @php
+            $destSchema = array_filter([
+                '@context' => 'https://schema.org',
+                '@type' => 'TouristDestination',
+                'name' => $destination->name,
+                'description' => Str::limit(strip_tags($destination->detail ?? $destination->description ?? ''), 155),
+                'image' => $destination->media_path ? Storage::url($destination->media_path) : ($destination->image ?? null),
+                'address' => ['@type' => 'PostalAddress', 'addressLocality' => $destination->location],
+            ]);
+        @endphp
+        <script type="application/ld+json">{!! json_encode($destSchema, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
     @endpush
 
     {{-- Hero Section --}}

@@ -12,13 +12,13 @@
             @if ($style)
                 <p style="margin:0 0 16px;">{{ $style['intro'] }}</p>
             @else
-                <p style="margin:0 0 16px;">Here are a few trips from the local partners we work with. Prices are per person, in Kenya shillings.</p>
+                <p style="margin:0 0 16px;">Here are a few trips from the local partners we work with. Prices are per person, in US dollars.</p>
             @endif
 
             @if ($tours->isNotEmpty())
                 <ul style="margin:0 0 20px;padding-left:20px;">
                     @foreach ($tours as $tour)
-                        <li style="margin-bottom:8px;"><a href="{{ route('tours.show', $tour->slug) }}" style="color:#8B5A2B;">{{ $tour->title }}</a>, from KSh {{ number_format((float) $tour->price) }}</li>
+                        <li style="margin-bottom:8px;"><a href="{{ route('tours.show', $tour->slug) }}" style="color:#8B5A2B;">{{ $tour->title }}</a>, from {{ \App\Support\Money::usd($tour->price) }}</li>
                     @endforeach
                 </ul>
             @endif

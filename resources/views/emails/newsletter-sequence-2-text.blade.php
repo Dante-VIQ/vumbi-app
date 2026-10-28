@@ -2,11 +2,11 @@ Hello,
 
 @if ($style){{ $style['intro'] }}
 @else
-Here are a few trips from the local partners we work with. Prices are per person, in Kenya shillings.
+Here are a few trips from the local partners we work with. Prices are per person, in US dollars.
 @endif
 
 @foreach ($tours as $tour)
-- {{ $tour->title }}, from KSh {{ number_format((float) $tour->price) }}: {{ route('tours.show', $tour->slug) }}
+- {{ $tour->title }}, from {{ \App\Support\Money::usd($tour->price) }}: {{ route('tours.show', $tour->slug) }}
 @endforeach
 
 {{ $style ? 'See all ' . strtolower($style['name']) . ' trips' : 'Find your trip' }}: {{ $styleUrl }}

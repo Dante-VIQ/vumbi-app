@@ -37,10 +37,10 @@ test('persona keys are normalised and bad values are rejected', function () {
 
 test('prices map to budget bands', function () {
     expect(Persona::bandForPrice(8000))->toBe('budget')
-        ->and(Persona::bandForPrice(29999.99))->toBe('budget')
-        ->and(Persona::bandForPrice(30000))->toBe('mid')
-        ->and(Persona::bandForPrice(89999))->toBe('mid')
-        ->and(Persona::bandForPrice(90000))->toBe('premium')
+        ->and(Persona::bandForPrice(32249))->toBe('budget')
+        ->and(Persona::bandForPrice(32250))->toBe('mid')
+        ->and(Persona::bandForPrice(90299))->toBe('mid')
+        ->and(Persona::bandForPrice(90300))->toBe('premium')
         ->and(Persona::bandForPrice(0))->toBeNull()
         ->and(Persona::bandForPrice(null))->toBeNull();
 });

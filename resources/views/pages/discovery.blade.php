@@ -233,7 +233,7 @@
                                 <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
                                 <p class="text-sm text-zinc-400 mt-1">{{ \Illuminate\Support\Str::words(strip_tags((string) $pkg->description), 25) }}</p>
                                 <div class="flex items-center justify-between mt-4">
-                                    <span class="text-2xl font-bold text-green-400">KSh {{ number_format($pkg->price) }}</span>
+                                    <span class="text-2xl font-bold text-green-400">{{ \App\Support\Money::usd($pkg->price) }}</span>
                                     <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
                                         Book Now
@@ -347,7 +347,7 @@
                             <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
                                 <h3 class="font-semibold text-lg" x-text="hotel.hotelName || hotel.name || 'Hotel'"></h3>
                                 <p class="text-amber-400 text-xl font-medium mt-2"
-                                    x-text="'KES ' + (hotel.priceAvg || hotel.price || 'N/A')"></p>
+                                    x-text="(hotel.priceAvg || hotel.price) ? '$' + Math.round(Number(hotel.priceAvg || hotel.price) / {{ \App\Support\Money::rate() }}).toLocaleString() : 'N/A'"></p>
                                 <p class="text-xs text-zinc-500 mt-1" x-text="hotel.address"></p>
                             </div>
                         </template>
@@ -414,7 +414,7 @@
                                     <p class="text-sm text-zinc-400 mt-1 line-clamp-2" x-text="pkg.description"></p>
                                     <div class="flex items-center justify-between mt-4">
                                         <span class="text-2xl font-bold text-green-400"
-                                            x-text="'KSh ' + Number(pkg.price).toLocaleString()"></span>
+                                            x-text="'$' + Math.round(Number(pkg.price) / {{ \App\Support\Money::rate() }}).toLocaleString()"></span>
                                         <button @click="$dispatch('open-booking', { packageId: pkg.id })"
                                             class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
                                             Book Now
@@ -462,7 +462,7 @@
                                     <div x-text="pkg.title" class="font-medium"></div>
                                     <div x-text="pkg.location" class="text-sm text-zinc-400"></div>
                                 </div>
-                                <span x-text="'KSh ' + Number(pkg.price).toLocaleString()"
+                                <span x-text="'$' + Math.round(Number(pkg.price) / {{ \App\Support\Money::rate() }}).toLocaleString()"
                                     class="text-green-400 font-semibold"></span>
                             </div>
                         </template>

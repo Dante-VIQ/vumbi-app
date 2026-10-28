@@ -133,7 +133,7 @@
                 @if($lead->estimated_price)
                 <div class="detail-row">
                     <span class="detail-label">Estimated Price</span>
-                    <span class="detail-value">KSh {{ number_format($lead->estimated_price) }}</span>
+                    <span class="detail-value">{{ \App\Support\Money::usd($lead->estimated_price) }}</span>
                 </div>
                 @endif
             </div>

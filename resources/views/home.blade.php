@@ -1,24 +1,19 @@
 @extends('layouts.app')
 
 @section('title', 'Vumbi Ventures — Discover Africa | Travel Guides, Safaris & Stories')
-@section('meta_description', 'Real stories, live prices, and authentic experiences from Kenya to Cape Town. Explore African travel guides, culture, and history from those who know it best.')
+@section('description', 'Real stories, live prices, and authentic experiences from Kenya to Cape Town. Explore African travel guides, culture, and history from those who know it best.')
 @section('keywords', 'Africa travel, authentic African experiences, Kenya travel, Tanzania safari, African culture, travel stories, Vumbi Ventures')
 
 @push('structured-data')
 @php
     $homepageSchema = [
         '@context' => 'https://schema.org',
-        '@type' => 'TravelAgency',
+        '@type' => 'WebPage',
         '@id' => url('/') . '#homepage',
-        'name' => 'Vumbi Ventures',
-        'description' => 'Africa-first travel discovery platform. Curated destination guides, safari planning, cultural stories and booking for East Africa and beyond.',
         'url' => url('/'),
-        'areaServed' => 'Africa',
-        'sameAs' => [
-            'https://twitter.com/vumbiventures',
-            'https://www.linkedin.com/company/vumbi-ventures',
-            'https://www.facebook.com/vumbiventures'
-        ],
+        'name' => 'Vumbi Ventures: Discover Africa',
+        'isPartOf' => ['@id' => url('/') . '#website'],
+        'about' => ['@id' => url('/') . '#organization'],
     ];
 @endphp
 <script type="application/ld+json">
