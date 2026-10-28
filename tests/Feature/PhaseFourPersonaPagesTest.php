@@ -34,13 +34,13 @@ test('each trip style page renders with a unique title and remembers the persona
 });
 
 test('trip page lists tagged tours with a price range', function () {
-    phaseFourPackage(['title' => 'Tagged Hike', 'price' => 200, 'audiences' => ['adventure']]);
-    phaseFourPackage(['title' => 'Tagged Climb', 'price' => 500, 'audiences' => ['adventure']]);
+    phaseFourPackage(['title' => 'Tagged Hike', 'price' => 25800, 'audiences' => ['adventure']]);
+    phaseFourPackage(['title' => 'Tagged Climb', 'price' => 64500, 'audiences' => ['adventure']]);
     phaseFourPackage(['title' => 'Other Trip', 'audiences' => ['youth']]);
 
     $this->get('/trips/adventure')->assertOk()
         ->assertSee('Tagged Hike')->assertSee('Tagged Climb')->assertDontSee('Other Trip')
-        ->assertSee('from KSh 200 to KSh 500', false);
+        ->assertSee('from $200 to $500', false);
 });
 
 test('trip page falls back honestly when nothing is tagged', function () {
@@ -101,19 +101,19 @@ test('sitemap lists trip pages', function () {
     $this->get('/sitemap.xml')->assertOk()->assertSee('/trips/adventure', false)->assertSee('/trips/groups', false);
 });
 
-test('prices on trip and services pages are shown in KSh', function () {
+test('prices on trip and services pages are shown in USD', function () {
     phaseFourPackage(['title' => 'Ksh Trip', 'price' => 45000, 'audiences' => ['group']]);
 
-    $this->get('/trips/groups')->assertOk()->assertSee('KSh 45,000')->assertDontSee('$45,000', false);
-    $this->get('/services')->assertOk()->assertSee('From KSh 45,000');
+    $this->get('/trips/groups')->assertOk()->assertSee('From $349')->assertDontSee('KSh');
+    $this->get('/services')->assertOk()->assertSee('From $349');
 });
 
-test('budget bands use KSh thresholds and the form labels match', function () {
-    expect(\App\Support\Persona::bandForPrice(29999))->toBe('budget')
-        ->and(\App\Support\Persona::bandForPrice(90000))->toBe('premium')
-        ->and(\App\Support\Persona::budgetRangeLabels()['mid'])->toBe('KSh 30,000 to 90,000');
+test('budget bands use USD thresholds applied to KSh prices and the form labels match', function () {
+    expect(\App\Support\Persona::bandForPrice(32000))->toBe('budget')
+        ->and(\App\Support\Persona::bandForPrice(90500))->toBe('premium')
+        ->and(\App\Support\Persona::budgetRangeLabels()['mid'])->toBe('$250 to $700');
 
-    $this->get('/contact')->assertOk()->assertSee('Under KSh 30,000');
+    $this->get('/contact')->assertOk()->assertSee('Under $250');
 });
 
 test('studio enquiries go to the studio inbox and travel enquiries to the travel inbox', function () {
@@ -136,4 +136,34 @@ test('the budget-band migration rebases old USD-derived bands', function () {
     (include database_path('migrations/2026_10_27_100000_rebase_budget_bands_to_ksh.php'))->up();
 
     expect($a->fresh()->budget_band)->toBe('budget')->and($b->fresh()->budget_band)->toBe('mid');
+});
+
+test('the USD band migration moves bands that matched the old KSh result and leaves hand-set ones', function () {
+    $auto = phaseFourPackage(['price' => 31000]);     // $240: budget now, mid under the old KSh bands
+    $manual = phaseFourPackage(['price' => 31000]);
+    \Illuminate\Support\Facades\DB::table('partner_packages')->where('id', $auto->id)->update(['budget_band' => 'mid']);
+    \Illuminate\Support\Facades\DB::table('partner_packages')->where('id', $manual->id)->update(['budget_band' => 'premium']);
+
+    (include database_path('migrations/2026_10_28_120000_rebase_budget_bands_to_usd.php'))->up();
+
+    expect($auto->fresh()->budget_band)->toBe('budget')->and($manual->fresh()->budget_band)->toBe('premium');
+});
+
+test('Money converts stored KSh to whole dollars at the configured rate', function () {
+    config(['currency.kes_per_usd' => 100]);
+
+    expect(\App\Support\Money::usd(45000))->toBe('$450')
+        ->and(\App\Support\Money::usd(149))->toBe('$1')
+        ->and(\App\Support\Money::kesFromUsd(250))->toBe(25000.0);
+
+    config(['currency.kes_per_usd' => 0]);
+    expect(\App\Support\Money::rate())->toBe(129.0);
+});
+
+test('the tours price filter is entered in dollars and matches stored KSh prices', function () {
+    phaseFourPackage(['title' => 'Cheap One', 'price' => 12900, 'slug' => 'cheap-one']);   // $100
+    phaseFourPackage(['title' => 'Pricey One', 'price' => 129000, 'slug' => 'pricey-one']); // $1,000
+
+    $this->get('/tours?min_price=500')->assertOk()->assertSee('Pricey One')->assertDontSee('Cheap One');
+    $this->get('/tours?max_price=500')->assertOk()->assertSee('Cheap One')->assertDontSee('Pricey One');
 });

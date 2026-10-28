@@ -180,7 +180,7 @@
                                 <a href="{{ route('tours.show', $tour) }}" 
                                    class="flex items-center justify-between p-3 bg-[#FCFAF7] rounded-xl hover:bg-[#F5EFE6] transition group">
                                     <span class="font-medium group-hover:text-[#8B5A2B]">{{ $tour->title }}</span>
-                                    <span class="text-sm text-[#8B5A2B] font-medium">KSh {{ number_format($tour->price) }}</span>
+                                    <span class="text-sm text-[#8B5A2B] font-medium">{{ \App\Support\Money::usd($tour->price) }}</span>
                                 </a>
                             @endforeach
                         </div>

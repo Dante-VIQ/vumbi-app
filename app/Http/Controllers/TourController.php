@@ -30,10 +30,10 @@ class TourController extends Controller
             $query->where('difficulty', $difficulty);
         }
         if ($min = $request->input('min_price')) {
-            $query->where('price', '>=', (float)$min);
+            $query->where('price', '>=', \App\Support\Money::kesFromUsd($min));
         }
         if ($max = $request->input('max_price')) {
-            $query->where('price', '<=', (float)$max);
+            $query->where('price', '<=', \App\Support\Money::kesFromUsd($max));
         }
         if ($location = $request->input('location')) {
             $query->where('location', 'like', "%{$location}%");

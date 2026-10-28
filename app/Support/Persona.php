@@ -19,9 +19,9 @@ final class Persona
     public const YOUTH = 'youth';
     public const GROUP = 'group';
 
-    /** Package prices are stored in Kenya shillings (KSh). Per-person bands: budget below BUDGET_MAX, premium from PREMIUM_MIN. */
-    public const BUDGET_MAX = 30000;
-    public const PREMIUM_MIN = 90000;
+    /** Per-person bands in US dollars: budget below BUDGET_MAX_USD, premium from PREMIUM_MIN_USD. Stored prices are KSh and converted. */
+    public const BUDGET_MAX_USD = 250;
+    public const PREMIUM_MIN_USD = 700;
 
     public static function all(): array
     {
@@ -67,13 +67,13 @@ final class Persona
         return ['budget' => 'Budget', 'mid' => 'Mid-range', 'premium' => 'Premium'];
     }
 
-    /** Enquiry-form wording for each budget band, in KSh. */
+    /** Enquiry-form wording for each budget band, in USD. */
     public static function budgetRangeLabels(): array
     {
         return [
-            'budget' => 'Under KSh ' . number_format(self::BUDGET_MAX),
-            'mid' => 'KSh ' . number_format(self::BUDGET_MAX) . ' to ' . number_format(self::PREMIUM_MIN),
-            'premium' => 'KSh ' . number_format(self::PREMIUM_MIN) . ' and above',
+            'budget' => 'Under $' . number_format(self::BUDGET_MAX_USD),
+            'mid' => '$' . number_format(self::BUDGET_MAX_USD) . ' to $' . number_format(self::PREMIUM_MIN_USD),
+            'premium' => '$' . number_format(self::PREMIUM_MIN_USD) . ' and above',
         ];
     }
 
@@ -100,11 +100,12 @@ final class Persona
             return null;
         }
 
-        $price = (float) $price;
+        // Stored package prices are KSh; the bands are defined in USD.
+        $price = (float) $price / Money::rate();
 
         return match (true) {
-            $price < self::BUDGET_MAX => 'budget',
-            $price >= self::PREMIUM_MIN => 'premium',
+            $price < self::BUDGET_MAX_USD => 'budget',
+            $price >= self::PREMIUM_MIN_USD => 'premium',
             default => 'mid',
         };
     }

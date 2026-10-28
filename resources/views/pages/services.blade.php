@@ -125,7 +125,7 @@
                 <h3 class="text-xl font-semibold mt-2">{{ $st['name'] }}</h3>
                 <p class="text-sm text-[#5C5C5C] mt-2 flex-1">{{ $st['who'][0] ?? '' }}</p>
                 @if ($range)
-                    <p class="mt-4 text-sm font-semibold">From KSh {{ number_format($range['min']) }}</p>
+                    <p class="mt-4 text-sm font-semibold">From {{ \App\Support\Money::usd($range['min']) }}</p>
                 @endif
                 <span class="mt-3 text-sm font-medium text-[#8B5A2B]">See trips &rarr;</span>
             </a>

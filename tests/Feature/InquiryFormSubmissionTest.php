@@ -17,9 +17,9 @@ it('sends a safari quote email when the landing page inquiry form is submitted',
             'notes' => 'Need a luxury lodge',
         ])
         ->assertRedirect()
-        ->assertSessionHas('success', 'Your safari quote request has been sent! Our team will contact you shortly.');
+        ->assertSessionHas('success', 'Your safari quote request has been sent!');
 
-    Mail::assertSent(SafariQuoteReceived::class, function ($mail) {
+    Mail::assertQueued(SafariQuoteReceived::class, function ($mail) {
         return $mail->hasTo(config('mail.from.address', 'africa@vumbiventures.com'))
             && $mail->quote->email === 'jane@example.com';
     });

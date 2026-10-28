@@ -22,7 +22,7 @@ class LlmsController extends Controller
         $lines[] = '';
         $lines[] = '> ' . config('seo.tagline');
         $lines[] = '';
-        $lines[] = 'Based in ' . config('seo.locality') . ', Kenya. Vumbi Ventures does not operate vehicles itself: it connects travellers with local partners it vets, and shows prices in Kenya shillings (KSh) up front.';
+        $lines[] = 'Based in ' . config('seo.locality') . ', Kenya. Vumbi Ventures does not operate vehicles itself: it connects travellers with local partners it vets, and shows prices in US dollars up front.';
         $lines[] = '';
         $lines[] = '## Plan a trip';
         $lines[] = '- [Find your trip](' . route('discover.index') . '): search destinations and filter by interest, budget, duration and group size';
@@ -50,7 +50,7 @@ class LlmsController extends Controller
         if ($tours->isNotEmpty()) {
             $lines[] = '## Trips';
             foreach ($tours as $tour) {
-                $lines[] = '- [' . $tour->title . '](' . route('tours.show', $tour->slug) . '): ' . $tour->location . ', from KSh ' . number_format((float) $tour->price);
+                $lines[] = '- [' . $tour->title . '](' . route('tours.show', $tour->slug) . '): ' . $tour->location . ', from ' . \App\Support\Money::usd($tour->price);
             }
             $lines[] = '';
         }

@@ -40,8 +40,8 @@
         "touristType" => implode(', ', $package->tourist_types ?? ['Adventure', 'Culture', 'Wildlife']),
         "offers" => [
             "@type" => "Offer",
-            "price" => $package->price,
-            "priceCurrency" => "KES",
+            "price" => \App\Support\Money::usdValue($package->price),
+            "priceCurrency" => "USD",
             "availability" => $package->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             "url" => url()->current(),
             "validFrom" => now()->toIso8601String(),
@@ -197,7 +197,7 @@
                                     <div class="p-3">
                                         <h4 class="font-medium text-sm text-zinc-200 line-clamp-1 group-hover:text-green-400 transition">{{ $similarTour->title }}</h4>
                                         <span class="text-green-400 text-sm font-bold mt-1 block">
-                                            KSh {{ number_format($similarTour->price) }}
+                                            {{ \App\Support\Money::usd($similarTour->price) }}
                                         </span>
                                     </div>
                                 </a>
@@ -212,7 +212,7 @@
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
                     <div class="flex items-baseline justify-between mb-1">
                         <span class="text-sm text-zinc-400">Starting from</span>
-                        <div class="text-3xl font-extrabold text-green-400">KSh {{ number_format($package->price) }}</div>
+                        <div class="text-3xl font-extrabold text-green-400">{{ \App\Support\Money::usd($package->price) }}</div>
                     </div>
                     <p class="text-xs text-zinc-500 text-right mb-6">Per person</p>
 

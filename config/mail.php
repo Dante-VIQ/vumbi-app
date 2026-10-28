@@ -126,7 +126,7 @@ return [
     //     preg_split('/\s*,\s*/', (string) env('ADMIN_EMAIL', 'africa@vumbiventures.com'))
     // ))),
 
-   'admin_address' => env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS')),
+   'admin_address' => env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'africa@vumbiventures.com')),
   
 'admin_whatsapp' => env('MAIL_ADMIN_WHATSAPP', ''),
 ];

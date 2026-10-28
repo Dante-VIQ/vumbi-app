@@ -26,7 +26,7 @@ function p5Package(array $attrs = []): PartnerPackage
 
 test('the quiz page renders with all four questions', function () {
     $this->get('/quiz')->assertOk()->assertSee('Who is travelling?')->assertSee('What do you enjoy most?')
-        ->assertSee('Under KSh 30,000')->assertSee('How long?');
+        ->assertSee('Under $250')->assertSee('How long?');
 });
 
 test('finishing the quiz stores anonymous answers, sets the persona and lands on filtered discovery', function () {
@@ -86,12 +86,12 @@ test('follow-ups go out on day 3 and day 7 only, once each, and not to unsubscri
     expect($day3->fresh()->sequence_step)->toBe(3);
 });
 
-test('follow-up emails use the persona trips, KSh prices and an unsubscribe link', function () {
+test('follow-up emails use the persona trips, USD prices and an unsubscribe link', function () {
     p5Package(['title' => 'Group Safari', 'price' => 45000, 'audiences' => ['group']]);
     $sub = NewsletterSubscriber::create(['email' => 'g@example.com', 'subscribed_at' => now(), 'persona' => 'group']);
 
     $two = (new NewsletterSequence($sub, 2))->render();
-    expect($two)->toContain('Group Safari')->toContain('KSh 45,000')->toContain('/trips/groups')->toContain('unsubscribe');
+    expect($two)->toContain('Group Safari')->toContain('$349')->toContain('/trips/groups')->toContain('unsubscribe');
 
     $three = (new NewsletterSequence($sub, 3))->render();
     expect($three)->toContain('Request a custom quote')->toContain('unsubscribe');
