@@ -22,7 +22,9 @@ class LlmsController extends Controller
         $lines[] = '';
         $lines[] = '> ' . config('seo.tagline');
         $lines[] = '';
-        $lines[] = 'Based in ' . config('seo.locality') . ', Kenya. Vumbi Ventures does not operate vehicles itself: it connects travellers with local partners it vets, and shows prices in US dollars up front.';
+        $lines[] = config('seo.definition');
+        $lines[] = '';
+        $lines[] = 'Vumbi Ventures does not operate vehicles itself: partners deliver the trips. Prices are shown in US dollars, converted from the partners\' Kenya shilling prices.';
         $lines[] = '';
         $lines[] = '## Plan a trip';
         $lines[] = '- [Find your trip](' . route('discover.index') . '): search destinations and filter by interest, budget, duration and group size';
@@ -32,7 +34,8 @@ class LlmsController extends Controller
         }
         $lines[] = '';
         $lines[] = '## About';
-        $lines[] = '- [About Vumbi Ventures](' . url('/about') . '): how the company works with vetted partners';
+        $lines[] = '- [What is Vumbi Ventures? (FAQ)](' . route('faq') . '): short answers about the company, trips, prices and booking';
+        $lines[] = '- [About Vumbi Ventures](' . url('/about') . '): how the company works with vetted partners, and a note from the founder';
         $lines[] = '- [Contact](' . route('contact') . '): enquiries are answered within 24 business hours';
         $lines[] = '';
 

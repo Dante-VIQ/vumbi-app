@@ -77,6 +77,7 @@
                     <li><a href="/discover" class="hover:text-white transition">Find My Trip</a></li>
                     <li><a href="{{ route('safari-checklist') }}" class="hover:text-white transition">Free Safari Checklist</a></li>
                     <li><a href="/destinations" class="hover:text-white transition">Explore Destinations</a></li>
+                    <li><a href="{{ route('faq') }}" class="hover:text-white transition">FAQ</a></li>
                     <li><a href="/studio" class="hover:text-white transition">Vumbi Tech Studio</a></li>
                 </ul>
             </div>

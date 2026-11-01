@@ -198,6 +198,15 @@
         </p>
     </section>
 
+    {{-- ================= WHO WE ARE (answer-first) ================= --}}
+    <section class="container mx-auto px-4 sm:px-6 pb-6" aria-labelledby="who-we-are">
+        <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-black/5 p-6 text-center">
+            <h2 id="who-we-are" class="text-lg font-semibold">What is Vumbi Ventures?</h2>
+            <p class="mt-2 text-sm text-zinc-600 leading-relaxed">{{ config('seo.definition') }}</p>
+            <p class="mt-3 text-sm"><a href="{{ route('about') }}" class="text-[#8B5A2B] font-semibold underline underline-offset-2">About us</a> <span class="text-zinc-400 mx-1">&middot;</span> <a href="{{ route('faq') }}" class="text-[#8B5A2B] font-semibold underline underline-offset-2">FAQ</a></p>
+        </div>
+    </section>
+
     {{-- ================= 2. LIVE NETWORK STATUS BAR ================= --}}
     <section class="py-6 bg-white border-y border-black/5">
         <div class="container mx-auto px-6">

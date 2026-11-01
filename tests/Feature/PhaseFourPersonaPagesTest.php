@@ -60,10 +60,13 @@ test('services page links to the three trip pages and has no web-dev copy', func
     foreach (['adventure', 'youth', 'groups'] as $slug) {
         $res->assertSee("/trips/{$slug}", false);
     }
-    $res->assertDontSee('web development', false);
+    // Visible copy only: the site-wide Organization schema legitimately mentions Vumbi Tech Studio.
+    $visible = preg_replace('/<script\b[^>]*>.*?<\/script>/s', '', $res->getContent());
+    expect(strtolower($visible))->not->toContain('web development');
 });
 
 test('about page has no invented stats and hides empty people sections', function () {
+    config(['about.founder.name' => null, 'about.founder.note' => null]);
     $res = $this->get('/about')->assertOk();
     $res->assertDontSee('2000+')->assertDontSee('Innovation Potential')->assertDontSee('Authentic Groundwork');
     $res->assertDontSee('Founder');

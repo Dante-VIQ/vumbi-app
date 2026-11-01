@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/quiz', [\App\Http\Controllers\QuizController::class, 'show'])->name('quiz');
 Route::post('/quiz', [\App\Http\Controllers\QuizController::class, 'submit'])->middleware('throttle:10,1')->name('quiz.submit');
+Route::get('/faq', \App\Http\Controllers\FaqController::class)->name('faq');
 Route::get('/llms.txt', \App\Http\Controllers\LlmsController::class)->name('llms');
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
@@ -61,7 +62,7 @@ Route::get('/trips/{style}', [\App\Http\Controllers\TripStyleController::class, 
     ->whereIn('style', ['adventure', 'youth', 'groups'])
     ->name('trips.show');
 
-Route::view('/about', 'pages.about');
+Route::view('/about', 'pages.about')->name('about');
 Route::get('/services', fn () => view('pages.services', ['styles' => \App\Support\TripStyles::all()]))->name('services');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy-policy', 'pages.privacy')->name('privacy');

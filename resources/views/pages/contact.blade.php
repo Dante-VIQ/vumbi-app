@@ -15,13 +15,15 @@
         "name" => "Contact Vumbi Ventures",
         "description" => "Contact Vumbi Ventures to plan a safari or trip in Kenya and East Africa and get a custom quote from vetted local partners.",
         "url" => url()->current(),
-        "mainEntity" => [
+        "isPartOf" => ["@id" => url('/') . '#website'],
+        "about" => ["@id" => url('/') . '#organization'],
+        "mainEntity" => array_filter([
             "@type" => "ContactPoint",
-            "contactType" => "Customer Service & Advisory",
-            "telephone" => "+" . config("services.whatsapp.number"),
-            "email" => "info@vumbiventures.com",
+            "contactType" => "customer service",
+            "telephone" => "+" . preg_replace('/\D/', '', (string) config("services.whatsapp.number")),
+            "email" => config('seo.email') ?: null,
             "availableLanguage" => ["English", "Swahili"]
-        ]
+        ])
     ];
 @endphp
 @endpush
