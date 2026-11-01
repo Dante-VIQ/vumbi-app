@@ -8,6 +8,12 @@
 
 return [
     'name' => 'Vumbi Ventures',
+    // The one-paragraph answer to "What is Vumbi Ventures?". Used on About, the FAQ, schema and llms.txt.
+    // Keep it factual and in the same words everywhere: AI engines repeat what they find consistently.
+    'definition' => 'Vumbi Ventures is a Kenya-based travel discovery and storytelling company in Nakuru. It connects travellers with vetted local partners for trips across Kenya and East Africa, with prices shown up front, and publishes Field Notes: guides to the history, culture and places of Africa. Vumbi also runs Vumbi Tech Studio, a separate web development service.',
+    'alternate_name' => 'Vumbi',
+    'slogan' => 'Travel East Africa with people who know it',
+    'knows_about' => ['Kenya safaris', 'East Africa travel planning', 'Hiking and climbing in Kenya', 'Budget and youth travel in East Africa', 'Group travel in East Africa', 'African history and culture', 'Local tour and transport partners'],
     'tagline' => 'Travel discovery and storytelling for Kenya and East Africa, connecting travellers with vetted local partners.',
     'email' => env('SEO_EMAIL', 'vumbiventures@gmail.com'),
     'telephone' => env('SEO_PHONE', '+254-734-591543'),

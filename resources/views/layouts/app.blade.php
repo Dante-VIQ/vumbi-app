@@ -48,10 +48,17 @@
             '@type' => 'TravelAgency',
             '@id' => $orgId,
             'name' => config('seo.name'),
+            'alternateName' => config('seo.alternate_name') ?: null,
+            'slogan' => config('seo.slogan') ?: null,
             'url' => url('/'),
             'logo' => asset('images/logo1.png'),
             'image' => asset('images/og-default.jpg'),
-            'description' => config('seo.tagline'),
+            'description' => config('seo.definition') ?: config('seo.tagline'),
+            'knowsAbout' => config('seo.knows_about') ?: null,
+            'foundingLocation' => ['@type' => 'Place', 'name' => config('seo.locality') . ', Kenya'],
+            'founder' => (config('about.founder.name') && config('about.founder.note'))
+                ? ['@type' => 'Person', 'name' => config('about.founder.name'), 'jobTitle' => config('about.founder.role') ?: null]
+                : null,
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => config('seo.locality'),

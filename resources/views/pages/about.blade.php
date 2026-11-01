@@ -18,13 +18,16 @@
 @php
     $pageSchemas = [];
 
-    $pageSchemas[] = [
+    $pageSchemas[] = array_filter([
         "@context" => "https://schema.org",
         "@type" => "AboutPage",
+        "@id" => url()->current() . '#aboutpage',
         "name" => "About Vumbi Ventures",
-        "description" => "Learn about the team behind Vumbi Ventures and our mission to showcase authentic African travel experiences and the local partners who make them possible.",
-        "url" => url()->current()
-    ];
+        "description" => config('seo.definition'),
+        "url" => url()->current(),
+        "isPartOf" => ['@id' => url('/') . '#website'],
+        "mainEntity" => ['@id' => url('/') . '#organization'],
+    ]);
 @endphp
 @endpush
 
@@ -45,6 +48,9 @@
                     Travel East Africa with <span class="text-[#8B5A2B]">people who know it</span>
                 </h1>
                 
+                <p id="what-is-vumbi" class="text-base sm:text-lg text-gray-800 leading-relaxed max-w-3xl mx-auto font-medium mb-5">
+                    {{ config('seo.definition') }} <a href="{{ route('faq') }}" class="text-[#8B5A2B] underline">More questions answered</a>.
+                </p>
                 <p class="text-base sm:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto font-normal">
                     <strong class="text-[#8B5A2B] font-bold">Vumbi</strong> means dust in Swahili. We find potential in what others overlook. From the heart of East Africa, we build remarkable travel experiences for overlooked places and the people who know them best.
                 </p>
@@ -143,13 +149,30 @@
             </div>
 
             @if ($showFounder)
-                <div class="mt-16 grid md:grid-cols-3 gap-8 items-center">
+                @php $scene = $founder['scene'] ?? null; @endphp
+                <div class="mt-16 grid md:grid-cols-5 gap-8 items-center" id="founder">
                     @if (! empty($founder['photo']))
-                        <img src="{{ asset($founder['photo']) }}" alt="{{ $founder['name'] }}" class="rounded-2xl w-full object-cover" loading="lazy">
+                        <figure class="md:col-span-2">
+                            <img src="{{ asset($founder['photo']) }}" alt="{{ $founder['name'] }}, {{ $founder['role'] ?? 'founder' }} of Vumbi Ventures" class="rounded-2xl w-full object-cover" loading="lazy">
+                        </figure>
+                    @elseif (! empty($scene['image']))
+                        <figure class="md:col-span-2">
+                            <img src="{{ $scene['image'] }}" alt="{{ $scene['alt'] ?? '' }}" width="1200" height="800" class="rounded-2xl w-full h-72 md:h-96 object-cover" loading="lazy"
+                                onerror="this.closest('figure').style.display='none'">
+                            <figcaption class="mt-2 text-xs text-gray-500">
+                                {{ $scene['caption'] ?? '' }}
+                                @if (! empty($scene['credit']))
+                                    Photo: <a href="{{ $scene['credit_url'] ?? 'https://unsplash.com' }}?utm_source=vumbi_ventures&amp;utm_medium=referral" class="underline" rel="noopener" target="_blank">{{ $scene['credit'] }}</a> on <a href="https://unsplash.com/?utm_source=vumbi_ventures&amp;utm_medium=referral" class="underline" rel="noopener" target="_blank">Unsplash</a>
+                                @endif
+                            </figcaption>
+                        </figure>
                     @endif
-                    <div class="{{ ! empty($founder['photo']) ? 'md:col-span-2' : 'md:col-span-3' }}">
-                        <h3 class="text-2xl font-bold">{{ $founder['name'] }}@if (! empty($founder['role'])) <span class="text-[#8B5A2B] text-base font-medium">, {{ $founder['role'] }}</span>@endif</h3>
-                        <p class="mt-3 text-gray-600 leading-relaxed">{{ $founder['note'] }}</p>
+                    <div class="{{ (! empty($founder['photo']) || ! empty($scene['image'])) ? 'md:col-span-3' : 'md:col-span-5' }}">
+                        <p class="text-xs font-bold tracking-wider text-[#8B5A2B] uppercase">A note from the founder</p>
+                        @foreach (preg_split('/\n{2,}/', trim($founder['note'])) as $para)
+                            <p class="mt-4 text-gray-700 leading-relaxed {{ $loop->first ? 'text-lg' : '' }}">{{ $para }}</p>
+                        @endforeach
+                        <p class="mt-6 font-bold text-[#1A1A1A]">{{ $founder['name'] }}@if (! empty($founder['role'])) <span class="font-medium text-[#8B5A2B]">, {{ $founder['role'] }}, Vumbi Ventures</span>@endif</p>
                     </div>
                 </div>
             @endif
