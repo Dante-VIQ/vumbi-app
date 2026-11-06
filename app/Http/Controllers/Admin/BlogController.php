@@ -131,7 +131,7 @@ class BlogController extends Controller
             if ($blog->media_path) {
                 Storage::disk('public_direct')->delete($blog->media_path);
             }
-            $mediaPath = $request->file('media')->store('blog-media', 'public_direct');
+            $mediaPath = $request->file('media')->store('uploads/headers', 'public_direct');
             $validated['media_path'] = $mediaPath;
             $validated['media_type'] = $request->media_type;
         }
