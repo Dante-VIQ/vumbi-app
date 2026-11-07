@@ -5,25 +5,43 @@ namespace App\Http\Controllers;
 use App\Services\Search\SearchOrchestratorService;
 use App\Jobs\BuildCityDiscoveryPage;
 use App\Models\City;
+use App\Models\PartnerPackage;
+use App\Support\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class DiscoveryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $trendingCities = City::where('is_published', true)
             ->orderBy('last_refreshed_at', 'desc')
             ->take(12)
             ->get();
 
-                // Get featured packages (latest active packages, limit 6)
-    $featuredPackages = \App\Models\PartnerPackage::active()
-                            ->latest()
-                            ->take(6)
-                            ->get();
-        return view('pages.discovery', compact('trendingCities', 'featuredPackages'));
+        $persona = Persona::current($request);
+        $filters = Persona::sanitizeFilters($request->only(['interest', 'budget', 'days', 'group']));
+
+        // Trips that satisfy every chosen filter, newest first, then ordered so the
+        // current persona's tours lead. Filters narrow; the persona only reorders.
+        $matches = PartnerPackage::active()->tagged($filters)->latest()->take(24)->get();
+        $noMatches = $filters !== [] && $matches->isEmpty();
+
+        if ($noMatches) {
+            // Never leave the visitor at a dead end: fall back to the best of everything.
+            $matches = PartnerPackage::active()->latest()->take(24)->get();
+        }
+
+        $featuredPackages = Persona::rank($matches, $persona)->take(6);
+
+        return view('pages.discovery', [
+            'trendingCities' => $trendingCities,
+            'featuredPackages' => $featuredPackages,
+            'persona' => $persona,
+            'filters' => $filters,
+            'noMatches' => $noMatches,
+        ]);
     }
 
     /**

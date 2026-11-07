@@ -45,6 +45,7 @@
                     @switch($data['inquiry_type'])
                         @case('travel') Travel Booking / Discovery @break
                         @case('web_dev') Web Development Services @break
+                        @case('seo') SEO & Digital Growth @break
                         @case('partnership') Partnership Opportunity @break
                         @case('other') Other @break
                         @default {{ $data['inquiry_type'] }}
@@ -53,6 +54,38 @@
             </div>
         </div>
         
+        @if(!empty($data['persona']))
+        <div class="field">
+            <div class="label">Traveller type</div>
+            <div class="value">{{ \App\Support\Persona::label($data['persona']) ?? $data['persona'] }}</div>
+        </div>
+        @endif
+
+        @if(!empty($data['travel_month']) || !empty($data['group_size']) || !empty($data['budget_range']))
+        <div class="field">
+            <div class="label">Trip details</div>
+            <div class="value">
+                @if(!empty($data['travel_month'])) Travel month: {{ $data['travel_month'] }}<br> @endif
+                @if(!empty($data['group_size'])) Travellers: {{ $data['group_size'] }}<br> @endif
+                @if(!empty($data['budget_range'])) Budget per person: {{ \App\Support\Persona::budgetRangeLabels()[$data['budget_range']] ?? $data['budget_range'] }} @endif
+            </div>
+        </div>
+        @endif
+
+        @if(!empty($data['travel_details']))
+        <div class="field">
+            <div class="label">Travel month & group size</div>
+            <div class="value">{{ $data['travel_details'] }}</div>
+        </div>
+        @endif
+
+        @if(!empty($data['website']))
+        <div class="field">
+            <div class="label">Website</div>
+            <div class="value">{{ $data['website'] }}</div>
+        </div>
+        @endif
+
         @if(!empty($data['subject']))
         <div class="field">
             <div class="label">Subject</div>

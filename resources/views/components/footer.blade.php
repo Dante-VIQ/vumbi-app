@@ -10,8 +10,8 @@
                     <span class="text-xl font-semibold">Vumbi Ventures</span>
                 </a>
                 <p class="text-[#C7B5A6] text-sm leading-relaxed">
-                    From overlooked places, we build remarkable solutions. A purpose-driven digital innovation company
-                    inspired by Africa.
+                    Honest guides, upfront prices and vetted local partners for safaris, culture and adventure across
+                    Kenya and East Africa.
                 </p>
 
                 {{-- Social Links --}}
@@ -49,7 +49,7 @@
                 <ul class="space-y-2 text-[#C7B5A6]">
                     <li><a href="/about" class="hover:text-white transition">About Us</a></li>
                     <li><a href="/services" class="hover:text-white transition">Services</a></li>
-                    <li><a href="/cultures" class="hover:text-white transition">People & Culture</a></li>
+                    <li><a href="/culture" class="hover:text-white transition">People & Culture</a></li>
                     <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
                     <li><a href="/contact" class="hover:text-white transition">Contact</a></li>
                 </ul>
@@ -74,9 +74,11 @@
                                 </path>
                             </svg></a></li>
                     <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
-                    <li><a href="/tours" class="hover:text-white transition">Plan Trip</a></li>
+                    <li><a href="/discover" class="hover:text-white transition">Find My Trip</a></li>
+                    <li><a href="{{ route('safari-checklist') }}" class="hover:text-white transition">Free Safari Checklist</a></li>
                     <li><a href="/destinations" class="hover:text-white transition">Explore Destinations</a></li>
-                    <li><a href="/studio" class="hover:text-white transition">Our Studio</a></li>
+                    <li><a href="{{ route('faq') }}" class="hover:text-white transition">FAQ</a></li>
+                    <li><a href="/studio" class="hover:text-white transition">Vumbi Tech Studio</a></li>
                 </ul>
             </div>
 
@@ -95,9 +97,9 @@
             <p>&copy; {{ date('Y') }} Vumbi Ventures. All rights reserved. Built from the spirit of Africa.</p>
             <div class="flex gap-6 mt-4 md:mt-0">
                 <a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy Policy</a>
-                <a href="/" class="hover:text-white transition">Terms of Service</a>
+                <a href="{{ route('terms') }}" class="hover:text-white transition">Terms of Service</a>
                 <a href="/portfolio" class="hover:text-white transition">Portfolio</a>
-                <a href="/" class="hover:text-white transition">Sitemap</a>
+                <a href="{{ url('/sitemap.xml') }}" class="hover:text-white transition">Sitemap</a>
             </div>
         </div>
     </div>

@@ -127,19 +127,17 @@ new class extends Component
     @endpush
 
     @push('structured-data')
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "TouristDestination",
-          "name": "{{ $destination->name }}",
-          "description": "{{ Str::limit(strip_tags($destination->detail ?? $destination->description ?? ''), 155) }}",
-          "image": "{{ $destination->media_path ? Storage::url($destination->media_path) : ($destination->image ?? '') }}",
-          "address": { 
-              "@type": "PostalAddress", 
-              "addressLocality": "{{ $destination->location }}" 
-          }
-        }
-        </script>
+        @php
+            $destSchema = array_filter([
+                '@context' => 'https://schema.org',
+                '@type' => 'TouristDestination',
+                'name' => $destination->name,
+                'description' => Str::limit(strip_tags($destination->detail ?? $destination->description ?? ''), 155),
+                'image' => $destination->media_path ? Storage::url($destination->media_path) : ($destination->image ?? null),
+                'address' => ['@type' => 'PostalAddress', 'addressLocality' => $destination->location],
+            ]);
+        @endphp
+        <script type="application/ld+json">{!! json_encode($destSchema, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
     @endpush
 
     {{-- Hero Section --}}
@@ -292,7 +290,7 @@ new class extends Component
                         <h3 class="font-bold text-lg text-[#1A1A1A] mb-4">Field Notes & Stories</h3>
                         <div class="space-y-4">
                             @foreach($relatedStories as $story)
-                                <a href="{{ route('blog.show', $story->slug ?? $story->id) }}" class="block group">
+                                <a href="{{ $story->url }}" class="block group">
                                     <h4 class="font-semibold text-sm text-[#1A1A1A] group-hover:text-[#8B5A2B] transition line-clamp-2">
                                         {{ $story->title }}
                                     </h4>
@@ -311,7 +309,7 @@ new class extends Component
                         <h3 class="font-bold text-lg text-[#1A1A1A] mb-4">Similar Destinations</h3>
                         <div class="space-y-4">
                             @foreach($relatedDestinations as $item)
-                                <a href="{{ route('destination.show', $item->slug ?? $item->id) }}" class="flex gap-3 group items-center">
+                                <a href="{{ route('pages.destination', ['destination' => $item->slug ?? $item->id]) }}" class="flex gap-3 group items-center">
                                     <div class="w-12 h-12 rounded-xl bg-zinc-200 overflow-hidden shrink-0">
                                         @if($item->media_path)
                                             <img src="{{ Storage::url($item->media_path) }}" class="w-full h-full object-cover">

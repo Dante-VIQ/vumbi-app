@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PartnerPackage;
+use App\Support\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
@@ -29,14 +30,17 @@ class TourController extends Controller
             $query->where('difficulty', $difficulty);
         }
         if ($min = $request->input('min_price')) {
-            $query->where('price', '>=', (float)$min);
+            $query->where('price', '>=', \App\Support\Money::kesFromUsd($min));
         }
         if ($max = $request->input('max_price')) {
-            $query->where('price', '<=', (float)$max);
+            $query->where('price', '<=', \App\Support\Money::kesFromUsd($max));
         }
         if ($location = $request->input('location')) {
             $query->where('location', 'like', "%{$location}%");
         }
+
+        // Persona tags: audience, interest, budget band, trip length, party size
+        $query->tagged(Persona::sanitizeFilters($request->only(['audience', 'interest', 'budget', 'days', 'group'])));
 
         // Sort
         match ($request->input('sort')) {

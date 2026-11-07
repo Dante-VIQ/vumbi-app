@@ -89,12 +89,26 @@ new class extends Component {
             ->paginate($this->perPage);
     }
 
+    /** Up to three posts matching the visitor's persona; only on the unfiltered first view. */
+    public function picksForVisitor()
+    {
+        $persona = \App\Support\Persona::current();
+        $slug = \App\Support\TripStyles::slugFor($persona);
+
+        if (! $slug || $this->selectedCategory !== 'all' || ! empty($this->search)) {
+            return collect();
+        }
+
+        return \App\Support\TripStyles::relatedPosts($slug, 3);
+    }
+
     public function with(): array
     {
         return [
             'blogs' => $this->blogs(),
             'categories' => $this->categories,
             'featuredBlogs' => $this->featuredBlogs,
+            'picks' => $this->picksForVisitor(),
         ];
     }
 };
@@ -166,6 +180,17 @@ new class extends Component {
         </div>
     </section>
 
+    @if ($picks->isNotEmpty())
+        <section class="container mx-auto px-6 pt-10">
+            <h2 class="text-lg font-semibold mb-3">Picked for {{ strtolower(\App\Support\Persona::label(\App\Support\Persona::current()) ?? 'you') }}s</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                @foreach ($picks as $pick)
+                    <a href="{{ $pick->url }}" class="bg-white rounded-xl border border-black/5 p-4 hover:border-[#8B5A2B] transition font-medium text-sm">{{ $pick->title }}</a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     {{-- FEATURED STORY SECTION --}}
     @if($featuredBlogs->count() > 0)
         @foreach($featuredBlogs as $blog)
@@ -194,7 +219,7 @@ new class extends Component {
                                 <span class="text-xs text-zinc-500 font-medium">
                                     By {{ $blog->author->name ?? 'Vumbi Field Writer' }}
                                 </span>
-                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}" 
+                                <a href="{{ $blog->url }}" 
                                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#8B5A2B] text-white rounded-xl font-medium hover:bg-[#5C3A1E] transition shadow-md hover:shadow-lg">
                                     <span>Read Story</span>
                                     <span>→</span>
@@ -232,7 +257,7 @@ new class extends Component {
                                 </div>
 
                                 <h3 class="text-xl font-semibold text-zinc-900 group-hover:text-[#8B5A2B] transition-colors leading-snug">
-                                    <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}">{{ $blog->title }}</a>
+                                    <a href="{{ $blog->url }}">{{ $blog->title }}</a>
                                 </h3>
 
                                 <p class="text-sm text-[#5C5C5C] mt-3 line-clamp-3 leading-relaxed">
@@ -250,7 +275,7 @@ new class extends Component {
                                     {{ $blog->author->name ?? 'Vumbi Contributor' }}
                                 </span>
 
-                                <a href="{{ route('blog.show', $blog->slug ?? $blog->id) }}"
+                                <a href="{{ $blog->url }}"
                                    class="text-sm font-semibold text-[#8B5A2B] hover:text-[#5C3A1E] transition flex items-center gap-1">
                                     <span>Read</span>
                                     <span class="group-hover:translate-x-1 transition-transform">→</span>

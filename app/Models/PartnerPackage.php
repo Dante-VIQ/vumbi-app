@@ -19,6 +19,7 @@ class PartnerPackage extends Model
     'difficulty', 'group_size_min', 'group_size_max',
     'booking_type', 'affiliate_source', 'affiliate_url',
     'region', 'destination_id',
+    'audiences', 'interests', 'budget_band', 'accommodation_style',
     ];
     protected $casts = [
       'active'        => 'boolean',
@@ -26,6 +27,8 @@ class PartnerPackage extends Model
     'itinerary'     => 'array',
     'included'      => 'array',
     'excluded'      => 'array',
+    'audiences'     => 'array',
+    'interests'     => 'array',
     ];
 
 protected static function booted(): void
@@ -34,17 +37,75 @@ protected static function booted(): void
         if (empty($package->slug)) {
             $package->slug = Str::slug($package->title);
         }
+        $package->fillBudgetBand();
     });
 
     static::updating(function (PartnerPackage $package) {
         if (empty($package->slug)) {
             $package->slug = Str::slug($package->title);
         }
+        $package->fillBudgetBand();
     });
 }
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+
+    /**
+     * Narrow by the persona tags. Every key is optional and ANDed together.
+     *
+     * @param  array{interest?: string, budget?: string, days?: string, group?: int, audience?: string}  $filters
+     */
+    public function scopeTagged($query, array $filters)
+    {
+        if (! empty($filters['audience'])) {
+            $query->whereJsonContains('audiences', $filters['audience']);
+        }
+
+        if (! empty($filters['interest'])) {
+            $query->whereJsonContains('interests', $filters['interest']);
+        }
+
+        if (! empty($filters['budget'])) {
+            $query->where('budget_band', $filters['budget']);
+        }
+
+        match ($filters['days'] ?? null) {
+            'short' => $query->where('duration_days', '<=', 3),
+            'week' => $query->whereBetween('duration_days', [4, 7]),
+            'long' => $query->where('duration_days', '>=', 8),
+            default => null,
+        };
+
+        if (! empty($filters['group'])) {
+            $size = (int) $filters['group'];
+            // A tour with no stated limit is assumed to fit any party.
+            $query->where(fn ($q) => $q->whereNull('group_size_min')->orWhere('group_size_min', '<=', $size))
+                  ->where(fn ($q) => $q->whereNull('group_size_max')->orWhere('group_size_max', '>=', $size));
+        }
+
+        return $query;
+    }
+
+    /** 2 = tagged for this persona, 1 = untagged, 0 = tagged only for other personas. */
+    public function personaScore(?string $persona): int
+    {
+        $audiences = $this->audiences ?? [];
+
+        if ($audiences === []) {
+            return 1;
+        }
+
+        return in_array($persona, $audiences, true) ? 2 : 0;
+    }
+
+    /** Set the budget band from the price when nobody has chosen one. */
+    public function fillBudgetBand(): void
+    {
+        if (empty($this->budget_band)) {
+            $this->budget_band = \App\Support\Persona::bandForPrice($this->price);
+        }
     }
 
     public function scopeForLocation($query, string $location)

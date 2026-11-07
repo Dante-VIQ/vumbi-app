@@ -1,14 +1,14 @@
 @extends('layouts.app')
  
-@section('title', 'Discover Africa – Destinations, Safaris & Travel Deals by Region')
-@section('description', 'Search 200+ handpicked African destinations — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
+@section('title', 'Discover Africa: Destinations, Safaris & Deals | Vumbi')
+@section('description', 'Search African destinations, safaris and cultural trips — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
 
 @push('schema')
     @php
     $pageSchemas = [];
 
     $pageSchemas[] = [
-        "@context" => "[https://schema.org](https://schema.org)",
+        "@context" => "https://schema.org",
         "@type" => "CollectionPage",
         "name" => "African Travel Experiences | Vumbi Ventures",
         "description" => "Explore authentic African safaris, cultural immersions, and hidden gems.",
@@ -28,7 +28,7 @@
         <!-- 1. HERO                                       -->
         <!-- ============================================= -->
         <section class="relative h-screen flex items-center justify-center">
-            <div class="absolute inset-0 bg-[url('[https://picsum.photos/id/1015/2000/1200](https://picsum.photos/id/1015/2000/1200)')] bg-cover bg-center">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/maasai-mara.jpg') }}')">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-zinc-950"></div>
             </div>
 
@@ -55,6 +55,26 @@
         <!-- ============================================= -->
         <!-- 2. BEFORE SEARCH: Trending & Categories       -->
         <!-- ============================================= -->
+        {{-- No-results / error fallback: never leave the visitor at a dead end. --}}
+        <div x-show="error && !loading" x-cloak class="max-w-2xl mx-auto px-6 pb-20 -mt-20 relative z-20 text-center">
+            <h2 class="text-3xl font-bold mb-3">We couldn't find a guide for that yet</h2>
+            <p class="text-zinc-300 mb-8">Try a nearby or more popular destination, or tell us where you want to go and we'll put together a custom itinerary for you.</p>
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button @click="query = 'Maasai Mara'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Maasai Mara</button>
+                <button @click="query = 'Nairobi'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Nairobi</button>
+                <button @click="query = 'Mombasa'; searchPlace()" class="px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-full hover:border-amber-400 transition">Mombasa</button>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="{{ route('contact') }}"
+                    data-gtag-event="no_results_quote_click"
+                    class="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-black rounded-2xl font-semibold transition">Get a custom quote</a>
+                <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + query + ' and would like help planning a trip.')"
+                    target="_blank" rel="noopener"
+                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"discover_no_results"}'
+                    class="px-8 py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-semibold transition">Chat on WhatsApp</a>
+            </div>
+        </div>
+
         <div x-show="!result?.city && !loading && !error" class="max-w-7xl mx-auto px-6 pb-20 -mt-20 relative z-20">
             <!-- Trending Cities -->
             @if (isset($trendingCities) && count($trendingCities) > 0)
@@ -64,7 +84,7 @@
                         @foreach ($trendingCities as $city)
                             <button @click="query = '{{ $city->name }}'; searchPlace()"
                                 class="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-400/60 transition transform hover:-translate-y-1 shadow-lg">
-                                <img src="{{ $city->image_url ?? '[https://picsum.photos/seed/](https://picsum.photos/seed/)' . $city->slug . '/400/300' }}"
+                                <img src="{{ $city->image_url ?? asset('images/maasai-mara.jpg') }}"
                                     alt="{{ $city->name }}"
                                     class="w-full h-40 object-cover group-hover:scale-105 transition">
                                 <div class="p-4">
@@ -99,22 +119,121 @@
             </div>
         </div>
 
-        @if (isset($featuredPackages) && count($featuredPackages) > 0)
-            <section class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20">
-                <h2 class="text-3xl font-bold mb-8 text-center">🌍 Featured Trips</h2>
+        {{-- ============================================= --}}
+        {{-- 2b. TRIPS: who's travelling + filters         --}}
+        {{-- ============================================= --}}
+        @php
+            $personas = \App\Support\Persona::all();
+            $toggle = function (string $key, $value) use ($filters) {
+                $next = (string) ($filters[$key] ?? '') === (string) $value ? null : $value;
+
+                return request()->fullUrlWithQuery([$key => $next]) . '#trips';
+            };
+            $pill = 'px-4 py-2 rounded-full border text-sm transition ';
+            $pillOn = 'bg-amber-400 border-amber-400 text-black font-semibold';
+            $pillOff = 'bg-zinc-900 border-zinc-800 hover:border-amber-400 text-zinc-200';
+        @endphp
+
+        <section id="trips" class="max-w-7xl mx-auto px-6 pb-16 -mt-20 relative z-20 scroll-mt-24">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2">Who's travelling?</h2>
+                <p class="text-zinc-400">Pick one and we'll put the trips that suit you first.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                @foreach ($personas as $key => $info)
+                    <a href="{{ request()->fullUrlWithQuery(['persona' => $key]) }}#trips"
+                        data-gtag-event="persona_selected" data-gtag-params='{"persona":"{{ $key }}","placement":"discover"}'
+                        class="block rounded-2xl border p-5 transition {{ $persona === $key ? 'border-amber-400 bg-amber-400/10' : 'border-zinc-800 bg-zinc-900 hover:border-amber-400/60' }}">
+                        <div class="font-semibold text-lg">{{ $info['label'] }}</div>
+                        <div class="text-sm text-zinc-400 mt-1">{{ $info['tagline'] }}</div>
+                    </a>
+                @endforeach
+            </div>
+            @if ($persona)
+                <p class="text-center text-sm text-zinc-500 mb-8">
+                    Showing trips for <span class="text-zinc-300">{{ \App\Support\Persona::label($persona) }}</span>.
+                    <a href="{{ request()->fullUrlWithQuery(['persona' => 'all']) }}#trips" class="text-amber-400 hover:text-amber-300">Show everyone's trips</a>
+                </p>
+            @else
+                <div class="mb-8"></div>
+            @endif
+
+            {{-- Filters --}}
+            <div class="space-y-3 mb-8">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Interest</span>
+                    @foreach (\App\Support\Persona::interests() as $key => $label)
+                        <a href="{{ $toggle('interest', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"interest","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['interest'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Budget</span>
+                    @foreach (\App\Support\Persona::budgetBands() as $key => $label)
+                        <a href="{{ $toggle('budget', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"budget","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['budget'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Length</span>
+                    @foreach (\App\Support\Persona::durations() as $key => $label)
+                        <a href="{{ $toggle('days', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"days","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ ($filters['days'] ?? null) === $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs uppercase tracking-wider text-zinc-500 w-20">Party</span>
+                    @foreach (\App\Support\Persona::partySizes() as $key => $label)
+                        <a href="{{ $toggle('group', $key) }}" data-gtag-event="trip_filter" data-gtag-params='{"filter":"group","value":"{{ $key }}"}'
+                            class="{{ $pill }}{{ (string) ($filters['group'] ?? '') === (string) $key ? $pillOn : $pillOff }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+                @if ($filters !== [])
+                    <div>
+                        <a href="{{ route('discover.index') }}{{ $persona ? '?persona=' . $persona : '' }}#trips" class="text-sm text-amber-400 hover:text-amber-300">Clear filters</a>
+                    </div>
+                @endif
+            </div>
+
+            @if ($noMatches)
+                <div class="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-6 text-center mb-8">
+                    <p class="text-lg font-semibold">No trips match all of those filters yet.</p>
+                    <p class="text-zinc-300 text-sm mt-1">Here are our most popular trips, or tell us what you want and we'll build it for you.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+                        <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" data-gtag-params='{"placement":"trip_filters"}'
+                            class="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-black rounded-2xl font-semibold transition">Get a custom quote</a>
+                        <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text={{ rawurlencode('Hi Vumbi Ventures, I could not find the right trip on your site and would like help planning one.') }}"
+                            target="_blank" rel="noopener"
+                            data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"trip_filters_no_match"}'
+                            class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-2xl font-semibold transition">Chat on WhatsApp</a>
+                    </div>
+                </div>
+            @endif
+
+            @if (isset($featuredPackages) && count($featuredPackages) > 0)
+                <h2 class="text-3xl font-bold mb-8 text-center">{{ $noMatches ? 'Popular Trips' : 'Trips for You' }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach ($featuredPackages as $pkg)
                         <a href="{{ route('tours.show', $pkg) }}"
                             class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                             <div class="h-48 bg-cover bg-center"
-                                style="background-image: url('{{ $pkg->image ?: '[https://picsum.photos/400/250](https://picsum.photos/400/250)' }}')">
+                                style="background-image: url('{{ $pkg->image ?: asset('images/maasai-mara.jpg') }}')">
                             </div>
                             <div class="p-5">
-                                <div class="text-xs text-green-400 uppercase tracking-wide mb-1">{{ ucfirst($pkg->type) }}</div>
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <span class="text-xs text-green-400 uppercase tracking-wide">{{ ucfirst($pkg->type) }}</span>
+                                    @if ($pkg->duration_days)
+                                        <span class="text-xs text-zinc-400">{{ $pkg->duration_days }} {{ \Illuminate\Support\Str::plural('day', $pkg->duration_days) }}</span>
+                                    @endif
+                                    @foreach (array_slice($pkg->audiences ?? [], 0, 2) as $aud)
+                                        <span class="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full border {{ $persona === $aud ? 'border-amber-400 text-amber-300' : 'border-zinc-700 text-zinc-400' }}">{{ \App\Support\Persona::label($aud) }}</span>
+                                    @endforeach
+                                </div>
                                 <h3 class="font-semibold text-lg">{{ $pkg->title }}</h3>
-                                <p class="text-sm text-zinc-400 mt-1 line-clamp-2">{{ $pkg->description }}</p>
+                                <p class="text-sm text-zinc-400 mt-1">{{ \Illuminate\Support\Str::words(strip_tags((string) $pkg->description), 25) }}</p>
                                 <div class="flex items-center justify-between mt-4">
-                                    <span class="text-2xl font-bold text-green-400">$ {{ number_format($pkg->price) }}</span>
+                                    <span class="text-2xl font-bold text-green-400">{{ \App\Support\Money::usd($pkg->price) }}</span>
                                     <button onclick="event.preventDefault(); dispatchBookingEvent({{ $pkg->id }})"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
                                         Book Now
@@ -124,8 +243,8 @@
                         </a>
                     @endforeach
                 </div>
-            </section>
-        @endif
+            @endif
+        </section>
 
         <!-- ============================================= -->
         <!-- 3. AFTER SEARCH: Results & Tabs               -->
@@ -135,7 +254,7 @@
 
                 <!-- CITY HEADER -->
                 <div class="text-center mb-16">
-                    <h1 class="text-5xl md:text-6xl font-bold mb-4" x-text="result.city"></h1>
+                    <h2 class="text-5xl md:text-6xl font-bold mb-4" x-text="result.city"></h2>
                     <p class="text-lg text-zinc-300 max-w-3xl mx-auto" x-text="result.description"></p>
                 </div>
 
@@ -228,7 +347,7 @@
                             <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-amber-400/50 transition hover:-translate-y-1">
                                 <h3 class="font-semibold text-lg" x-text="hotel.hotelName || hotel.name || 'Hotel'"></h3>
                                 <p class="text-amber-400 text-xl font-medium mt-2"
-                                    x-text="'KES ' + (hotel.priceAvg || hotel.price || 'N/A')"></p>
+                                    x-text="(hotel.priceAvg || hotel.price) ? '$' + Math.round(Number(hotel.priceAvg || hotel.price) / {{ \App\Support\Money::rate() }}).toLocaleString() : 'N/A'"></p>
                                 <p class="text-xs text-zinc-500 mt-1" x-text="hotel.address"></p>
                             </div>
                         </template>
@@ -288,14 +407,14 @@
                         <template x-for="pkg in result.partner_packages" :key="pkg.id">
                             <div class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-green-400/50 transition hover:-translate-y-1 shadow-lg">
                                 <div class="h-48 bg-cover bg-center"
-                                    :style="'background-image: url(' + (pkg.image || '[https://picsum.photos/400/250](https://picsum.photos/400/250)') + ')'">
+                                    :style="'background-image: url(' + (pkg.image || '{{ asset('images/maasai-mara.jpg') }}') + ')'">
                                 </div>
                                 <div class="p-5">
                                     <h3 class="font-semibold text-lg" x-text="pkg.title"></h3>
                                     <p class="text-sm text-zinc-400 mt-1 line-clamp-2" x-text="pkg.description"></p>
                                     <div class="flex items-center justify-between mt-4">
                                         <span class="text-2xl font-bold text-green-400"
-                                            x-text="'KSh ' + Number(pkg.price).toLocaleString()"></span>
+                                            x-text="'$' + Math.round(Number(pkg.price) / {{ \App\Support\Money::rate() }}).toLocaleString()"></span>
                                         <button @click="$dispatch('open-booking', { packageId: pkg.id })"
                                             class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium transition">
                                             Book Now
@@ -343,11 +462,20 @@
                                     <div x-text="pkg.title" class="font-medium"></div>
                                     <div x-text="pkg.location" class="text-sm text-zinc-400"></div>
                                 </div>
-                                <span x-text="'KSh ' + Number(pkg.price).toLocaleString()"
+                                <span x-text="'$' + Math.round(Number(pkg.price) / {{ \App\Support\Money::rate() }}).toLocaleString()"
                                     class="text-green-400 font-semibold"></span>
                             </div>
                         </template>
-                        <div x-show="search && !packages.length" class="text-center text-zinc-500 py-4">No packages found for this destination.</div>
+                        <div x-show="search && !packages.length" class="text-center text-zinc-400 py-4 text-sm">
+                            <p>No packages found for this destination yet.</p>
+                            <div class="flex justify-center gap-4 mt-3">
+                                <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" class="text-amber-400 hover:text-amber-300 font-semibold">Get a custom quote</a>
+                                <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + search + ' and would like help planning a trip.')"
+                                    target="_blank" rel="noopener"
+                                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"discover_modal_no_results"}'
+                                    class="text-green-400 hover:text-green-300 font-semibold">WhatsApp us</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -420,9 +548,16 @@
                     partner_packages: []
                 },
 
+                track(name, params) {
+                    if (typeof gtag === 'function') {
+                        gtag('event', name, params || {});
+                    }
+                },
+
                 async searchPlace() {
                     if (!this.query?.trim()) return;
 
+                    this.track('discover_search', { query: this.query.trim() });
                     this.loading = true;
                     this.error = null;
                     this.building = false;
@@ -441,6 +576,13 @@
                         if (!res.ok) throw new Error(data.message || 'Search failed');
 
                         this.result = data.result || this.result;
+
+                        if (this.result?.city) {
+                            this.track('destination_view', { destination: this.result.city, source: 'discover' });
+                        } else if (data.status !== 'building') {
+                            // Nothing came back for this search: show the fallback instead of a dead end.
+                            this.error = 'no_results';
+                        }
 
                         if (data.status === 'building') {
                             this.building = true;
@@ -471,6 +613,9 @@
 
                             if (data.status === 'ready') {
                                 this.result = data.result;
+                                if (this.result?.city) {
+                                    this.track('destination_view', { destination: this.result.city, source: 'discover' });
+                                }
                                 this.building = false;
                                 clearInterval(interval);
                             }

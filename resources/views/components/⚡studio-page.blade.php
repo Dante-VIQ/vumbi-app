@@ -270,218 +270,48 @@ new class extends Component {
 
             {{-- Projects Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                {{-- Project 1: Seattle Mobility Solutions --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                01
+                @foreach (config('case_studies') as $slug => $study)
+                    <div
+                        class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-6">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
+                                    {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                                </div>
+                                <span
+                                    class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
+                                    Live Operational
+                                </span>
                             </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
 
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Seattle Mobility Solutions
-                        </h3>
+                            <h3 class="text-2xl font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors">
+                                {{ $study['name'] }}
+                            </h3>
+                            <p class="text-xs text-slate-400 mb-4">{{ $study['industry'] }}</p>
 
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            A specialized Non-Emergency Medical Transportation (NEMT) dispatch and fleet engine built
-                            for US healthcare corridors. Integrates wheelchair/gurney accessibility routing,
-                            facility-to-facility patient scheduling, automated dispatching algorithms, and
-                            HIPAA-compliant trip log management.
-                        </p>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">{{ $study['summary'] }}</p>
 
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Fleet
-                                Dispatch</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">NEMT
-                                Logistics</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Driver
-                                Portal</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">seattlemobilitysolutions.com</span>
-                        <a href="https://mobilityseattle.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 2: Ride Aide LLC --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                02
+                            <div class="flex flex-wrap gap-2 mb-8">
+                                @foreach ($study['tags'] as $tag)
+                                    <span
+                                        class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">{{ $tag }}</span>
+                                @endforeach
                             </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
                         </div>
 
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Ride Aide LLC
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            An end-to-end transportation booking platform designed for medical appointments and senior
-                            transport. Features live GPS ride tracking, dynamic distance-based fare estimation,
-                            automated SMS notifications for patients, and driver shift optimization systems.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Live
-                                GPS Tracking</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Ride
-                                Booking</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Automated
-                                Dispatch</span>
+                        <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                            <a href="{{ route('studio.case-study', $slug) }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all">
+                                Read case study
+                            </a>
+                            <a href="{{ $study['url'] }}" target="_blank" rel="noopener noreferrer"
+                                class="text-xs text-slate-400 hover:text-amber-300 font-mono transition-colors">
+                                {{ $study['url_label'] }} &#8599;
+                            </a>
                         </div>
                     </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">rideaidellc.com</span>
-                        <a href="https://rideaidellc.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 3: GB Handyman LLC --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                03
-                            </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            GB Handyman LLC
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            An active home services booking and business management hub. Allows homeowners to request
-                            estimates, schedule contractor site visits, receive digital invoices, and track home
-                            improvement job progress in real time.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Quote
-                                Engine</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Job
-                                CRM</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Invoicing</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">gbhandymanllc.com</span>
-                        <a href="https://gbhandymanllc.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Project 4: Amazing Palace --}}
-                <div
-                    class="group relative bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 shadow-[0_15px_35px_rgba(0,0,0,0.3)] flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-lg">
-                                04
-                            </div>
-                            <span
-                                class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                Live Operational
-                            </span>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                            Amazing Palace
-                        </h3>
-
-                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                            A full-stack luxury retail and e-commerce portal equipped with a product catalog showcase,
-                            online reservation systems, automated inventory control, and secure payment checkout
-                            integrations.
-                        </p>
-
-                        {{-- Highlight Features --}}
-                        <div class="flex flex-wrap gap-2 mb-8">
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">E-Commerce</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Payment
-                                Gateway</span>
-                            <span
-                                class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-slate-300">Inventory
-                                Management</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span class="text-xs text-slate-400 font-mono">amazingpalace.com</span>
-                        <a href="https://amazingpalace.com" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/30 transition-all group/link">
-                            <span>Visit Live Site</span>
-                            <svg class="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
+                @endforeach
             </div>
         </div>
     </section>
@@ -544,6 +374,89 @@ new class extends Component {
         </div>
     </section>
 
+    {{-- Website & Growth Packages (moved here from the travel site's Services page) --}}
+    <section id="packages" class="max-w-6xl mx-auto px-4 py-16 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-white">Website &amp; Growth Packages</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto mt-3 text-base">
+                Flexible options for businesses at every stage. All packages include responsive design and SEO foundations.
+            </p>
+        </div>
+
+        @php
+            $studioPackages = [
+                [
+                    'slug' => 'starter',
+                    'name' => 'Starter',
+                    'price' => '$700',
+                    'desc' => 'Perfect for small businesses needing a professional online presence.',
+                    'features' => ['5-Page Custom Website', 'Mobile Responsive', 'Basic SEO Setup', 'Contact Form Integration', '2 Rounds of Revisions', '30 Days Support'],
+                    'featured' => false,
+                ],
+                [
+                    'slug' => 'growth',
+                    'name' => 'Growth',
+                    'price' => '$1,250',
+                    'desc' => 'For businesses ready to attract clients and showcase their work.',
+                    'features' => ['Up to 10 Pages', 'Advanced SEO', 'Blog or Portfolio Section', 'Social Media Integration', 'Basic Branding Package', '3 Months Support'],
+                    'featured' => true,
+                ],
+                [
+                    'slug' => 'scale',
+                    'name' => 'Scale',
+                    'price' => 'Custom',
+                    'desc' => 'Complex web apps, e-commerce, or ongoing marketing retainers.',
+                    'features' => ['Custom Web Application', 'E-commerce / Booking Systems', 'Full Branding & Visuals', 'Marketing Strategy & Ads', 'Ongoing Maintenance', 'Priority Support'],
+                    'featured' => false,
+                ],
+            ];
+        @endphp
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach ($studioPackages as $pkg)
+                <div class="relative flex flex-col rounded-3xl p-8 backdrop-blur-xl border {{ $pkg['featured'] ? 'bg-gradient-to-b from-amber-950/30 to-slate-900/40 border-amber-500/40' : 'bg-gradient-to-b from-slate-800/30 to-slate-900/40 border-white/10' }}">
+                    @if ($pkg['featured'])
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[10px] font-bold uppercase px-3 py-1 rounded-full tracking-wider">Most Popular</span>
+                    @endif
+                    <h3 class="text-xl font-bold text-white">{{ $pkg['name'] }}</h3>
+                    <div class="mt-2 text-3xl font-extrabold text-amber-400">{{ $pkg['price'] }}</div>
+                    <p class="text-sm text-slate-400 mt-2">{{ $pkg['desc'] }}</p>
+                    <ul class="mt-6 space-y-3 text-sm text-slate-300 flex-grow">
+                        @foreach ($pkg['features'] as $feat)
+                            <li class="flex items-start gap-3"><span class="text-emerald-400">✓</span> {{ $feat }}</li>
+                        @endforeach
+                    </ul>
+                    <a href="{{ route('studio.contact', ['package' => $pkg['slug']]) }}"
+                        class="mt-8 block text-center py-3 rounded-xl font-semibold text-sm transition {{ $pkg['featured'] ? 'bg-amber-400 hover:bg-amber-300 text-slate-950' : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white' }}">
+                        Get Started
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- How we work --}}
+    <section class="max-w-5xl mx-auto px-4 pb-16 relative z-10">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-extrabold text-white">How We Work</h2>
+            <p class="text-slate-400 mt-2">A straightforward process from idea to launch, and beyond.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            @foreach ([
+                ['01', 'Discovery Call', 'We learn about your business, goals and audience.'],
+                ['02', 'Proposal & Plan', 'A clear scope, timeline and investment estimate.'],
+                ['03', 'Design & Build', 'Iterative development with regular feedback loops.'],
+                ['04', 'Launch & Grow', 'Deployment, training and ongoing marketing support.'],
+            ] as [$num, $title, $desc])
+                <div>
+                    <div class="text-3xl font-light text-amber-400/60">{{ $num }}</div>
+                    <h3 class="font-semibold text-white mt-2">{{ $title }}</h3>
+                    <p class="text-sm text-slate-400 mt-1">{{ $desc }}</p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
     {{-- Contact CTA --}}
     <footer class="border-t border-white/10 bg-slate-950/80 py-16 relative z-10 text-center">
         <div class="max-w-4xl mx-auto px-4">
@@ -552,7 +465,7 @@ new class extends Component {
                 Whether you need a custom enterprise application or want to pilot a licensed platform like Nafasi in
                 your region.
             </p>
-            <a href="mailto:studio@vumbiventures.com"
+            <a href="{{ route('studio.contact') }}"
                 class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-slate-950 font-black text-base hover:bg-slate-200 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.2)]">
                 ✉️ Contact Tech Studio
             </a>

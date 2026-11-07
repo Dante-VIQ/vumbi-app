@@ -22,9 +22,9 @@
 
             <p style="margin:0 0 8px;">If you only read three things first:</p>
             <ol style="margin:0 0 20px;padding-left:22px;">
-                <li style="margin-bottom:6px;"><a href="{{ url('/blog/32') }}" style="color:#8B5A2B;">How to plan your first safari in Kenya</a></li>
-                <li style="margin-bottom:6px;"><a href="{{ url('/blog/31') }}" style="color:#8B5A2B;">The best time to visit Kenya for a safari</a></li>
-                <li><a href="{{ url('/blog/33') }}" style="color:#8B5A2B;">The unwritten rules of attending a Kenyan wedding</a>, a taste of our storytelling</li>
+                <li style="margin-bottom:6px;"><a href="{{ \App\Models\Blog::find(32)?->url ?? url('/blog/32') }}" style="color:#8B5A2B;">How to plan your first safari in Kenya</a></li>
+                <li style="margin-bottom:6px;"><a href="{{ \App\Models\Blog::find(31)?->url ?? url('/blog/31') }}" style="color:#8B5A2B;">The best time to visit Kenya for a safari</a></li>
+                <li><a href="{{ \App\Models\Blog::find(33)?->url ?? url('/blog/33') }}" style="color:#8B5A2B;">The unwritten rules of attending a Kenyan wedding</a>, a taste of our storytelling</li>
             </ol>
 
             <p style="margin:0 0 16px;">
@@ -35,7 +35,7 @@
                 and we will match you with vetted local partners and send a custom itinerary or quote within 24 hours.
             </p>
 
-            <p style="margin:0 0 16px;">We send Field Notes about once a month.</p>
+            <p style="margin:0 0 16px;">We send Field Notes about once a month, plus two short follow-up emails in your first week.</p>
             <p style="margin:0;">The Vumbi Ventures team<br>Nakuru, Kenya</p>
         </div>
 

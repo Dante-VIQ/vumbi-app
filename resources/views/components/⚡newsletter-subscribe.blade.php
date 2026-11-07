@@ -51,12 +51,14 @@ new class extends Component {
         // answer, so the form never reveals who is subscribed.
         $subscriber = NewsletterSubscriber::firstOrCreate(
             ['email' => $this->email],
-            ['subscribed_at' => now()]
+            ['subscribed_at' => now(), 'persona' => \App\Support\Persona::current(), 'source' => $this->placement]
         );
 
         $this->message = $successMessage;
         $this->messageType = 'success';
-        $this->email = '';
+        // $this->email = '';
+
+        $this->reset('email');
 
         if ($subscriber->wasRecentlyCreated) {
             $this->dispatch('newsletter-subscribed', placement: $this->placement);
@@ -68,9 +70,6 @@ new class extends Component {
                 report($e);
             }
         }
-
-        // You could also trigger an event to send a welcome email
-        // event(new NewsletterSubscribed($this->email));
     }
 };
 ?>
@@ -107,5 +106,5 @@ new class extends Component {
         </button>
     </form>
     @error('email') <span class="{{ $errorClasses }}">{{ $message }}</span> @enderror
-    <p class="text-xs mt-3 {{ $noteClasses }}">We respect your privacy. Unsubscribe at any time. <a href="{{ route('privacy') }}" class="underline hover:opacity-80">Privacy policy</a></p>
+    <p class="text-xs mt-3 {{ $noteClasses }}">Includes our free Kenya first-safari planning checklist. We respect your privacy. Unsubscribe at any time. <a href="{{ route('privacy') }}" class="underline hover:opacity-80">Privacy policy</a></p>
 </div>

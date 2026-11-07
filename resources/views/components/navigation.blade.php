@@ -34,7 +34,6 @@
                     ['name' => 'Destinations', 'route' => 'destinations.index', 'url' => '/destinations', 'icon' => 'fas fa-map-marked-alt'],
                     ['name' => 'Cultures', 'route' => 'cultures.give', 'url' => '/cultures', 'icon' => 'fas fa-feather-alt'],
                     ['name' => 'Stories', 'route' => 'blog', 'url' => '/blog', 'icon' => 'fas fa-book-open'],
-                    ['name' => 'Services', 'route' => 'pages.services', 'url' => '/services', 'icon' => 'fas fa-concierge-bell'],
                     ['name' => 'About Us', 'route' => 'about', 'url' => '/about', 'icon' => 'fas fa-info-circle'],
                     ['name' => 'Contact', 'route' => 'contact', 'url' => '/contact', 'icon' => 'fas fa-envelope'],
                 ];
@@ -54,12 +53,17 @@
                 </a>
             @endforeach
 
-            {{-- Vumbi Studio Switcher --}}
-            <a href="{{ url('/studio') }}"
-                class="ml-2 px-3 py-1.5 text-xs font-semibold text-zinc-700 bg-zinc-100 hover:bg-zinc-900 hover:text-amber-400 border border-zinc-200 rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-sm">
-                <i class="fas fa-code text-amber-600"></i>
-                Studio (Tech)
-            </a>
+            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @keydown.escape="open = false">
+                <button type="button" @click="open = !open" :aria-expanded="open" aria-haspopup="true"
+                    class="px-3 py-2 text-sm font-medium text-zinc-700 hover:text-[#8B5A2B] flex items-center gap-1.5">
+                    <i class="fas fa-route text-xs text-zinc-400"></i> Trip Styles <i class="fas fa-chevron-down text-[10px]"></i>
+                </button>
+                <div x-show="open" x-cloak x-transition class="absolute left-0 top-full w-56 bg-white rounded-xl border border-zinc-100 shadow-lg py-2 z-50">
+                    @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                        <a href="{{ route('trips.show', $tsSlug) }}" class="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 hover:text-[#8B5A2B]">{{ $ts['name'] }}</a>
+                    @endforeach
+                </div>
+            </div>
 
             @role('master|engineer')
                 <a href="{{ url('/admin/africa') }}"
@@ -118,10 +122,11 @@
             @endguest
 
             {{-- Primary Safari Booking CTA --}}
-            <a href="{{ url('/tours') }}"
+            <a href="{{ url('/discover') }}"
+                data-gtag-event="find_my_trip_click" data-gtag-params='{"placement":"nav_desktop"}'
                 class="hidden lg:flex items-center gap-2 px-4.5 py-2.5 bg-gradient-to-r from-[#8B5A2B] to-[#5C3A1E] text-white rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-[#8B5A2B]/20 transition-all duration-200">
                 <i class="fas fa-compass text-xs"></i>
-                Book Safari
+                Find My Trip
             </a>
 
             {{-- Mobile Toggle Button --}}
@@ -143,10 +148,6 @@
         <div class="max-h-[calc(100vh-100px)] overflow-y-auto p-4 space-y-3">
             <div class="flex justify-between items-center pb-2 border-b border-zinc-100">
                 <span class="text-xs font-bold uppercase tracking-wider text-[#8B5A2B]">Explore Vumbi</span>
-                <a href="{{ url('/studio') }}"
-                    class="text-xs font-semibold text-zinc-900 bg-amber-400 hover:bg-amber-500 px-2.5 py-1 rounded-full transition">
-                    Studio (Tech) →
-                </a>
             </div>
 
             <nav class="space-y-1">
@@ -161,13 +162,21 @@
                         {{ $item['name'] }}
                     </a>
                 @endforeach
+                <p class="px-3.5 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-zinc-400">Trip styles</p>
+                @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                    <a href="{{ route('trips.show', $tsSlug) }}" @click="mobileOpen = false"
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-zinc-700 hover:bg-zinc-50">
+                        <i class="fas fa-route w-5 text-center text-zinc-400"></i>{{ $ts['name'] }}
+                    </a>
+                @endforeach
             </nav>
 
             <div class="pt-2 border-t border-zinc-100 space-y-2">
-                <a href="{{ url('/tours') }}" @click="mobileOpen = false"
+                <a href="{{ url('/discover') }}" @click="mobileOpen = false"
+                    data-gtag-event="find_my_trip_click" data-gtag-params='{"placement":"nav_mobile"}'
                     class="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-[#8B5A2B] to-[#5C3A1E] text-white rounded-xl font-bold text-sm shadow-md">
                     <i class="fas fa-compass"></i>
-                    Book Safari Expedition
+                    Find My Trip
                 </a>
 
                 @auth

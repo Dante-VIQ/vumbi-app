@@ -72,7 +72,7 @@
                 "name" => "Vumbi Ventures",
                 "logo" => [
                     "@type" => "ImageObject",
-                    "url" => asset('images/vumbi-ventures-logo.png')
+                    "url" => asset('images/logo1.png')
                 ]
             ],
             "blogPost" => [

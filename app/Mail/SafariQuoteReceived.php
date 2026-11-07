@@ -4,18 +4,30 @@ namespace App\Mail;
 
 use App\Models\SafariQuote;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SafariQuoteReceived extends Mailable
+class SafariQuoteReceived extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public function __construct(public SafariQuote $quote) {}
 
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this->subject('New Safari Quote Inquiry: ' . $this->quote->name)
-                    ->markdown('emails.safari-quote');
+        return new Envelope(
+            subject: 'New Safari Quote — ' . $this->quote->destination,
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.safari-quote-received',
+            with: ['quote' => $this->quote],
+        );
     }
 }

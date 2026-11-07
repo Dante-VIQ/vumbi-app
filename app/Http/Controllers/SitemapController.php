@@ -12,7 +12,7 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $cacheKey = 'sitemap_content';
+        $cacheKey = 'sitemap_content_v2';
         $cached = cache()->get($cacheKey);
 
         if ($cached && ! app()->environment('local')) {
@@ -29,14 +29,28 @@ class SitemapController extends Controller
             (object) ['loc' => url('/about'), 'lastmod' => now()->toDateString(), 'priority' => '0.9', 'changefreq' => 'daily'],
             (object) ['loc' => url('/destinations'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
             (object) ['loc' => url('/culture'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/faq'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
+            (object) ['loc' => url('/quiz'), 'lastmod' => now()->toDateString(), 'priority' => '0.6', 'changefreq' => 'monthly'],
+            (object) ['loc' => url('/studio'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
+            (object) ['loc' => url('/trips/adventure'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/trips/youth'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/trips/groups'), 'lastmod' => now()->toDateString(), 'priority' => '0.8', 'changefreq' => 'weekly'],
+            (object) ['loc' => url('/studio/contact'), 'lastmod' => now()->toDateString(), 'priority' => '0.5', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/safari-checklist'), 'lastmod' => now()->toDateString(), 'priority' => '0.7', 'changefreq' => 'monthly'],
             (object) ['loc' => url('/privacy-policy'), 'lastmod' => now()->toDateString(), 'priority' => '0.3', 'changefreq' => 'yearly'],
+            (object) ['loc' => url('/terms'), 'lastmod' => now()->toDateString(), 'priority' => '0.3', 'changefreq' => 'yearly'],
+            ...collect(array_keys(config('case_studies')))->map(fn ($slug) => (object) [
+                'loc' => route('studio.case-study', $slug),
+                'lastmod' => now()->toDateString(),
+                'priority' => '0.6',
+                'changefreq' => 'monthly',
+            ])->all(),
         ];
 
         $blogs = Blog::orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($post) {
-                $post->loc = route('blog.show', $post->id);
+                $post->loc = $post->url;
                 $post->lastmod = $post->updated_at->toDateString();
                 $post->priority = '0.7';
                 $post->changefreq = 'monthly';
@@ -44,7 +58,6 @@ class SitemapController extends Controller
                 return $post;
             });
 
-        // Tour pages are the pages that convert, so they must be crawlable.
         $tours = PartnerPackage::active()
             ->whereNotNull('slug')
             ->get()
@@ -80,7 +93,6 @@ class SitemapController extends Controller
 
         $view = view('sitemap', ['pages' => $all])->render();
 
-        // Cache for 24 hours in production
         if (! app()->environment('local')) {
             cache()->put($cacheKey, $view, now()->addDay());
         }

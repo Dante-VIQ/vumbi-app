@@ -14,6 +14,7 @@ class TourClick extends Model
         'referring_url',
         'ip_hash',
         'clicked_at',
+        'persona',
     ];
 
     protected $casts = [

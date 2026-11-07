@@ -133,7 +133,7 @@
                 @if($lead->estimated_price)
                 <div class="detail-row">
                     <span class="detail-label">Estimated Price</span>
-                    <span class="detail-value">KSh {{ number_format($lead->estimated_price) }}</span>
+                    <span class="detail-value">{{ \App\Support\Money::usd($lead->estimated_price) }}</span>
                 </div>
                 @endif
             </div>
@@ -145,7 +145,7 @@
             </div>
 
             <div style="text-align: center; margin-bottom: 16px;">
-                <a href="https://wa.me/254734591543" class="whatsapp-btn">
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}" class="whatsapp-btn">
                     💬 Chat With Us on WhatsApp
                 </a>
             </div>

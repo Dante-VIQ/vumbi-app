@@ -1,8 +1,15 @@
+# Search and AI answer-engine crawlers are welcome: being fetched is how pages get cited.
+# To opt out of AI model training only, add a separate group with "Disallow: /" for GPTBot,
+# ClaudeBot, Google-Extended or CCBot. Blocking the search bots listed here stops the site appearing in AI answers.
+# A crawler named in its own group ignores the "*" group, so named bots share the rules below.
 User-agent: *
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
 Allow: /
-Sitemap: https://vumbiventures.com/sitemap.xml
-
-# Disallow admin and private paths
 Disallow: /admin/
 Disallow: /login/
 Disallow: /register/
@@ -10,3 +17,6 @@ Disallow: /password/
 Disallow: /livewire/
 Disallow: /vendor/
 Disallow: /storage/framework/
+Disallow: /go/
+
+Sitemap: https://vumbiventures.com/sitemap.xml

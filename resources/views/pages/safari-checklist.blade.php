@@ -11,7 +11,7 @@
             'items' => [
                 'Decide what matters most: the Great Migration, fewer crowds, lower prices or green scenery.',
                 'For migration river crossings, plan for July to October, with August and September the usual peak. Herds follow the rains, so no operator can promise a crossing on a given date.',
-                'Expect the main rainy seasons to bring quieter parks and lower rates. Our <a href="' . url('/blog/31') . '">best-time guide</a> compares each month.',
+                'Expect the main rainy seasons to bring quieter parks and lower rates. Our <a href="' . (\App\Models\Blog::find(31)?->url ?? url('/blog/31')) . '">best-time guide</a> compares each month.',
                 'Keep two or three travel dates open if you can; wildlife timing moves from year to year.',
             ],
         ],
@@ -21,7 +21,7 @@
                 'Shortlist two or three parks, not six. A first safari works best with 3 to 5 nights in one or two areas.',
                 'Match parks to your wishes: Maasai Mara for big cats and migration, Amboseli for elephants with Kilimanjaro behind them, Lake Nakuru for rhinos and birdlife.',
                 'Add a coast or beach leg only if you have time; road and flight times between regions are longer than maps suggest.',
-                'Read <a href="' . url('/blog/32') . '">how to plan your first safari in Kenya</a> before you pick.',
+                'Read <a href="' . (\App\Models\Blog::find(32)?->url ?? url('/blog/32')) . '">how to plan your first safari in Kenya</a> before you pick.',
             ],
         ],
         [

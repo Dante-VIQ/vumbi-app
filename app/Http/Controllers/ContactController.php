@@ -27,16 +27,27 @@ class ContactController extends Controller
         'phone' => 'nullable|string',
         'inquiry_type' => 'required|string',
         'subject' => 'nullable|string',
+        'website' => 'nullable|url',
+        'travel_details' => 'nullable|string|max:255',
+        'travel_month' => ['nullable', 'date_format:Y-m'],
+        'group_size' => 'nullable|integer|min:1|max:200',
+        'budget_range' => ['nullable', \Illuminate\Validation\Rule::in(['budget', 'mid', 'premium'])],
+        'persona' => ['nullable', \Illuminate\Validation\Rule::in(\App\Support\Persona::keys())],
         'message' => 'required|string',
         'consent' => 'accepted',
     ]);
 
     // Send email notification to admin
-    Mail::to('africa@vumbiventures.com')->send(new ContactFormSubmitted($validated));
+    // Studio enquiries (web_dev / seo) go to the Studio inbox; everything else to the travel inbox.
+    $to = in_array($validated['inquiry_type'], ['web_dev', 'seo'], true)
+        ? config('mail.studio_email', 'studio@vumbiventures.com')
+        : 'africa@vumbiventures.com';
+    Mail::to($to)->send(new ContactFormSubmitted($validated));
 
     // Optionally store in database
 
-    return redirect()->route('contact')->with('success', 'Thank you! We will get back to you within 24 hours.');
+    // Return to the page the form was sent from (travel contact or Studio contact).
+    return redirect()->back()->with('success', 'Thank you! We will get back to you within 24 hours.')->with('lead_event', 'contact_page');
 }
 
 }

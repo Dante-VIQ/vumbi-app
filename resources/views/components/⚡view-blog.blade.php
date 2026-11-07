@@ -434,7 +434,10 @@ new class extends Component
                     </div>
                 </div>
                 <div class="text-sm text-[#5C5C5C] font-medium">
-                    {{ $blog->created_at ? $blog->created_at->format('M d, Y') : '' }}
+                    <time datetime="{{ $blog->created_at?->toDateString() }}">{{ $blog->created_at ? $blog->created_at->format('M d, Y') : '' }}</time>
+                    @if ($blog->updated_at && $blog->created_at && $blog->created_at->diffInDays($blog->updated_at) >= 7)
+                        <span class="block text-xs font-normal">Updated <time datetime="{{ $blog->updated_at->toDateString() }}">{{ $blog->updated_at->format('M d, Y') }}</time></span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -525,7 +528,7 @@ new class extends Component
                                 <div class="not-prose my-10 bg-[#F5EFE6] border border-[#8B5A2B]/15 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5">
                                     <div class="flex-1">
                                         <h3 class="font-semibold text-lg text-[#1A1A1A] mb-1">Enjoying this so far?</h3>
-                                        <p class="text-sm text-[#5C5C5C] leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox.</p>
+                                        <p class="text-sm text-[#5C5C5C] leading-relaxed">Get the next Field Notes dispatch — untold travel stories and African history, straight to your inbox. Includes our free Kenya first-safari checklist.</p>
                                     </div>
                                     <div class="w-full md:w-72 shrink-0">
                                         <livewire:newsletter-subscribe variant="light" placement="inline" :key="'newsletter-inline-' . $blog->id" />
@@ -594,6 +597,7 @@ new class extends Component
 
                 {{-- Sidebar WhatsApp CTA (desktop) --}}
                 <x-whatsapp-cta :title="$blog->title" placement="blog_sidebar" :blog-id="$blog->id" />
+                <x-trip-style-links class="mt-4" />
 
                 {{-- Travel Booking Widget --}}
                 {{-- @if ($blog->title)
@@ -686,7 +690,7 @@ new class extends Component
                         <h3 class="font-semibold text-base mb-4 text-zinc-900">Related Stories</h3>
                         <div class="space-y-4">
                             @foreach ($relatedPosts as $post)
-                                <a href="{{ route('blog.show', $post->slug ?? $post->id) }}" class="flex gap-3 group items-center">
+                                <a href="{{ $post->url }}" class="flex gap-3 group items-center">
                                     @if ($post->media_path)
                                         <img src="{{ asset($post->media_path) }}" class="w-14 h-14 rounded-xl object-cover shrink-0">
                                     @endif
@@ -715,7 +719,7 @@ new class extends Component
                 </div>
                 <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     @foreach ($relatedPosts->take(3) as $post)
-                        <a href="{{ route('blog.show', $post->slug ?? $post->id) }}"
+                        <a href="{{ $post->url }}"
                             class="group block bg-[#FCFAF7] rounded-2xl overflow-hidden border border-black/5 hover:shadow-xl transition duration-300">
                             @if ($post->media_path)
                                 <div class="aspect-[16/9] overflow-hidden bg-zinc-200">

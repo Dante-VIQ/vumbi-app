@@ -40,7 +40,7 @@
         "touristType" => implode(', ', $package->tourist_types ?? ['Adventure', 'Culture', 'Wildlife']),
         "offers" => [
             "@type" => "Offer",
-            "price" => $package->price,
+            "price" => \App\Support\Money::usdValue($package->price),
             "priceCurrency" => "USD",
             "availability" => $package->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             "url" => url()->current(),
@@ -197,7 +197,7 @@
                                     <div class="p-3">
                                         <h4 class="font-medium text-sm text-zinc-200 line-clamp-1 group-hover:text-green-400 transition">{{ $similarTour->title }}</h4>
                                         <span class="text-green-400 text-sm font-bold mt-1 block">
-                                            $ {{ number_format($similarTour->price) }}
+                                            {{ \App\Support\Money::usd($similarTour->price) }}
                                         </span>
                                     </div>
                                 </a>
@@ -212,7 +212,7 @@
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
                     <div class="flex items-baseline justify-between mb-1">
                         <span class="text-sm text-zinc-400">Starting from</span>
-                        <div class="text-3xl font-extrabold text-green-400">$ {{ number_format($package->price) }}</div>
+                        <div class="text-3xl font-extrabold text-green-400">{{ \App\Support\Money::usd($package->price) }}</div>
                     </div>
                     <p class="text-xs text-zinc-500 text-right mb-6">Per person</p>
 
@@ -266,8 +266,10 @@
                         @endif
                     </div>
 
-                    <a href="https://wa.me/254745781236?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
+                    <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=I'm%20interested%20in%20{{ urlencode($package->title) }}"
                         target="_blank"
+                        data-gtag-event="whatsapp_click"
+                        data-gtag-params="{{ json_encode(['placement' => 'tour_page', 'package_id' => $package->id]) }}"
                         class="w-full bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 py-3 rounded-xl font-semibold transition flex justify-center items-center gap-2 mt-3 text-sm">
                         💬 Ask on WhatsApp
                     </a>

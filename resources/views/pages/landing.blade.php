@@ -1,5 +1,22 @@
-<div x-data="{ inquiryModal: false, selectedDestination: '' }">
+<div x-data="{
+        inquiryModal: {{ $errors->any() ? 'true' : 'false' }},
+        selectedDestination: {{ old('destination') ? json_encode(old('destination')) : "''" }}
+     }">
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)"
+            class="bg-emerald-600 text-white text-sm font-semibold px-6 py-3 text-center">
+            {{ session('success') }}
+            <button @click="show = false" class="ml-4 font-bold">&times;</button>
+        </div>
+    @endif
 
+    @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 12000)"
+            class="bg-red-600 text-white text-sm font-semibold px-6 py-3 text-center">
+            {{ session('error') }}
+            <button @click="show = false" class="ml-4 font-bold">&times;</button>
+        </div>
+    @endif
     {{-- ================= 1. HERO SECTION (PARTNER & AGGREGATOR MODEL) ================= --}}
     <section x-data="{
                 currentSlide: 0,
@@ -30,21 +47,21 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
                         </span>
-                        <span>VUMBI VENTURES • EAST AFRICA TRAVEL & TRANSPORT AGGREGATOR</span>
+                        <span>VUMBI VENTURES • EAST AFRICA SAFARI PLANNING</span>
                     </div>
 
                     <h1
                         class="text-4xl sm:text-6xl lg:text-7xl xl:text-[4.1rem] leading-[1.08] font-black tracking-tight text-[#1A1A1A]">
-                        Discover Africa.<br>
+                        Plan Your First East Africa Safari.<br>
                         <span class="text-[#8B5A2B] relative inline-block">
-                            Book Verified Partner Deals.
+                            Book With Trusted Local Partners.
                             <span class="absolute -bottom-1 left-0 h-[3px] w-full bg-[#D98C5F]/40 rounded"></span>
                         </span>
                     </h1>
 
                     <p class="max-w-lg mx-auto lg:mx-0 text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
-                        We connect you directly with vetted 4x4 transport operators, safari guides, and exclusive travel
-                        deals across Kenya and East Africa.
+                        Honest guides, prices shown upfront, and vetted local operators across Kenya and East Africa, so you can
+                        choose and book with confidence.
                     </p>
 
                     {{-- Direct Action Buttons --}}
@@ -52,16 +69,22 @@
                         <button @click="inquiryModal = true; selectedDestination = 'Hero Section Inquiry'"
                             class="px-8 py-4 bg-[#8B5A2B] hover:bg-[#6B3E1A] text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-[#8B5A2B]/20 hover:scale-[1.02]">
                             <i class="fas fa-paper-plane text-sm"></i>
-                            Get Custom Partner Quote
+                            Get a Free Safari Quote
                         </button>
 
-                        <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
+                        <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20am%20inquiring%20about%20safari%20partner%20deals"
                             target="_blank"
+                            data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"homepage_hero"}'
                             class="px-6 py-4 border border-emerald-600/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp text-lg text-emerald-600"></i>
                             WhatsApp Chat
                         </a>
                     </div>
+                    <p class="text-sm text-gray-600 text-center lg:text-left">
+                        Planning your first safari?
+                        <a href="{{ route('safari-checklist') }}" class="font-semibold text-[#8B5A2B] underline underline-offset-2 hover:opacity-80"
+                            data-gtag-event="checklist_click" data-gtag-params='{"placement":"homepage_hero"}'>Get the free Kenya first-safari checklist →</a>
+                    </p>
 
                     {{-- Partner Trust Metrics --}}
                     <div class="grid grid-cols-3 gap-4 pt-4 border-t border-black/5 max-w-lg mx-auto lg:mx-0">
@@ -71,14 +94,14 @@
                                 Partners</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Best</div>
-                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Affiliate
-                                Rates</div>
+                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Upfront</div>
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Starting
+                                Prices</div>
                         </div>
                         <div>
-                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">100%</div>
-                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Curated
-                                Trips</div>
+                            <div class="text-2xl sm:text-3xl font-black text-[#8B5A2B]">Hand-picked</div>
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mt-0.5">Safari
+                                Itineraries</div>
                         </div>
                     </div>
                 </div>
@@ -154,6 +177,36 @@
         </div>
     </section>
 
+    {{-- ================= PERSONA STRIP ================= --}}
+    <section class="container mx-auto px-4 sm:px-6 py-8">
+        <p class="text-center text-sm font-medium text-zinc-600 mb-4">How do you like to travel?</p>
+        <div class="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            @foreach (\App\Support\TripStyles::all() as $tsSlug => $ts)
+                <a href="{{ route('trips.show', $tsSlug) }}" data-gtag-event="persona_card_click" data-gtag-params="{{ json_encode(['style' => $tsSlug, 'placement' => 'home_strip']) }}"
+                    class="bg-white rounded-2xl border border-black/5 shadow-sm hover:shadow-md hover:border-[#8B5A2B] transition p-5 text-center">
+                    <span class="font-semibold">{{ $ts['name'] }}</span>
+                    <span class="block text-xs text-zinc-500 mt-1">{{ $ts['badge'] }} &rarr;</span>
+                </a>
+            @endforeach
+        </div>
+        <p class="text-center mt-5 text-sm">
+            <a href="{{ route('quiz') }}" data-gtag-event="quiz_start_click" data-gtag-params='{"placement":"home_strip"}'
+                class="text-[#8B5A2B] font-semibold underline underline-offset-2">Not sure yet? Take the 1-minute quiz</a>
+            <span class="text-zinc-400 mx-2">or</span>
+            <a href="{{ route('discover.index') }}" data-gtag-event="find_my_trip_click" data-gtag-params='{"placement":"home_strip"}'
+                class="text-[#8B5A2B] font-semibold underline underline-offset-2">search destinations</a>
+        </p>
+    </section>
+
+    {{-- ================= WHO WE ARE (answer-first) ================= --}}
+    <section class="container mx-auto px-4 sm:px-6 pb-6" aria-labelledby="who-we-are">
+        <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-black/5 p-6 text-center">
+            <h2 id="who-we-are" class="text-lg font-semibold">What is Vumbi Ventures?</h2>
+            <p class="mt-2 text-sm text-zinc-600 leading-relaxed">{{ config('seo.definition') }}</p>
+            <p class="mt-3 text-sm"><a href="{{ route('about') }}" class="text-[#8B5A2B] font-semibold underline underline-offset-2">About us</a> <span class="text-zinc-400 mx-1">&middot;</span> <a href="{{ route('faq') }}" class="text-[#8B5A2B] font-semibold underline underline-offset-2">FAQ</a></p>
+        </div>
+    </section>
+
     {{-- ================= 2. LIVE NETWORK STATUS BAR ================= --}}
     <section class="py-6 bg-white border-y border-black/5">
         <div class="container mx-auto px-6">
@@ -195,6 +248,7 @@
             $eastAfricanDestinations = [
                 [
                     'name' => 'Maasai Mara National Reserve',
+                    'audiences' => ['adventure','group'],
                     'location' => 'Kenya',
                     'description' => 'Great Migration game drives, big cat tracking, and luxury partner tented camps.',
                     'price' => 'From $175 / person',
@@ -204,6 +258,7 @@
                 ],
                 [
                     'name' => 'Lake Nakuru & Rift Valley',
+                    'audiences' => ['youth','group'],
                     'location' => 'Kenya',
                     'description' => 'Rhino sanctuaries, flamingo lakes, and 1 to 3 day safari getaways with local drivers.',
                     'price' => 'From $325 / person',
@@ -213,6 +268,7 @@
                 ],
                 [
                     'name' => 'Amboseli Kilimanjaro View',
+                    'audiences' => ['group'],
                     'location' => 'Kenya',
                     'description' => 'Massive elephant herds set against the backdrop of Mount Kilimanjaro.',
                     'price' => 'From $422 / person',
@@ -222,6 +278,7 @@
                 ],
                 [
                     'name' => 'Zanzibar Beach & Spice Tour',
+                    'audiences' => ['youth','group'],
                     'location' => 'Tanzania',
                     'description' => 'Combine mainland game drives with pristine white sand beach relaxation.',
                     'price' => 'From $105 / person',
@@ -231,6 +288,7 @@
                 ],
                 [
                     'name' => 'Diani Beach Getaway',
+                    'audiences' => ['youth','group'],
                     'location' => 'Kenya Coast',
                     'description' => 'Turquoise Indian Ocean waters, water sports, and luxury beach resort affiliate deals.',
                     'price' => 'From $80 / person',
@@ -240,6 +298,7 @@
                 ],
                 [
                     'name' => 'Serengeti & Ngorongoro Crater',
+                    'audiences' => ['adventure','group'],
                     'location' => 'Tanzania',
                     'description' => 'Unmatched predator density and the world’s largest intact volcanic caldera.',
                     'price' => 'From $791 / person',
@@ -248,6 +307,13 @@
                     'link' => 'https://gyg.me/jTATNgL2'
                 ],
             ];
+            // Editable guesses: show destinations that suit the visitor's saved persona first.
+            $homePersona = \App\Support\Persona::current();
+            if ($homePersona) {
+                $eastAfricanDestinations = collect($eastAfricanDestinations)
+                    ->sortByDesc(fn ($d) => in_array($homePersona, $d['audiences'] ?? [], true) ? 1 : 0)
+                    ->values()->all();
+            }
         @endphp
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -274,7 +340,8 @@
                                 {{ $dest['name'] }}
                             </h3>
                             <p class="text-[#8B5A2B] text-xs font-semibold mt-1"><i class="fas fa-map-marker-alt"></i>
-                                {{ $dest['location'] }}</p>
+                                {{ $dest['location'] }}
+                            </p>
                             <p class="text-sm text-[#5C5C5C] mt-3 leading-relaxed">
                                 {{ $dest['description'] }}
                             </p>
@@ -282,17 +349,15 @@
                     </div>
 
                     {{-- Action Row: lead capture is the primary path (it keeps the visitor
-                         in our funnel and lets us follow up), the affiliate booking link is
-                         a clearly secondary, lower-emphasis option for visitors who already
-                         know they want to book instantly. --}}
+                    in our funnel and lets us follow up), the affiliate booking link is
+                    a clearly secondary, lower-emphasis option for visitors who already
+                    know they want to book instantly. --}}
                     <div class="p-6 pt-0 flex flex-col gap-2">
-                        <button @click="inquiryModal = true; selectedDestination = '{{ $dest['name'] }}'"
+                        <button @click.stop="inquiryModal = true; selectedDestination = @js($dest['name'])"
                             class="w-full py-3 px-4 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-paper-plane"></i> Request Partner Quote
                         </button>
-                        <a href="{{ $dest['link'] }}"
-                            target="_blank"
-                            rel="nofollow sponsored"
+                        <a href="{{ $dest['link'] }}" target="_blank" rel="nofollow sponsored"
                             title="Book directly on our affiliate partner's site"
                             class="text-center text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline py-1 transition"
                             data-gtag-event="affiliate_click"
@@ -328,9 +393,9 @@
                         class="w-12 h-12 bg-[#8B5A2B]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#8B5A2B] text-xl">
                         <i class="fas fa-tags"></i>
                     </div>
-                    <h3 class="font-bold text-[#1A1A1A]">Curated Affiliate Deals</h3>
-                    <p class="text-xs text-[#5C5C5C] mt-2 leading-relaxed">Access direct partner pricing and exclusive
-                        travel discounts via our global travel affiliate network.</p>
+                    <h3 class="font-bold text-[#1A1A1A]">Prices You Can See</h3>
+                    <p class="text-xs text-[#5C5C5C] mt-2 leading-relaxed">See starting prices upfront and book through
+                        established global travel platforms.</p>
                 </div>
                 <div class="p-6 rounded-2xl bg-[#FCFAF7] border border-amber-900/5">
                     <div
@@ -367,10 +432,10 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-6">
 
-                    @foreach($blogs as $blog)
+                    @foreach(\App\Support\TripStyles::prioritisePosts(collect($blogs), \App\Support\Persona::current()) as $blog)
                         <article class="insight-card p-5 bg-white rounded-2xl shadow-sm border border-black/5">
                             <h3 class="font-bold text-lg text-slate-900 hover:text-[#8B5A2B]">
-                                <a href="{{ route('blog.show', $blog->id) }}">{{ $blog->title }}</a>
+                                <a href="{{ $blog->url }}">{{ $blog->title }}</a>
                             </h3>
                             <p class="text-xs text-slate-500 mt-2 line-clamp-2">
                                 @php
@@ -378,7 +443,7 @@
                                 @endphp
                                 {{ Str::limit(strip_tags($rawDesc), 100) }}
                             </p>
-                            <a href="{{ route('blog.show', $blog->id) }}"
+                            <a href="{{ $blog->url }}"
                                 class="inline-block mt-4 text-xs font-bold text-[#8B5A2B]">
                                 Read Field Note →
                             </a>
@@ -388,6 +453,8 @@
             </div>
         </section>
     @endif
+
+    <x-founder-note />
 
     {{-- ================= 6. FINAL CONVERSION CTA ================= --}}
     <section class="py-20 bg-slate-950 text-white text-center relative overflow-hidden">
@@ -407,8 +474,9 @@
                     class="w-full sm:w-auto px-8 py-4 bg-[#8B5A2B] hover:bg-[#A87A4D] text-white font-bold rounded-xl transition shadow-lg shadow-[#8B5A2B]/30">
                     <i class="fas fa-calendar-alt mr-2"></i> Request Custom Itinerary Quote
                 </button>
-                <a href="https://wa.me/254734591543?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
+                <a href="https://wa.me/{{ config('services.whatsapp.number') }}?text=Hi%20Vumbi%20Ventures,%20I%20would%20like%20to%20plan%20a%20safari"
                     target="_blank"
+                    data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"homepage_cta"}'
                     class="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
                     <i class="fab fa-whatsapp text-lg"></i> Chat Instantly on WhatsApp
                 </a>
@@ -417,79 +485,142 @@
     </section>
 
     {{-- ================= 7. RAPID INQUIRY MODAL ================= --}}
-    <div x-show="inquiryModal" x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" x-cloak>
+<div x-show="inquiryModal" @click.self="inquiryModal = false"
+     x-cloak
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="inquiry-title"
+     @keydown.escape.window="inquiryModal = false"
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
 
-        <div @click.away="inquiryModal = false"
-            class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative">
-            <button @click="inquiryModal = false"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">
-                &times;
-            </button>
+   <div x-data="{ submitting: false }"
+         class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
 
-            <div class="mb-6">
-                <span class="text-xs font-bold text-[#8B5A2B] uppercase tracking-wider">Fast Response Guaranteed</span>
-                <h3 class="text-2xl font-extrabold text-slate-900 mt-1">Partner Tour & Safari Quote</h3>
-                <p class="text-xs text-slate-500">Inquiring for: <span class="font-bold text-slate-800"
-                        x-text="selectedDestination"></span></p>
+        <button type="button" @click="inquiryModal = false"
+                class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold"
+                aria-label="Close">&times;</button>
+
+        <div class="mb-6">
+            <span class="text-xs font-bold text-[#8B5A2B] uppercase tracking-wider">Fast Response Guaranteed</span>
+            <h3 id="inquiry-title" class="text-2xl font-extrabold text-slate-900 mt-1">
+                Partner Tour & Safari Quote
+            </h3>
+            <p class="text-xs text-slate-500">Inquiring for:
+                <span class="font-bold text-slate-800" x-text="selectedDestination || 'General Inquiry'"></span>
+            </p>
+        </div>
+
+        {{-- Validation error summary --}}
+        @if($errors->any())
+            <div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3">
+                <ul class="list-disc list-inside space-y-0.5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('inquiry.send-quote') }}"
+              method="POST"
+              class="space-y-4"
+              @submit="submitting = true">
+            @csrf
+
+            <input type="hidden" name="destination" x-model="selectedDestination">
+
+            {{-- Honeypot --}}
+            <div class="hidden" aria-hidden="true">
+                <label>Website</label>
+                <input type="text" name="website" tabindex="-1" autocomplete="off">
             </div>
 
-            <form action="/inquiry/send-quote" method="POST" class="space-y-4">
-                @csrf
-                <input type="hidden" name="destination" x-model="selectedDestination">
+            <div>
+                <label for="inq-name" class="block text-xs font-bold text-slate-700 uppercase mb-1">Your Full Name</label>
+                <input id="inq-name" type="text" name="name" required
+                       value="{{ old('name') }}"
+                       class="w-full border @error('name') border-red-500 @else border-slate-300 @enderror
+                              rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                       placeholder="e.g. Jane Doe">
+                @error('name')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
 
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Your Full Name</label>
-                    <input type="text" name="name" required
-                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                        placeholder="e.g. Jane Doe">
+                    <label for="inq-email" class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+                    <input id="inq-email" type="email" name="email" required
+                           value="{{ old('email') }}"
+                           class="w-full border @error('email') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                           placeholder="jane@example.com">
+                    @error('email')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
-                        <input type="email" name="email" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                            placeholder="jane@example.com">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp / Phone</label>
-                        <input type="tel" name="phone" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                            placeholder="+254 7...">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
-                        <input type="month" name="travel_month" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Travelers Count</label>
-                        <input type="number" min="1" name="travelers" value="2" required
-                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
-                    </div>
-                </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Special Requests /
-                        Preferences</label>
-                    <textarea name="notes" rows="2"
-                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
-                        placeholder="e.g. Need 4x4 Land Cruiser transfer from Nakuru, luxury lodge preferences..."></textarea>
+                    <label for="inq-phone" class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp / Phone</label>
+                    <input id="inq-phone" type="tel" name="phone" required
+                           value="{{ old('phone') }}"
+                           class="w-full border @error('phone') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                           placeholder="+254 7...">
+                    @error('phone')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
+            </div>
 
-                <button type="submit"
-                    class="w-full py-3.5 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white font-bold rounded-xl transition shadow-md">
-                    Submit Safari Quote Request
-                </button>
-            </form>
-        </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div x-data="travelMonthPicker" class="w-full">
+                    <label for="inq-month" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travel Month</label>
+                    <div class="relative w-full">
+                        <input
+                            x-ref="input"
+                            id="inq-month"
+                            type="text"
+                            name="travel_month"
+                            required
+                            readonly
+                            placeholder="Select travel month"
+                            value="{{ old('travel_month') }}"
+                            class="w-full border @error('travel_month') border-red-500 @else border-slate-300 @enderror
+                                   rounded-xl px-3.5 py-2.5 pr-10 text-sm bg-white cursor-pointer
+                                   focus:ring-2 focus:ring-[#8B5A2B] outline-none">
+                        <i class="fas fa-calendar-alt absolute right-3 top-1/2 -translate-y-1/2 text-[#8B5A2B] pointer-events-none text-sm"></i>
+                    </div>
+                    @error('travel_month')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label for="inq-travelers" class="block text-xs font-bold text-slate-700 uppercase mb-1">Travelers Count</label>
+                    <input id="inq-travelers" type="number" min="1" max="100" name="travelers" required
+                           value="{{ old('travelers', 2) }}"
+                           class="w-full border @error('travelers') border-red-500 @else border-slate-300 @enderror
+                                  rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none">
+                    @error('travelers')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            <div>
+                <label for="inq-notes" class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                    Special Requests / Preferences
+                </label>
+                <textarea id="inq-notes" name="notes" rows="2"
+                          class="w-full border @error('notes') border-red-500 @else border-slate-300 @enderror
+                                 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#8B5A2B] outline-none"
+                          placeholder="e.g. First safari, 5 nights, interested in Maasai Mara and Amboseli, mid-range lodges...">{{ old('notes') }}</textarea>
+                @error('notes')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <button type="submit" :disabled="submitting"
+                    class="w-full py-3.5 bg-[#8B5A2B] hover:bg-[#5C3A1E] text-white font-bold rounded-xl
+                           transition shadow-md disabled:opacity-60 disabled:cursor-not-allowed">
+                <span x-show="!submitting">Submit Safari Quote Request</span>
+                <span x-show="submitting" x-cloak>Sending…</span>
+            </button>
+        </form>
     </div>
+</div>
 
 </div>

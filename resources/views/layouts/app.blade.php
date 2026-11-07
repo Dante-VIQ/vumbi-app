@@ -5,9 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="vumbi-persona" content="{{ \App\Support\Persona::current() }}">
 
     {{-- SEO Meta Tags --}}
-    <title>@yield('title', config('app.name', 'Vumbi Ventures')) - Authentic East African Safaris & Expeditions</title>
+    @php
+        $__t = trim($__env->yieldContent('title'));
+        $__fullTitle = $__t === ''
+            ? 'Vumbi Ventures | Authentic East African Safaris & Expeditions'
+            : (stripos($__t, 'Vumbi') !== false ? $__t : $__t . ' | Vumbi Ventures');
+    @endphp
+    <title>{{ $__fullTitle }}</title>
     <meta name="description" content="@yield('description', 'Custom African safaris, tour vehicle rentals, live itineraries, and authentic travel experiences across Kenya and East Africa.')">
     <meta name="keywords" content="@yield('keywords', 'Kenya safaris, Maasai Mara tours, vehicle rentals Nakuru, East Africa travel, Vumbi Ventures')">
 
@@ -15,7 +22,7 @@
     <meta property="og:title" content="@yield('og_title', $__env->yieldContent('title') ?: config('app.name'))">
     <meta property="og:description" content="@yield('og_description', $__env->yieldContent('description') ?: 'Authentic African safaris and custom tour itineraries.')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
 
     {{-- Twitter Card --}}
@@ -24,11 +31,14 @@
     <meta name="twitter:description" content="@yield('twitter_description', $__env->yieldContent('description') ?: 'Authentic African safaris and custom tour itineraries.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"></noscript>
     {{-- Canonical URL --}}
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Robots --}}
-    <meta name="robots" content="@yield('robots', 'index, follow')">
+    <meta name="robots" content="@yield('robots', request()->is('admin*', 'dashboard*', 'profile*', 'inquiry/thank-you*', 'login', 'register', 'password/*', 'forgot-password', 'reset-password/*') ? 'noindex, nofollow' : 'index, follow')">
 
     {{-- Performance hints --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -38,63 +48,51 @@
     @php
         $schemas = [];
         
-        // Organization (TravelAgency)
-        $schemas[] = [
+        // Organization (TravelAgency). One stable @id so every page points at the same entity.
+        $orgId = url('/') . '#organization';
+        $seoSameAs = array_values(array_filter((array) config('seo.same_as')));
+        $schemas[] = array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'TravelAgency',
-            'name' => 'Vumbi Ventures',
-            'url' => url()->current(),
+            '@id' => $orgId,
+            'name' => config('seo.name'),
+            'alternateName' => config('seo.alternate_name') ?: null,
+            'slogan' => config('seo.slogan') ?: null,
+            'url' => url('/'),
             'logo' => asset('images/logo1.png'),
-            'description' => 'Custom African safaris, cultural tours, and authentic travel experiences across East Africa.',
+            'image' => asset('images/og-default.jpg'),
+            'description' => config('seo.definition') ?: config('seo.tagline'),
+            'knowsAbout' => config('seo.knows_about') ?: null,
+            'foundingLocation' => ['@type' => 'Place', 'name' => config('seo.locality') . ', Kenya'],
+            'founder' => (config('about.founder.name') && config('about.founder.note'))
+                ? ['@type' => 'Person', 'name' => config('about.founder.name'), 'jobTitle' => config('about.founder.role') ?: null]
+                : null,
             'address' => [
                 '@type' => 'PostalAddress',
-                'addressLocality' => 'Nakuru',
-                'addressCountry' => 'KE',
+                'addressLocality' => config('seo.locality'),
+                'addressCountry' => config('seo.country'),
             ],
-            'telephone' => '+254-734-591543',
-            'email' => 'info@vumbiventures.com',
-            'priceRange' => '$$',
-            'openingHours' => 'Mo-Fr 09:00-17:00',
-            'sameAs' => [
-                'https://twitter.com/vumbiventures',
-                'https://linkedin.com/company/vumbi-ventures',
-                'https://instagram.com/vumbiventures',
-            ],
-            'contactPoint' => [
+            'areaServed' => ['Kenya', 'Tanzania', 'Uganda', 'Rwanda'],
+            'telephone' => config('seo.telephone') ?: null,
+            'email' => config('seo.email') ?: null,
+            'sameAs' => $seoSameAs ?: null,
+            'contactPoint' => array_filter([
                 '@type' => 'ContactPoint',
-                'contactType' => 'Customer Service',
+                'contactType' => 'customer service',
+                'email' => config('seo.email') ?: null,
+                'telephone' => config('seo.telephone') ?: null,
                 'availableLanguage' => ['English', 'Swahili'],
-            ],
-            'potentialAction' => [
-                [
-                    '@type' => 'SearchAction',
-                    'target' => [
-                        '@type' => 'EntryPoint',
-                        'urlTemplate' => url('/tours') . '?q={search_term_string}',
-                    ],
-                    'query-input' => 'required name=search_term_string',
-                ],
-                [
-                    '@type' => 'ReserveAction',
-                    'target' => [
-                        '@type' => 'EntryPoint',
-                        'urlTemplate' => url('/tours'),
-                        'actionPlatform' => [
-                            'http://schema.org/DesktopWebPlatform',
-                            'http://schema.org/MobileWebPlatform',
-                        ],
-                    ],
-                    'description' => 'Book an authentic African safari or custom tour package.',
-                ],
-            ],
-        ];
+            ]),
+        ]);
 
         // WebSite schema
         $schemas[] = [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
-            'name' => 'Vumbi Ventures',
-            'url' => url()->current(),
+            '@id' => url('/') . '#website',
+            'name' => config('seo.name'),
+            'url' => url('/'),
+            'publisher' => ['@id' => $orgId],
             'potentialAction' => [
                 '@type' => 'SearchAction',
                 'target' => [
@@ -144,6 +142,7 @@
         </script>
     @endforeach
     @stack('schema')
+    @stack('structured-data')
 
     {{-- Analytics — Ahrefs --}}
     <script>
@@ -182,17 +181,6 @@
             </svg>
             <span class="font-medium text-slate-800">Loading expedition details...</span>
         </div>
-    </div>
-
-    {{-- Studio Bridge Top Bar for Enterprise & Web Development Traffic --}}
-    <div class="bg-slate-950 text-slate-400 text-xs py-2 px-4 border-b border-slate-800 flex justify-between items-center gap-3">
-        <div class="flex items-center gap-2 min-w-0">
-            <span class="inline-block w-2 h-2 shrink-0 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Looking for custom web app development, APIs & software engineering?</span>
-        </div>
-        <a href="{{ url('/studio') }}" class="text-amber-400 hover:text-amber-300 font-semibold transition flex items-center gap-1 shrink-0 whitespace-nowrap">
-            Visit Vumbi Studio ➔
-        </a>
     </div>
 
     {{-- Primary Travel Navigation --}}
@@ -243,12 +231,19 @@
                                 <div x-text="pkg.title" class="font-medium text-amber-400"></div>
                                 <div x-text="pkg.location" class="text-xs text-slate-300 mt-0.5"></div>
                             </div>
-                            <span x-text="'$' + Number(pkg.price).toLocaleString()"
+                            <span x-text="'$' + Math.round(Number(pkg.price) / {{ \App\Support\Money::rate() }}).toLocaleString()"
                                 class="text-white font-bold bg-amber-600/30 px-3 py-1 rounded-lg border border-amber-500/40 text-sm"></span>
                         </div>
                     </template>
                     <div x-show="search && !packages.length" class="text-center text-slate-400 py-6 text-sm">
-                        No safari packages found matching your query. Contact our tour team directly for a custom itinerary!
+                        <p>No safari packages found matching your query yet. Tell us what you have in mind and we'll build a custom itinerary.</p>
+                        <div class="flex justify-center gap-4 mt-3">
+                            <a href="{{ route('contact') }}" data-gtag-event="no_results_quote_click" class="text-amber-400 hover:text-amber-300 font-semibold">Get a custom quote</a>
+                            <a :href="'https://wa.me/{{ config('services.whatsapp.number') }}?text=' + encodeURIComponent('Hi Vumbi Ventures, I searched for ' + search + ' and would like help planning a safari.')"
+                                target="_blank" rel="noopener"
+                                data-gtag-event="whatsapp_click" data-gtag-params='{"placement":"search_modal_no_results"}'
+                                class="text-green-400 hover:text-green-300 font-semibold">WhatsApp us</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,8 +253,7 @@
     {{-- Scripts --}}
     @livewireScripts
     @stack('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"></script>
 
     <script>
         window.addEventListener('open-booking', e => {

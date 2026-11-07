@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,14 +39,17 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
+            'scheme' => env('MAIL_SCHEME', 'ssl'),
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'username' => env('MAIL_USERNAME'),
+            'host' => env('MAIL_HOST', 'smtp.hostinger.com'),
+            'port' => env('MAIL_PORT', 465),
+            'username' => env('MAIL_USERNAME', 'africa@vumbiventures.com'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env(
+                'MAIL_EHLO_DOMAIN',
+                parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)
+            ),
         ],
 
         'ses' => [
@@ -111,10 +114,19 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'africa@vumbidna.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'africa@vumbiventures.com'),
         'name' => env('MAIL_FROM_NAME', 'Vumbi Ventures'),
     ],
 
-    'admin_email' => env('ADMIN_EMAIL', 'africa@vumbidna.com'),
+    // Where Vumbi Tech Studio enquiries (web_dev / seo) are delivered.
+    'studio_email' => env('STUDIO_EMAIL', 'studio@vumbiventures.com'),
 
+    // 'admin_email' => array_values(array_filter(array_map(
+    //     fn($email) => trim((string) $email),
+    //     preg_split('/\s*,\s*/', (string) env('ADMIN_EMAIL', 'africa@vumbiventures.com'))
+    // ))),
+
+   'admin_address' => env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'africa@vumbiventures.com')),
+  
+'admin_whatsapp' => env('MAIL_ADMIN_WHATSAPP', ''),
 ];

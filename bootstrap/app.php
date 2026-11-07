@@ -6,8 +6,6 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
-
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -16,32 +14,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        
-        // Register your route middleware here
         $middleware->alias([
-            // Add this if you're using Spatie Permission package
             'permission' => PermissionMiddleware::class,
-            'role'       => RoleMiddleware::class,
-            
-            // Example of other common middlewares
-            // 'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'role' => RoleMiddleware::class,
             'internal.api' => \App\Http\Middleware\VerifyInternalApiKey::class,
         ]);
 
-        // If you want to apply middleware to specific route groups
         $middleware->web(append: [
-                 //
+            \App\Http\Middleware\PersistPersona::class,
+            \App\Http\Middleware\LogAiCrawlers::class,
         ]);
 
-        // Email clients' one-click unsubscribe (RFC 8058) POSTs without a CSRF token;
-        // the link is protected by its signature instead.
         $middleware->validateCsrfTokens(except: ['newsletter/unsubscribe/*']);
-
-
-
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-
-    
