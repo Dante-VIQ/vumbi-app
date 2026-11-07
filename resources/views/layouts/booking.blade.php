@@ -50,7 +50,7 @@
             "@type" => "Organization",
             "name" => "Vumbi Ventures",
             "url" => url('/'),
-            "logo" => asset('images/vumbi-ventures-logo.png'),
+            "logo" => asset('images/logo1.png'),
             "sameAs" => [
                 "https://twitter.com/vumbiventures",
                 "https://linkedin.com/company/vumbi-ventures",

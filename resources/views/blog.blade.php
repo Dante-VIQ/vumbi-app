@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Field Notes: Travel Stories & African History | Vumbi Ventures')
+@section('title', 'Field Notes: Travel Stories & African History | Vumbi')
 @section('description', 'Untold travel narratives, cultural encounters, and deep dives into African history from places that rarely make headlines.')
 @section('keywords', 'African history, travel stories, cultural deep-dives, East Africa travel, African civilizations, off-the-beaten-path')
 

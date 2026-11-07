@@ -67,6 +67,7 @@
 
 {{-- Robots: index, follow by default --}}
 @section('robots', 'index, follow')
+@section('og_type', 'article')
 
 @push('styles')
     <style>

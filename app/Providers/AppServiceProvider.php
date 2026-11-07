@@ -90,7 +90,7 @@ $this->app->singleton(SearchOrchestratorService::class);
             "@type" => "Organization",
             "name" => "Vumbi Ventures",
             "url" => url('/'),
-            "logo" => asset('images/vumbi-ventures-logo.png'),
+            "logo" => asset('images/logo1.png'),
             "sameAs" => [
                 "https://www.facebook.com/share/g/1MVnVFXkMQ/",
                 "https://linkedin.com/company/vumbi-ventures",
