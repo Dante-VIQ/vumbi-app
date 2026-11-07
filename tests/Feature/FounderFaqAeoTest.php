@@ -83,3 +83,16 @@ test('the homepage, llms.txt, sitemap and footer all point at the FAQ', function
     $this->get('/llms.txt')->assertOk()->assertSee(config('seo.definition'))->assertSee('/faq', false);
     $this->get('/sitemap.xml')->assertOk()->assertSee('/faq', false);
 });
+
+it('shows the founder note on the homepage, links to /about and has one h1 on discover', function () {
+    $this->get('/')->assertOk()->assertSee('A note from the founder')->assertSee('Why Vumbi Ventures exists');
+    $html = $this->get('/discover')->assertOk()->getContent();
+    expect(preg_match_all('/<h1[\s>]/', $html))->toBe(1);
+});
+
+it('defaults lead notifications to africa@vumbiventures.com', function () {
+    config(['mail.admin_email' => null]);
+    $lead = new \App\Models\Lead(['package_title' => 'x']);
+    $env = (new \App\Mail\AdminNewLeadNotification($lead))->envelope();
+    expect(collect($env->to)->pluck('address')->all())->toBe(['africa@vumbiventures.com']);
+});

@@ -43,7 +43,7 @@
             });
         } catch (e) {}
 
-        // Newsletter signups — every <livewire:newsletter-subscribe> instance
+        // Newsletter signups — every newsletter-subscribe Livewire component instance
         // dispatches this with its placement (sidebar, inline, endpost, footer).
         document.addEventListener('livewire:initialized', function () {
             Livewire.on('newsletter-subscribed', function (event) {
