@@ -254,7 +254,7 @@
 
                 <!-- CITY HEADER -->
                 <div class="text-center mb-16">
-                    <h1 class="text-5xl md:text-6xl font-bold mb-4" x-text="result.city"></h1>
+                    <h2 class="text-5xl md:text-6xl font-bold mb-4" x-text="result.city"></h2>
                     <p class="text-lg text-zinc-300 max-w-3xl mx-auto" x-text="result.description"></p>
                 </div>
 

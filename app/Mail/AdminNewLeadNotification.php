@@ -22,7 +22,7 @@ class AdminNewLeadNotification extends Mailable
 
     public function envelope(): Envelope
     {
-        $recipients = config('mail.admin_email', ['bookings@vumbiventures.com']);
+        $recipients = config('mail.admin_email', ['africa@vumbiventures.com']);
 
         if (is_string($recipients)) {
             $recipients = array_values(array_filter(array_map(
@@ -32,7 +32,7 @@ class AdminNewLeadNotification extends Mailable
         }
 
         if (! is_array($recipients) || $recipients === []) {
-            $recipients = ['bookings@vumbiventures.com'];
+            $recipients = ['africa@vumbiventures.com'];
         }
 
         return new Envelope(

@@ -454,6 +454,8 @@
         </section>
     @endif
 
+    <x-founder-note />
+
     {{-- ================= 6. FINAL CONVERSION CTA ================= --}}
     <section class="py-20 bg-slate-950 text-white text-center relative overflow-hidden">
         <div class="container mx-auto px-6 relative z-10 max-w-3xl">
