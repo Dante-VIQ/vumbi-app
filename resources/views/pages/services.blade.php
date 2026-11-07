@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
  
-@section('title', 'Trips & Travel Planning in Kenya & East Africa | Vumbi Ventures')
+@section('title', 'Kenya & East Africa Trips and Planning | Vumbi Ventures')
 @section('description', 'From private safaris in Kenya to cultural tours in Tanzania. We craft custom, authentic African travel experiences. Itineraries built for you.')
 @section('keywords', 'African travel services, custom safari planning, Kenya tour operator, Tanzania travel agency, adventure travel Africa, group travel services, bespoke itineraries, Vumbi Ventures services')
 

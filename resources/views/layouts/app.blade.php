@@ -8,7 +8,13 @@
     <meta name="vumbi-persona" content="{{ \App\Support\Persona::current() }}">
 
     {{-- SEO Meta Tags --}}
-    <title>@yield('title', config('app.name', 'Vumbi Ventures')) - Authentic East African Safaris & Expeditions</title>
+    @php
+        $__t = trim($__env->yieldContent('title'));
+        $__fullTitle = $__t === ''
+            ? 'Vumbi Ventures | Authentic East African Safaris & Expeditions'
+            : (stripos($__t, 'Vumbi') !== false ? $__t : $__t . ' | Vumbi Ventures');
+    @endphp
+    <title>{{ $__fullTitle }}</title>
     <meta name="description" content="@yield('description', 'Custom African safaris, tour vehicle rentals, live itineraries, and authentic travel experiences across Kenya and East Africa.')">
     <meta name="keywords" content="@yield('keywords', 'Kenya safaris, Maasai Mara tours, vehicle rentals Nakuru, East Africa travel, Vumbi Ventures')">
 
@@ -16,7 +22,7 @@
     <meta property="og:title" content="@yield('og_title', $__env->yieldContent('title') ?: config('app.name'))">
     <meta property="og:description" content="@yield('og_description', $__env->yieldContent('description') ?: 'Authentic African safaris and custom tour itineraries.')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
 
     {{-- Twitter Card --}}
@@ -25,12 +31,14 @@
     <meta name="twitter:description" content="@yield('twitter_description', $__env->yieldContent('description') ?: 'Authentic African safaris and custom tour itineraries.')">
     <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"></noscript>
     {{-- Canonical URL --}}
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Robots --}}
-    <meta name="robots" content="@yield('robots', 'index, follow')">
+    <meta name="robots" content="@yield('robots', request()->is('admin*', 'dashboard*', 'profile*', 'inquiry/thank-you*', 'login', 'register', 'password/*', 'forgot-password', 'reset-password/*') ? 'noindex, nofollow' : 'index, follow')">
 
     {{-- Performance hints --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -245,8 +253,7 @@
     {{-- Scripts --}}
     @livewireScripts
     @stack('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"></script>
 
     <script>
         window.addEventListener('open-booking', e => {

@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'About Vumbi Ventures | Vetted Local Partners in Kenya & East Africa')
+@section('title', 'About Vumbi Ventures | Vetted Local Partners in East Africa')
 @section('description', 'Vumbi means dust. We find potential in what the world overlooks. Learn how we connect travellers with vetted local partners across East Africa.')
 @section('keywords', 'about Vumbi Ventures, African travel company, sustainable tourism Africa, authentic travel, our mission')
-@section('og_image', asset('images/about-og.jpg')) 
 
 @push('styles')
 <style>

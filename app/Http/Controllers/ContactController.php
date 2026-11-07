@@ -47,7 +47,7 @@ class ContactController extends Controller
     // Optionally store in database
 
     // Return to the page the form was sent from (travel contact or Studio contact).
-    return redirect()->back()->with('success', 'Thank you! We will get back to you within 24 hours.');
+    return redirect()->back()->with('success', 'Thank you! We will get back to you within 24 hours.')->with('lead_event', 'contact_page');
 }
 
 }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'FAQ: What Is Vumbi Ventures and How Do Trips Work? | Vumbi Ventures')
-@section('description', 'What is Vumbi Ventures? A Kenya-based travel discovery and storytelling company that connects travellers with vetted local partners. Answers on trips, prices, booking and more.')
+@section('title', 'FAQ: What Is Vumbi Ventures and How Do Trips Work?')
+@section('description', 'What is Vumbi Ventures? A Kenya-based travel discovery and storytelling company that connects travellers with vetted local partners. Answers on trips and booking.')
 
 @section('content')
 <section class="pt-24 pb-8 md:pt-32 text-center container mx-auto px-6 max-w-3xl">

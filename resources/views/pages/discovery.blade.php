@@ -1,6 +1,6 @@
 @extends('layouts.app')
  
-@section('title', 'Discover Africa – Destinations, Safaris & Travel Deals by Region')
+@section('title', 'Discover Africa: Destinations, Safaris & Deals | Vumbi')
 @section('description', 'Search African destinations, safaris and cultural trips — Maasai Mara, Zanzibar, Diani Beach and more. Compare hotels, safaris and flights with real local insight.')
 
 @push('schema')

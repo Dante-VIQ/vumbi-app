@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'East Africa Safari & Tour Marketplace | Find Your Perfect Adventure')
+@section('title', 'East Africa Safari & Tour Marketplace')
 @section('description', 'Find and book your perfect adventure in Kenya, Tanzania & beyond. Compare tours, safaris, and cultural experiences across East Africa.')
 @section('keywords', 'East Africa safari, Kenya tours, Tanzania safari, book African safari, African tour operator, adventure travel Africa')
 

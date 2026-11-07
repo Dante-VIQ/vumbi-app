@@ -61,6 +61,11 @@
             });
         });
 
+        @if (session('lead_event'))
+        // Server-confirmed contact-form submission.
+        track('generate_lead', { source: @json(session('lead_event')) });
+        @endif
+
         // Generic delegated click tracking: add data-gtag-event="event_name" and
         // (optionally) data-gtag-params='{"key":"value"}' to any element — affiliate
         // links, CTA buttons, etc. — and it's tracked with no extra JS per page.

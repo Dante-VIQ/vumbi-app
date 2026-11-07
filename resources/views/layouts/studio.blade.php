@@ -7,6 +7,38 @@
 
     <title>{{ $title ?? 'Vumbi Ventures Tech Studio' }}</title>
     <meta name="description" content="{{ $description ?? 'Engineering scalable digital solutions and proprietary platforms for Africa.' }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vumbi Tech Studio">
+    <meta property="og:title" content="{{ $title ?? 'Vumbi Ventures Tech Studio' }}">
+    <meta property="og:description" content="{{ $description ?? 'Engineering scalable digital solutions and proprietary platforms for Africa.' }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ asset('images/og-default.jpg') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    @php
+        $__studioDesc = $description ?? 'Engineering scalable digital solutions and proprietary platforms for Africa.';
+        $__studioOrg = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            '@id' => url('/studio') . '#organization',
+            'name' => 'Vumbi Tech Studio',
+            'url' => url('/studio'),
+            'logo' => asset('images/logo1.png'),
+            'parentOrganization' => ['@id' => url('/') . '#organization'],
+            'description' => $__studioDesc,
+        ];
+        $__studioCrumbs = [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Vumbi Ventures', 'item' => url('/')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tech Studio', 'item' => url('/studio')],
+        ];
+        if (! request()->is('studio')) {
+            $__studioCrumbs[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $title ?? 'Studio', 'item' => url()->current()];
+        }
+        $__studioCrumbList = ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $__studioCrumbs];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($__studioOrg, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($__studioCrumbList, JSON_UNESCAPED_SLASHES) !!}</script>
 
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

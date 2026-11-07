@@ -49,7 +49,7 @@
                 <ul class="space-y-2 text-[#C7B5A6]">
                     <li><a href="/about" class="hover:text-white transition">About Us</a></li>
                     <li><a href="/services" class="hover:text-white transition">Services</a></li>
-                    <li><a href="/cultures" class="hover:text-white transition">People & Culture</a></li>
+                    <li><a href="/culture" class="hover:text-white transition">People & Culture</a></li>
                     <li><a href="/blog" class="hover:text-white transition">Field Notes</a></li>
                     <li><a href="/contact" class="hover:text-white transition">Contact</a></li>
                 </ul>

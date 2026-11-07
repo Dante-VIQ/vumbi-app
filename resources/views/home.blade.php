@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Vumbi Ventures — Discover Africa | Travel Guides, Safaris & Stories')
+@section('title', 'Vumbi Ventures | Africa Travel Guides, Safaris & Stories')
 @section('description', 'Real stories, live prices, and authentic experiences from Kenya to Cape Town. Explore African travel guides, culture, and history from those who know it best.')
 @section('keywords', 'Africa travel, authentic African experiences, Kenya travel, Tanzania safari, African culture, travel stories, Vumbi Ventures')
 
