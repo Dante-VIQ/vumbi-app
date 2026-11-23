@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="robots" content="@yield('robots', 'index, nofollow')">
+    <meta name="robots" content="@yield('robots', 'noindex, nofollow')">
 
     <title>@yield('title', 'Admin - Vumbi Ventures')</title>
 
@@ -104,6 +104,21 @@
                            class="flex items-center gap-3 p-3 rounded transition {{ request()->routeIs('admin.cultures.*') ? 'bg-terracotta text-raw-linen' : 'hover:bg-terracotta hover:bg-opacity-30' }}">
                             <i class="fas fa-users w-5"></i>
                             <span>Leads</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('campaigns.index') }}"
+                           class="flex items-center gap-3 p-3 rounded transition {{ request()->routeIs('campaigns.*') ? 'bg-terracotta text-raw-linen' : 'hover:bg-white/5' }}">
+                            <i class="fas fa-envelope w-5"></i>
+                            <span>Email campaigns</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('subscribers.index') }}"
+                           class="flex items-center gap-3 p-3 rounded transition {{ request()->routeIs('subscribers.*') ? 'bg-terracotta text-raw-linen' : 'hover:bg-white/5' }}">
+                            <i class="fas fa-address-book w-5"></i>
+                            <span>Email list</span>
                         </a>
                     </li>
                 </ul>
