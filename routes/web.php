@@ -168,6 +168,15 @@ Route::middleware(['auth', 'role:master|engineer'])
         Route::get('leads/{lead}', [PartnerLeadController::class, 'show'])->name('leads.show');
         Route::patch('leads/{lead}/status', [PartnerLeadController::class, 'updateStatus'])->name('leads.update-status');
         Route::get('leads/export', [PartnerLeadController::class, 'export'])->name('leads.export');
+
+        // Email list and campaigns
+        Route::get('subscribers', [\App\Http\Controllers\Admin\SubscriberController::class, 'index'])->name('subscribers.index');
+        Route::get('subscribers/export', [\App\Http\Controllers\Admin\SubscriberController::class, 'export'])->name('subscribers.export');
+        Route::resource('campaigns', \App\Http\Controllers\Admin\EmailCampaignController::class)->except(['show'])->parameters(['campaigns' => 'campaign']);
+        Route::get('campaigns/{campaign}', [\App\Http\Controllers\Admin\EmailCampaignController::class, 'show'])->name('campaigns.show')->whereNumber('campaign');
+        Route::get('campaigns/{campaign}/preview', [\App\Http\Controllers\Admin\EmailCampaignController::class, 'preview'])->name('campaigns.preview');
+        Route::post('campaigns/{campaign}/test', [\App\Http\Controllers\Admin\EmailCampaignController::class, 'test'])->name('campaigns.test')->middleware('throttle:10,1');
+        Route::post('campaigns/{campaign}/send', [\App\Http\Controllers\Admin\EmailCampaignController::class, 'send'])->name('campaigns.send');
     });
 
 require __DIR__.'/api.php';
