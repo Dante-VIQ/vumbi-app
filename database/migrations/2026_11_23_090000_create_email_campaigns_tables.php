@@ -8,6 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // A first attempt on MySQL created the tables and then failed on the long index name
+        // (MySQL cannot roll back table creation). Clear those leftovers so this can be re-run.
+        Schema::dropIfExists('email_campaign_sends');
+        Schema::dropIfExists('email_campaigns');
+
         Schema::create('email_campaigns', function (Blueprint $table) {
             $table->id();
             $table->string('name');                       // internal label
@@ -36,7 +41,8 @@ return new class extends Migration
             $table->text('error')->nullable();
             $table->timestamps();
 
-            $table->unique(['email_campaign_id', 'newsletter_subscriber_id']);
+            // Explicit short name: the default is over MySQL's 64-character identifier limit.
+            $table->unique(['email_campaign_id', 'newsletter_subscriber_id'], 'campaign_sends_campaign_subscriber_unique');
         });
     }
 
